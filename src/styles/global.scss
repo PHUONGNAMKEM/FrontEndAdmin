@@ -1,0 +1,17 @@
+// @import "tailwindcss";
+/* @import "variable.scss"; */
+@use "tailwindcss";
+@use "./variable.scss";
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --theme-primary: #fff;
+    --theme-secondary: #1677ff;
+    --theme-third: #ee525a;
+    --theme-current: var(--theme-primary);
+}

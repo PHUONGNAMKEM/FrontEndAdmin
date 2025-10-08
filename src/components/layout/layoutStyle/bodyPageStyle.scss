@@ -1,0 +1,50 @@
+.themeColor {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  // margin-right: 16px;
+  height: 100%;
+}
+
+.changeThemeColor {
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
+  background-color: #ffffff;
+  border: 2px solid #d8d9d8;
+  position: relative;
+  margin: 6px;
+  padding: 2px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+  }
+
+  &.primary-theme {
+    background-color: var(--theme-primary);
+  }
+
+  &.secondary-theme {
+    background-color: var(--theme-secondary);
+  }
+
+  &.third-theme {
+    background-color: var(--theme-third);
+  }
+}
+
+// .headerBody {
+//   background-color: var(--theme-current) !important;
+// }
+
+.ant-breadcrumb ol li {
+  color: var(--text-color) !important;
+}
