@@ -1,8 +1,8 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { AuthContextType } from '../../types/AuthContextType';
-import { Rank, Role, User } from '../../types/UserType';
+import { AuthContextType } from '../../types/auth/AuthContextType';
 import { useQuery } from '@tanstack/react-query';
 import { getAccountAPI } from 'src/services/api.me.service';
+import { User } from 'src/types/user/UserType';
 
 
 export const AuthContext = createContext<AuthContextType>({

@@ -4,7 +4,7 @@ import './goalUpdate.scss';
 import { GoalType } from "../../../types/Goal/GoalType";
 import dayjs, { Dayjs } from "dayjs";
 import { updateGoalAPI } from "../../../services/api.me.service";
-import RichEditor2 from "../../richTextEditor/RichEditor2";
+import RichEditor2 from "../../ui/richTextEditor/RichEditor2";
 import { RcFile, UploadProps } from "antd/es/upload";
 import { PlusOutlined } from "@ant-design/icons";
 import TypeOfGoal from "../typeofGoal/typeofGoal";

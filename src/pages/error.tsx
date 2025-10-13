@@ -1,6 +1,6 @@
 import { Result, Button } from "antd";
 import { Link, useRouteError } from "react-router-dom";
-import { RouteError } from "../types/RouteError";
+import { RouteError } from "../types/error/RouteError";
 
 export default function ErrorPage() {
     const error = useRouteError();

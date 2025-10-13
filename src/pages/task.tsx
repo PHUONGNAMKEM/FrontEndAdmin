@@ -7,7 +7,7 @@ import { ColumnTableType } from "../types/ColumnType";
 import TableColumn from "../components/table_column/table.column";
 import { closestCorners, DndContext, DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import AddColumnTitle from "../components/add/addList";
+import AddColumnTitle from "../components/ui/add/addList";
 import TaskUpdate from "../components/task/taskUpdate/taskUpdate";
 
 const TaskPage = () => {

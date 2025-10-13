@@ -1,5 +1,5 @@
 import { Button, DatePicker, Dropdown, Input, MenuProps, Modal, notification, Popconfirm, Radio, Space } from "antd";
-import RichEditor from "../../richTextEditor/RichEditor";
+import RichEditor from "../../ui/richTextEditor/RichEditor";
 import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { TaskType } from "../../../types/TaskType";

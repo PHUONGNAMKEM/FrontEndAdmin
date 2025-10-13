@@ -1,10 +1,10 @@
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { Button, Col, Divider, Form, Input, message, notification, Row } from "antd";
-import { FormProps, Link, useNavigate } from "react-router-dom";
+import { FormProps, Link, Navigate, useNavigate } from "react-router-dom";
 import { loginAPI } from "src/services/api.me.service";
 import { useContext, useState } from "react";
-import { AuthContext } from "../components/context/auth.context";
-import { IRegisterFormValues } from "../interface/IRegisterFormValues";
+import { AuthContext } from "@components/context/auth.context";
+import { IRegisterFormValues } from "src/interface/IRegisterFormValues";
 
 const LoginPage = () => {
 
@@ -14,27 +14,42 @@ const LoginPage = () => {
     const { setUser } = useContext(AuthContext);
 
     const onFinish = async (values: IRegisterFormValues) => {
-        setIsLoading(true)
-        const res = await loginAPI(values.username, values.password)
+        setIsLoading(true);
+        const res = await loginAPI(values.username, values.password);
         console.log(">>> check res: ", res);
 
         console.log(">>> check username", values.username);
         console.log(">>> check password", values.password);
 
         if (res.data) {
-            message.success("Login successfully")
-            setIsLoading(false)
-            localStorage.setItem("access_token", res.data.access_token)
-            setUser(res.data.user)
-            navigate("/overview")
+            message.success("Login successfully");
+            setIsLoading(false);
+            localStorage.setItem("access_token", res.data.access_token);
+            localStorage.setItem("role", res.data.user.role.name);
+            localStorage.setItem("username", res.data.user.username);
+            setUser(res.data.user);
+
+
+            const hasChangedPassword = localStorage.getItem("hasChangedPassword");
+            if (res.data.user.role.name === "Staff") {
+                if (res.data.user.is_first_login && !hasChangedPassword) {
+                    navigate("/guide");
+                } else {
+                    console.log(">>> congrats");
+                    navigate("/congrats");
+                }
+            }
+            else {
+                navigate("/overview");
+            }
         }
         else {
             notification.error({
                 message: "Error Login",
-                description: JSON.stringify(res.data?.message || "Unknown error")
+                description: JSON.stringify(res.message || "Unknown error")
             })
         }
-        setIsLoading(false)
+        setIsLoading(false);
     }
 
     return (
@@ -114,9 +129,13 @@ const LoginPage = () => {
                         {/* <hr style={{ borderTop: " 1px solid #eee", margin: "24px 0" }} /> */}
                         <Divider />
 
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {/* <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <span>No account yet? </span>
                             <Link to="/register" style={{ marginLeft: 4 }}>Register here</Link>
+                        </div> */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <span>Forgot Password? </span>
+                            <Link to="/reset-password" style={{ marginLeft: 4 }}>Reset password here</Link>
                         </div>
                     </fieldset>
                 </Col>

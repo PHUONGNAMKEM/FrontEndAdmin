@@ -27,7 +27,7 @@
     "@mui/x-charts": "8.13.1",
     "@tailwindcss/vite": "4.1.11",
     "@tanstack/react-query": "5.90.2",
-    "antd": "5.18.1",
+    "antd": "5.27.4",
     "antd-style": "3.7.1",
     "axios": "1.7.2",
     "dayjs": "1.11.13",
@@ -45,7 +45,8 @@
     "react-router-dom": "6.23.1",
     "socket.io-client": "4.8.1",
     "styled-components": "6.1.19",
-    "tailwindcss": "4.1.11"
+    "tailwindcss": "4.1.11",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",

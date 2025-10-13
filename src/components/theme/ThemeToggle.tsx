@@ -1,6 +1,5 @@
 import { Button } from 'antd';
 import { useTheme } from '../context/ThemeContext';
-import ButtonSwitchTheme from './ButtonToggleTheme';
 import { Moon, MoonStar, Sun } from 'lucide-react';
 
 const ThemeToggle = () => {

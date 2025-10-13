@@ -1,7 +1,7 @@
 import { Button, Input, notification, Modal } from 'antd';
 import { useState } from 'react';
 import { createUserAPI } from '../../services/api.me.service';
-import { UserFormProps } from '../../types/UserForm';
+import { UserFormProps } from 'src/types/user/UserForm';
 
 const UserForm: React.FC<UserFormProps> = ({ loadUser }) => {
 

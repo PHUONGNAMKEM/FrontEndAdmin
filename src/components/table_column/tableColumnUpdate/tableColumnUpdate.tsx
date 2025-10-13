@@ -1,5 +1,5 @@
 import { DatePicker, Input, Modal, notification, Radio } from "antd";
-import RichEditor from "../../richTextEditor/RichEditor";
+import RichEditor from "../../ui/richTextEditor/RichEditor";
 import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { ColumnTableType } from "../../../types/ColumnType";

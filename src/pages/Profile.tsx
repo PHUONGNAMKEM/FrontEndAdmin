@@ -60,6 +60,83 @@ const employees: EmployeeData[] = [
         gender: "Nam",
         avatar_url: "https://i.pravatar.cc/150?img=3",
     },
+    {
+        key: "4",
+        code: "NV006180",
+        full_name: "Nguyễn Hoàng Long",
+        position: "Lập trình viên",
+        department: "Dự án AMIS C&B",
+        probation_date: "01/02/2021",
+        official_date: "01/04/2021",
+        gender: "Nam",
+        avatar_url: "https://i.pravatar.cc/150?img=1",
+    },
+    {
+        key: "5",
+        code: "NV000500",
+        full_name: "Nguyễn Thị Trang",
+        position: "Nhân viên kiểm soát chất lượng",
+        department: "Dự án QLBC.VN",
+        probation_date: "16/02/2016",
+        official_date: "16/04/2016",
+        gender: "Nữ",
+        avatar_url: "https://i.pravatar.cc/150?img=2",
+    },
+    {
+        key: "6",
+        code: "NV000759",
+        full_name: "Võ Minh Chiến",
+        position: "Nhân viên Kinh doanh Xúc tiến",
+        department: "Nhóm KD HCSN 08",
+        probation_date: "11/06/2019",
+        official_date: "11/08/2019",
+        gender: "Nam",
+        avatar_url: "https://i.pravatar.cc/150?img=3",
+    },
+    {
+        key: "7",
+        code: "NV006180",
+        full_name: "Nguyễn Hoàng Long",
+        position: "Lập trình viên",
+        department: "Dự án AMIS C&B",
+        probation_date: "01/02/2021",
+        official_date: "01/04/2021",
+        gender: "Nam",
+        avatar_url: "https://i.pravatar.cc/150?img=1",
+    },
+    {
+        key: "8",
+        code: "NV000500",
+        full_name: "Nguyễn Thị Trang",
+        position: "Nhân viên kiểm soát chất lượng",
+        department: "Dự án QLBC.VN",
+        probation_date: "16/02/2016",
+        official_date: "16/04/2016",
+        gender: "Nữ",
+        avatar_url: "https://i.pravatar.cc/150?img=2",
+    },
+    {
+        key: "9",
+        code: "NV000759",
+        full_name: "Võ Minh Chiến",
+        position: "Nhân viên Kinh doanh Xúc tiến",
+        department: "Nhóm KD HCSN 08",
+        probation_date: "11/06/2019",
+        official_date: "11/08/2019",
+        gender: "Nam",
+        avatar_url: "https://i.pravatar.cc/150?img=3",
+    },
+    {
+        key: "10",
+        code: "NV000759",
+        full_name: "Võ Minh Chiến",
+        position: "Nhân viên Kinh doanh Xúc tiến",
+        department: "Nhóm KD HCSN 08",
+        probation_date: "11/06/2019",
+        official_date: "11/08/2019",
+        gender: "Nam",
+        avatar_url: "https://i.pravatar.cc/150?img=3",
+    },
 ];
 
 // ================== CỘT BẢNG NHÂN VIÊN ==================
@@ -207,7 +284,7 @@ const ProfilePage = () => {
                     <Table
                         columns={columns}
                         dataSource={employees}
-                        pagination={{ total: 2388, pageSize: 50, showSizeChanger: false }}
+                        pagination={{ total: 10, pageSize: 3, showSizeChanger: false }}
                         scroll={{ x: 1100 }}
                         onRow={(record) => ({
                             onClick: () => {

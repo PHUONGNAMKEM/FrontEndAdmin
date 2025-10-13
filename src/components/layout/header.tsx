@@ -13,7 +13,6 @@ import { useContext, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AuthContext } from "../context/auth.context";
 import { logoutAPI } from "../../services/api.me.service";
-import { Rank, Role } from "../../types/UserType";
 import "./layoutStyle/header.scss"
 import { useTheme } from "@components/context/ThemeContext";
 
@@ -34,6 +33,8 @@ const Header = () => {
             if (res.data) {
                 // clear data
                 localStorage.removeItem("access_token")
+                localStorage.removeItem("role")
+                localStorage.removeItem("username")
                 setUser(null);
                 message.success("Logout successfully")
                 // redirect user to home page

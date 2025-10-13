@@ -20,13 +20,12 @@ import {
     UserSwitchOutlined,
     WarningOutlined,
 } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import { MenuProps } from 'rc-menu';
+import { Breadcrumb, Layout, Menu, theme, MenuProps } from 'antd';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useParams } from 'react-router-dom';
 import './layoutStyle/bodyPageStyle.scss'
 import { getGoalByIdAPI } from '../../services/api.me.service';
-import { ArrowLeftRight, ArrowRight, ChartColumn, CircleAlert, FileSpreadsheet, FileUser, Gift, House, Settings, Shield, SquareKanban, TriangleAlert, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, ChartColumn, CircleAlert, FileSpreadsheet, FileUser, Gift, GraduationCap, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX } from 'lucide-react';
 import ThemeToggle from '../theme/ThemeToggle';
 import { useTheme } from '@components/context/ThemeContext';
 import { IconWrapper } from '@components/customsIconLucide/IconWrapper';
@@ -52,21 +51,48 @@ const BodyPage = () => {
     }
     const [collapsed, setCollapsed] = useState(false);
 
-    const items: MenuItem[] = [
-        getItem(<Link to="/overview">Tổng quan</Link>, 'overview', <IconWrapper Icon={House} />),
-        getItem(<Link to="/profile">Hồ sơ</Link>, 'profile', <IconWrapper Icon={FileUser} />),
-        getItem(<Link to="/contract">Hợp đồng</Link>, 'contract', <IconWrapper Icon={FileSpreadsheet} />),
-        getItem(<Link to="/appointment">Bổ nhiệm</Link>, 'appointment', <IconWrapper Icon={UserRoundPlus} />),
-        getItem(<Link to="/dismissal">Miễn nhiệm</Link>, 'dismissal', <IconWrapper Icon={UserRoundX} />),
-        getItem(<Link to="/transfer">Thuyên chuyển</Link>, 'transfer', <IconWrapper Icon={ArrowLeftRight} />),
-        getItem(<Link to="/resignation">Nghỉ việc</Link>, 'resignation', <IconWrapper Icon={UserRoundMinus} />),
-        getItem(<Link to="/reward">Khen thưởng</Link>, 'reward', <IconWrapper Icon={Gift} />),
-        getItem(<Link to="/discipline">Kỷ luật</Link>, 'discipline', <IconWrapper Icon={Shield} />),
-        getItem(<Link to="/incident">Sự cố</Link>, 'incident', <IconWrapper Icon={CircleAlert} />),
-        getItem(<Link to="/planning">Quy hoạch</Link>, 'planning', <IconWrapper Icon={SquareKanban} />),
-        getItem(<Link to="/report">Báo cáo</Link>, 'report', <IconWrapper Icon={ChartColumn} />),
-        getItem(<Link to="/settings">Thiết lập</Link>, 'settings', <IconWrapper Icon={Settings} />),
+    // Check role and display follow role
+    const role = localStorage.getItem("role") || "Staff";
+    // const { user } = useContext(AuthContext); và check if (user?.role?.name === "ADMIN") {
+
+    const baseItems: MenuItem[] = [
+        getItem(<Link to="/guide">Hướng dẫn</Link>, "guide", <IconWrapper Icon={GraduationCap} />),
+        getItem(<Link to="/congrats">Nhân viên</Link>, "congrats", <IconWrapper Icon={PartyPopper} />),
     ];
+
+    // Danh sách menu chung cho HR và Admin
+    const hrAndAdminItems: MenuItem[] = [
+        getItem(<Link to="/overview">Tổng quan</Link>, "overview", <IconWrapper Icon={House} />),
+        getItem(<Link to="/employee">Nhân viên</Link>, "employee", <IconWrapper Icon={UserRound} />),
+        getItem(<Link to="/profile">Hồ sơ</Link>, "profile", <IconWrapper Icon={FileUser} />),
+        getItem(<Link to="/contract">Hợp đồng</Link>, "contract", <IconWrapper Icon={FileSpreadsheet} />),
+        getItem(<Link to="/appointment">Bổ nhiệm</Link>, "appointment", <IconWrapper Icon={UserRoundPlus} />),
+        getItem(<Link to="/dismissal">Miễn nhiệm</Link>, "dismissal", <IconWrapper Icon={UserRoundX} />),
+        getItem(<Link to="/transfer">Thuyên chuyển</Link>, "transfer", <IconWrapper Icon={ArrowLeftRight} />),
+        getItem(<Link to="/resignation">Nghỉ việc</Link>, "resignation", <IconWrapper Icon={UserRoundMinus} />),
+        getItem(<Link to="/reward">Khen thưởng</Link>, "reward", <IconWrapper Icon={Gift} />),
+        getItem(<Link to="/discipline">Kỷ luật</Link>, "discipline", <IconWrapper Icon={Shield} />),
+        getItem(<Link to="/incident">Sự cố</Link>, "incident", <IconWrapper Icon={CircleAlert} />),
+        getItem(<Link to="/planning">Quy hoạch</Link>, "planning", <IconWrapper Icon={SquareKanban} />),
+        getItem(<Link to="/report">Báo cáo</Link>, "report", <IconWrapper Icon={ChartColumn} />),
+        getItem(<Link to="/settings">Thiết lập</Link>, "settings", <IconWrapper Icon={Settings} />),
+    ];
+
+    // Chỉ Admin mới có thêm
+    const adminExtraItems: MenuItem[] = [
+        getItem(<Link to="/user-management">Quản lý người dùng</Link>, "user-management", <IconWrapper Icon={UserCog} />),
+    ];
+
+    // Build danh sách cuối cùng
+    let items: MenuItem[] = [];
+
+    if (role === "Admin") {
+        items = [...hrAndAdminItems, ...adminExtraItems, ...baseItems];
+    } else if (role === "HR") {
+        items = [...hrAndAdminItems, ...baseItems]; // HR có tất cả trừ user-management
+    } else if (role === "Staff") {
+        items = [...baseItems]; // Staff chỉ có Hướng dẫn
+    }
 
     const {
         token: { colorBgContainer, borderRadiusLG },

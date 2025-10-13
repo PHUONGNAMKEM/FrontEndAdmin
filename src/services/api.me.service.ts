@@ -3,8 +3,52 @@ import { RcFile } from "antd/es/upload";
 import { GoalType } from "../types/Goal/GoalType";
 import { TaskType } from "../types/TaskType";
 import axios from "./axios.customize";
-import { AxiosResponse } from "axios";
 import dayjs, { Dayjs } from "dayjs";
+import { ApiResponse } from "src/types/api";
+
+
+// Employee
+export const fetchEmployeeAPI = (current: number, pageSize: number) => {
+    const URL_BACKEND = `/api/employee?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+}
+
+export const createEmployeeAPI = (formData: FormData) => {
+    const URL_BACKEND = "/api/employee";
+    const config = {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    };
+    return axios.post(`${URL_BACKEND}`, formData, config);
+};
+
+export const fetchFilteredEmployeesAPI = (filters: Record<string, any>, current = 1, pageSize = 10) => {
+    const params = new URLSearchParams({ current: current.toString(), pageSize: pageSize.toString() });
+    Object.entries(filters).forEach(([key, value]) => {
+        if (value) params.append(key, value);
+    });
+    return axios.get(`/api/employee/filter?${params.toString()}`);
+};
+
+
+
+// Change Password
+export const changePasswordAPI = (oldPassword: string | undefined, newPassword: string | undefined) => {
+    const URL_BACKEND = `/api/change-password`;
+    const data = {
+        oldPassword,
+        newPassword
+    }
+    return axios.post(URL_BACKEND, data);
+}
+
+// User
+const fetchUserAPI = (current: number, pageSize: number) => {
+    const URL_BACKEND = `/api/user?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+}
+
 
 const createUserAPI = (username: string, email: string, password: string) => {
     const URL_BACKEND = "/api/user";
@@ -14,7 +58,7 @@ const createUserAPI = (username: string, email: string, password: string) => {
         password: password,
     }
 
-    return axios.post(URL_BACKEND, data)
+    return axios.post(URL_BACKEND, data);
 }
 
 const updateUserAPI = (_id: string, fullName: string, phone: string) => {
@@ -33,36 +77,9 @@ const deleteUserAPI = (_id: string) => {
     return axios.delete(URL_BACKEND)
 }
 
-const fetchUserAPI = (current: number, pageSize: number) => {
-    const URL_BACKEND = `/api/user?current=${current}&pageSize=${pageSize}`;
-    return axios.get(URL_BACKEND)
-}
-
-// const handleUploadFile = (file, folder) => {
-//     const URL_BACKEND = "/api/file/upload";
-
-//     let config = {
-//         headers: {
-//             "upload-type": folder,
-//             "Content-Type": "multipart/form-data"
-//         }
-//     }
-
-//     const bodyFormData = new FormData();
-//     bodyFormData.append("fileImg", file);
-
-//     return axios.post(URL_BACKEND, bodyFormData, config)
-// }
-
-// const updateUserAvatarAPI = (avatar, _id, fullName, phone) => {
-//     const URL_BACKEND = "/api/user";
-//     const data = {
-//         _id: _id,
-//         avatar: avatar,
-//         fullName, phone
-//     }
-
-//     return axios.put(URL_BACKEND, data)
+// const fetchUserAPI = (current: number, pageSize: number) => {
+//     const URL_BACKEND = `/api/user?current=${current}&pageSize=${pageSize}`;
+//     return axios.get(URL_BACKEND)
 // }
 
 const registerUserAPI = (username: string, email: string, password: string) => {
@@ -76,7 +93,7 @@ const registerUserAPI = (username: string, email: string, password: string) => {
     return axios.post(URL_BACKEND, data)
 }
 
-const loginAPI = (email: string, password: string) => {
+const loginAPI = (email: string, password: string): Promise<ApiResponse> => {
     const URL_BACKEND = "/api/login";
     const data = {
         username: email,
@@ -342,5 +359,5 @@ export {
     createColumnAPI, deleteColumnAPI, createTaskAPI, updateTaskColumn, updateTaskOrders,
     updateTitleColumnAPI, updateTitleTaskAPI, deleteTaskAPI, getGoalByIdAPI, getAllTypeofGoal,
     createTypeofGoalAPI, updateTypeofGoalAPI, deleteTypeofGoalAPI, deleteAllTypeofGoalAPI,
-    addTypeofGoalToGoalTypeAPI
+    addTypeofGoalToGoalTypeAPI,
 }

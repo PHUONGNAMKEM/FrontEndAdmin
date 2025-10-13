@@ -7,11 +7,11 @@ import { GoalType } from "../types/Goal/GoalType";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import GoalAdd from "../components/goal/goalAdd/goalAdd";
-import ButtonAddNewGoal from "../components/layout/buttonAddNewGoal/buttonAddNewGoal";
 import { AuthContext } from "../components/context/auth.context";
 import { TypeofGoal } from "../types/Goal/TypeofGoal";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
+import ButtonAddNewGoal from "@components/goal/buttonAddNewGoal/buttonAddNewGoal";
 
 const GoalPage = () => {
 

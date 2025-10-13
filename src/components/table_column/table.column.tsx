@@ -9,7 +9,7 @@ import { Ellipsis } from "lucide-react";
 import { Dropdown, MenuProps, notification, Popconfirm, Space } from "antd";
 import { deleteColumnAPI, deleteTaskAPI } from "../../services/api.me.service";
 import { useParams } from "react-router-dom";
-import AddNewTask from "../add/addTask";
+import AddNewTask from "../ui/add/addTask";
 import { useState } from "react";
 import TaskUpdate from "../task/taskUpdate/taskUpdate";
 import TableColumnUpdate from "./tableColumnUpdate/tableColumnUpdate";

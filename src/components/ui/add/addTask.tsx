@@ -2,7 +2,7 @@ import { Input, Button, notification, DatePicker, DatePickerProps } from "antd";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
-import { ColumnTableType } from "../../types/ColumnType";
+import { ColumnTableType } from "../../../types/ColumnType";
 import { createTaskAPI } from "src/services/api.me.service";
 
 type AddColumnTitleProps = {

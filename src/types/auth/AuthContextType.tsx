@@ -1,4 +1,4 @@
-import { User } from "./UserType";
+import { User } from "../user/UserType";
 
 export type AuthContextType = {
     user: User | null;
