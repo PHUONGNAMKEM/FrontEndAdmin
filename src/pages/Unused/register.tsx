@@ -1,6 +1,6 @@
 import { Button, Input, notification, Row, Col, Form, Divider } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { IRegisterFormValues } from "../interface/IRegisterFormValues";
+import { IRegisterFormValues } from "src/interface/IRegisterFormValues";
 import { registerUserAPI } from "src/services/api.me.service";
 
 const RegisterPage = () => {

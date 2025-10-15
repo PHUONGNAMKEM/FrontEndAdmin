@@ -1,17 +1,15 @@
 
 import { Button, Col, Form, notification, Row } from "antd";
-import Goal from "../components/goal/goalComponent/goalComponent";
 import { useContext, useEffect, useState } from "react";
 import { createGoalAPI, fetchGoalAPI, getAllTypeofGoal, getTypeofGoalByIdAPI } from "src/services/api.me.service";
-import { GoalType } from "../types/Goal/GoalType";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import GoalAdd from "../components/goal/goalAdd/goalAdd";
-import { AuthContext } from "../components/context/auth.context";
-import { TypeofGoal } from "../types/Goal/TypeofGoal";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import ButtonAddNewGoal from "@components/goal/buttonAddNewGoal/buttonAddNewGoal";
+import { TypeofGoal } from "src/types/Goal/TypeofGoal";
+import { GoalType } from "src/types/Goal/GoalType";
+import Goal from "@components/goal/goalComponent/goalComponent";
 
 const GoalPage = () => {
 

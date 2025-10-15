@@ -25,7 +25,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import './layoutStyle/bodyPageStyle.scss'
 import { getGoalByIdAPI } from '../../services/api.me.service';
-import { ArrowLeftRight, ArrowRight, ChartColumn, CircleAlert, FileSpreadsheet, FileUser, Gift, GraduationCap, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, ChartColumn, ChartNoAxesGantt, CircleAlert, FileSpreadsheet, FileUser, Gift, GraduationCap, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, Warehouse } from 'lucide-react';
 import ThemeToggle from '../theme/ThemeToggle';
 import { useTheme } from '@components/context/ThemeContext';
 import { IconWrapper } from '@components/customsIconLucide/IconWrapper';
@@ -65,6 +65,8 @@ const BodyPage = () => {
     const hrAndAdminItems: MenuItem[] = [
         getItem(<Link to="/overview">Tổng quan</Link>, "overview", <IconWrapper Icon={House} />),
         getItem(<Link to="/employee">Nhân viên</Link>, "employee", <IconWrapper Icon={UserRound} />),
+        getItem(<Link to="/department">Phòng ban</Link>, "department", <IconWrapper Icon={Warehouse} />),
+        getItem(<Link to="/position">Chức vụ</Link>, "position", <IconWrapper Icon={ChartNoAxesGantt} />),
         getItem(<Link to="/profile">Hồ sơ</Link>, "profile", <IconWrapper Icon={FileUser} />),
         getItem(<Link to="/contract">Hợp đồng</Link>, "contract", <IconWrapper Icon={FileSpreadsheet} />),
         getItem(<Link to="/appointment">Bổ nhiệm</Link>, "appointment", <IconWrapper Icon={UserRoundPlus} />),

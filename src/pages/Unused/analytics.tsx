@@ -1,9 +1,6 @@
 import { ClockCircleOutlined } from "@ant-design/icons";
 import { Timeline } from "antd";
 import { useEffect, useState } from "react";
-import { GoalType } from "../types/Goal/GoalType";
-import { TypeofGoal } from "../types/Goal/TypeofGoal";
-import { fetchGoalAPI, getTypeofGoalByIdAPI } from "../services/api.me.service";
 import { Link, useOutletContext } from "react-router-dom";
 type OutletContextType = {
     setHeaderContent: (node: React.ReactNode) => void;

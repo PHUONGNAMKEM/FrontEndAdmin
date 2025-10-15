@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Col, Row } from "antd";
 import { getAllColumnAPI, getTaskByIdGoal, updateTaskColumn, updateTaskOrders } from "src/services/api.me.service";
-import { TaskType } from "../types/TaskType";
 import { useParams } from "react-router-dom";
-import { ColumnTableType } from "../types/ColumnType";
-import TableColumn from "../components/table_column/table.column";
 import { closestCorners, DndContext, DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import AddColumnTitle from "../components/ui/add/addList";
-import TaskUpdate from "../components/task/taskUpdate/taskUpdate";
+import { TaskType } from "src/types/TaskType";
+import { ColumnTableType } from "src/types/ColumnType";
+import TableColumn from "@components/table_column/table.column";
+import AddColumnTitle from "@components/ui/add/addList";
+import TaskUpdate from "@components/task/taskUpdate/taskUpdate";
 
 const TaskPage = () => {
 

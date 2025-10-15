@@ -10,7 +10,7 @@ import {
     AntDesignOutlined,
 } from "@ant-design/icons";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { Funnel, Settings, List as LucideList, LayoutList, AlignJustify, PanelLeft, Search, CirclePlus, ListEnd, Ellipsis, Edit3, Check, Delete, Trash } from "lucide-react";
+import { Funnel, Settings, List as LucideList, LayoutList, AlignJustify, PanelLeft, Search, CirclePlus, ListEnd, Ellipsis, Edit3, Check, Delete, Trash, Ban } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useEmployeeStore } from "src/stores/useEmployeeStore";
@@ -21,6 +21,8 @@ const { Title } = Typography;
 import { useSearchParams } from "react-router-dom";
 import EmployeeAdd from "./EmployeeAdd/EmployeeAdd";
 import { EmployeeFilterPage } from "./EmployeeFilter/EmployeeFilterPage";
+import { useDepartmentStore } from "src/stores/useDepartmentStore";
+import { usePositionStore } from "src/stores/usePositionStore";
 
 // ================== CỘT BẢNG NHÂN VIÊN ==================
 const columns = [
@@ -101,9 +103,7 @@ const items = [
 
 const EmployeePage = () => {
     const [viewMode, setViewMode] = useState<"list" | "detail">("list");
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-        null
-    );
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
     const { employees, meta, fetchEmployees, setModalOpen, isModalOpen, updateEmployee, deleteEmployee } = useEmployeeStore();
 
@@ -114,6 +114,8 @@ const EmployeePage = () => {
 
     useEffect(() => {
         fetchEmployees(currentPage, currentSize);
+        fetchDepartment(undefined, metaDepartment?.total);
+        fetchPosition(undefined, metaPosition?.total);
     }, [currentPage, currentSize]);
 
     const handlePageChange = (current: number, pageSize: number) => {
@@ -136,6 +138,8 @@ const EmployeePage = () => {
         return () => setHeaderContent(null);
     }, [setHeaderContent, meta?.total]);
 
+    // Logic filter Open
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // Logic editing Employee
     const [isEditing, setIsEditing] = useState(false);
@@ -149,6 +153,10 @@ const EmployeePage = () => {
     const handleChange = (field: keyof Employee, value: any) => {
         setEditedEmployee((prev) => prev ? { ...prev, [field]: value } : prev);
     };
+
+    const handleCancel = () => {
+        setIsEditing(!isEditing);
+    }
 
     const handleUpdate = async () => {
         if (!editedEmployee || !selectedEmployee) return;
@@ -173,7 +181,7 @@ const EmployeePage = () => {
         message.success("Cập nhật nhân viên thành công!");
 
         setSelectedEmployee((prev) => prev ? { ...prev, ...changedFields } : prev);  // cập nhật giao diện bên phải chi tiết nhân viên
-
+        await fetchEmployees!(currentPage, currentSize); // chỗ này nè
         setIsEditing(false);
     };
 
@@ -198,6 +206,21 @@ const EmployeePage = () => {
         message.error('Click on No');
     };
 
+    const { fetchDepartment, departments, meta: metaDepartment } = useDepartmentStore();
+    const { fetchPosition, positions, meta: metaPosition } = usePositionStore();
+
+    // Department Options để bỏ vào option trong Select input
+    const departmentOptions = departments.map((dept) => ({
+        value: dept.id,
+        label: dept.name,
+    }));
+
+    // Position Options để bỏ vào option trong Select input
+    const positionOptions = positions.map((dept) => ({
+        value: dept.id,
+        label: dept.name,
+    }));
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== HEADER TOOLBAR ===== */}
@@ -215,7 +238,14 @@ const EmployeePage = () => {
                         prefix={<IconWrapper Icon={Search} />}
                         style={{ width: 300 }}
                     />
-                    <Button className="ml-2.5" size="large" icon={<IconWrapper Icon={ListEnd} />} />
+                    <Button
+                        className="ml-2.5"
+                        size="large"
+                        icon={<IconWrapper Icon={ListEnd} />}
+                        onClick={() => {
+                            setIsFilterOpen((prev) => !prev);
+                        }}
+                    />
                 </div>
 
                 <Space>
@@ -246,29 +276,32 @@ const EmployeePage = () => {
                 </Space>
             </div >
 
-            {/* <EmployeeFilterPage /> */}
-
             {/* ===== VIEW CHÍNH ===== */}
             {
                 viewMode === "list" ? (
-                    <Table
-                        columns={columns}
-                        dataSource={employees}
-                        pagination={{
-                            current: meta?.current || 1,
-                            pageSize: meta?.pageSize || 10,
-                            total: meta?.total || 0,
-                            showSizeChanger: true,
-                            onChange: handlePageChange,
-                        }}
-                        scroll={{ x: 1100 }}
-                    // onRow={(record) => ({
-                    //     onClick: () => {
-                    //         setSelectedEmployee(record);
-                    //         setViewMode("detail");
-                    //     },
-                    // })}
-                    />
+                    <div className="flex">
+                        <Table
+                            className="flex-1 border border-[#eee] rounded-t-lg rounded-b-lg"
+                            columns={columns}
+                            dataSource={employees}
+                            pagination={{
+                                current: meta?.current || 1,
+                                pageSize: meta?.pageSize || 10,
+                                total: meta?.total || 0,
+                                showSizeChanger: true,
+                                onChange: handlePageChange,
+                            }}
+                            scroll={{ x: 1100 }}
+                        // onRow={(record) => ({
+                        //     onClick: () => {
+                        //         setSelectedEmployee(record);
+                        //         setViewMode("detail");
+                        //         handleChangeItem(record);
+                        //     },
+                        // })}
+                        />
+                        {isFilterOpen && <EmployeeFilterPage />}
+                    </div>
                 ) : (
                     <div style={{ display: "flex", gap: 16 }}>
                         <div className="flex flex-col">
@@ -385,9 +418,25 @@ const EmployeePage = () => {
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Vị trí công việc">
                                             {isEditing ? (
-                                                <Input
+                                                // <Input
+                                                //     value={editedEmployee?.positionName}
+                                                //     onChange={(e) => handleChange("positionName", e.target.value)}
+                                                // />
+                                                <Select
+                                                    className="w-full"
                                                     value={editedEmployee?.positionName}
-                                                    onChange={(e) => handleChange("positionName", e.target.value)}
+                                                    placeholder="Chọn vị trí"
+                                                    options={positionOptions}
+                                                    showSearch // cho phép gõ để lọc
+                                                    optionFilterProp="label"
+                                                    filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
+                                                        (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                                    }
+                                                    onChange={(value, option) => {
+                                                        handleChange("positionId", value);
+                                                        let optionLabel = (option as { value: string; label: string })?.label
+                                                        handleChange("positionName", optionLabel);
+                                                    }}
                                                 />
                                             ) : (
                                                 selectedEmployee.positionName || "Trống"
@@ -395,9 +444,25 @@ const EmployeePage = () => {
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Đơn vị công tác">
                                             {isEditing ? (
-                                                <Input
+                                                // <Input
+                                                //     value={editedEmployee?.departmentName}
+                                                //     onChange={(e) => handleChange("departmentName", e.target.value)}
+                                                // />
+                                                <Select
+                                                    className="w-full"
                                                     value={editedEmployee?.departmentName}
-                                                    onChange={(e) => handleChange("departmentName", e.target.value)}
+                                                    placeholder="Chọn phòng ban"
+                                                    options={departmentOptions}
+                                                    showSearch // cho phép gõ để lọc
+                                                    optionFilterProp="label"
+                                                    filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
+                                                        (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                                    }
+                                                    onChange={(value, option) => {
+                                                        handleChange("departmentId", value);
+                                                        let optionLabel = (option as { value: string; label: string })?.label
+                                                        handleChange("departmentName", optionLabel);
+                                                    }}
                                                 />
                                             ) : (
                                                 selectedEmployee.departmentName || "Chưa được phân công"
@@ -498,6 +563,14 @@ const EmployeePage = () => {
                                     {isEditing && (
                                         <div className="flex justify-end mt-4">
                                             <Button
+                                                type="default"
+                                                icon={<Ban size={16} />}
+                                                onClick={handleCancel}
+                                            >
+                                                Hủy
+                                            </Button>
+                                            <Button
+                                                className="ml-4"
                                                 type="primary"
                                                 icon={<Check size={16} />}
                                                 onClick={handleUpdate}

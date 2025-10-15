@@ -6,11 +6,16 @@ import axios from "./axios.customize";
 import dayjs, { Dayjs } from "dayjs";
 import { ApiResponse } from "src/types/api";
 import { Employee } from "src/types/employee/Employee";
+import { Department } from "src/types/department/Department";
+import { Position } from "src/types/position/Position";
+import { Contract } from "src/types/contract/Contract";
 
 
 // Employee
 export const fetchEmployeeAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/Employee?current=${current}&pageSize=${pageSize}`;
+    const URL_BACKEND = current && pageSize
+        ? `/api/Employee?current=${current}&pageSize=${pageSize}`
+        : `/api/Employee`;
     return axios.get(URL_BACKEND);
 }
 
@@ -35,12 +40,33 @@ export const updateEmployeeAPI = (id: string, payload: Partial<Employee>): Promi
     return axios.put(`${URL_BACKEND}`, data);
 };
 
+//https://hrmadmin.huynhthanhson.io.vn/api/Employee/filter?fields=fullname&q=Hu%E1%BB%B3nh&current=1&pageSize=20
 export const fetchFilteredEmployeesAPI = (filters: Record<string, any>, current = 1, pageSize = 10): Promise<ApiResponse> => {
-    const params = new URLSearchParams({ current: current.toString(), pageSize: pageSize.toString() });
-    Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, value);
+    const params = new URLSearchParams;
+
+    // Lấy ra các key hợp lý - có value, value ko bị null object[key] = value
+    const validKeys = Object.keys(filters).filter(
+        (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ""
+    );
+
+    // Object.keys trả về mảng các key hợp lý -> thêm các key hợp lý vào fields
+    if (validKeys.length > 0) {
+        params.append("fields", validKeys.join(','));
+    }
+
+    // Thêm các query (key=value) vào url cách 1 (ở đây có validKeys rồi nên dùng lại luôn)
+    validKeys.forEach((key) => {
+        params.append(key, filters[key]);
     });
-    return axios.get(`/api/employee/filter?${params.toString()}`);
+
+    // Thêm các query (key=value) vào url cách 2
+    // Object.entries(filters).forEach(([key, value]) => {
+    //     if (value) params.append(key, value);
+    // });
+
+    params.append("current", current.toString());
+    params.append("pageSize", pageSize.toString());
+    return axios.get(`/api/Employee/filter?${params.toString()}`);
 };
 
 export const deleteEmployeeAPI = (id: string): Promise<ApiResponse> => {
@@ -48,7 +74,6 @@ export const deleteEmployeeAPI = (id: string): Promise<ApiResponse> => {
 
     return axios.delete(`${URL_BACKEND}`);
 };
-
 
 // Change Password
 export const changePasswordAPI = (currentPassword: string | undefined, newPassword: string | undefined): Promise<ApiResponse> => {
@@ -60,17 +85,70 @@ export const changePasswordAPI = (currentPassword: string | undefined, newPasswo
     return axios.post(URL_BACKEND, data);
 }
 
-
 // Department
 export const fetchDepartmentAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Department?current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }
 
+export const createDepartmentAPI = (payload: Department): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/Department";
+    return axios.post(`${URL_BACKEND}`, payload);
+}
+
+export const updateDepartmentAPI = (id: string, payload: Partial<Department>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Department/${id}`;
+    const data = { ...payload };
+    return axios.put(`${URL_BACKEND}`, data);
+}
+
+export const deleteDepartmentAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Department/${id}`;
+    return axios.delete(`${URL_BACKEND}`);
+}
+
 // Position
 export const fetchPositionAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Position?current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
+}
+
+export const createPositionAPI = (payload: Position): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/Position";
+    return axios.post(`${URL_BACKEND}`, payload);
+}
+
+export const updatePositionAPI = (id: string, payload: Partial<Position>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Position/${id}`;
+    const data = { ...payload };
+    return axios.put(`${URL_BACKEND}`, data);
+}
+
+export const deletePositionAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Position/${id}`;
+    return axios.delete(`${URL_BACKEND}`);
+}
+
+// Contract
+export const fetchContractAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Contract?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+}
+
+export const createContractAPI = (payload: Contract): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/Contract";
+    return axios.post(`${URL_BACKEND}`, payload);
+}
+
+export const updateContractAPI = (id: string, payload: Partial<Contract>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Contract/${id}`;
+    const data = { ...payload };
+    return axios.put(`${URL_BACKEND}`, data);
+}
+
+export const deleteContractAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Contract/${id}`;
+    return axios.delete(`${URL_BACKEND}`);
 }
 
 // User

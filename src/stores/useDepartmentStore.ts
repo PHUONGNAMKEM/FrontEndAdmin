@@ -1,4 +1,4 @@
-import { fetchDepartmentAPI } from "src/services/api.services";
+import { createDepartmentAPI, deleteDepartmentAPI, fetchDepartmentAPI, updateDepartmentAPI } from "src/services/api.services";
 import { PaginationMeta } from "src/types/api";
 import { Department } from "src/types/department/Department";
 
@@ -9,7 +9,9 @@ interface DepartmentStore {
     meta?: PaginationMeta | null;
     isModalOpen: boolean;
     fetchDepartment: (current?: number, pageSize?: number) => Promise<void>;
-    // addUser?: (formData: FormData) => Promise<void>;
+    addDepartment?: (payload: Department) => Promise<void>;
+    updateDepartment?: (id: string, data: Partial<Department>) => Promise<void>;
+    deleteDepartment?: (id: string) => Promise<void>;
     setModalOpen: (value: boolean) => void;
 }
 
@@ -28,20 +30,58 @@ export const useDepartmentStore = create<DepartmentStore>((set, get) => ({
             console.log(">>> check departments: ", departments)
 
             set({ departments, meta });
-        } catch (err) {
+        } catch (err: any) {
             console.error("Fetch departments failed:", err);
+            throw err;
         }
     },
 
-    // addEmployee: async (formData) => {
-    //     try {
-    //         const res = await createEmployeeAPI(formData);
-    //         const created = res.data.data || res.data;
-    //         set({ users: [...get().users, created] });
-    //     } catch (err) {
-    //         console.error("Add employee failed:", err);
-    //     }
-    // },
+    addDepartment: async (payload) => {
+        try {
+            const res = await createDepartmentAPI(payload);
+            const created = res.data.data || res.data;
+            if (created) {
+                set({ departments: [...get().departments, created] });
+            }
+            return created;
+        } catch (err: any) {
+            console.error("Thêm phòng ban thất bại:", err);
+            throw err;
+        }
+    },
+
+    updateDepartment: async (id, data) => {
+        try {
+            const res = await updateDepartmentAPI(id, data);
+            const updated = res.data.data || res.data;
+
+            // Cập nhật trong state
+            set({
+                departments: get().departments.map((e) =>
+                    e.id === id ? { ...e, ...updated } : e
+                ),
+            });
+        } catch (err: any) {
+            console.error("Cập nhật phòng ban thất bại:", err);
+            throw err;
+        }
+    },
+
+    deleteDepartment: async (id) => {
+        try {
+            const res = await deleteDepartmentAPI(id);
+            if (res.statusCode === 200 || res.data?.success) {
+                // Cập nhật lại store
+                set({
+                    departments: get().departments.filter((e) => e.id !== id),
+                });
+            }
+            set({ departments: get().departments.filter((e) => e.id !== id), });
+        } catch (err: any) {
+            console.error("Xóa phòng ban thất bại:", err);
+            throw err;
+        }
+    },
 
     setModalOpen: (value) => set({ isModalOpen: value }),
 }));
