@@ -1,4 +1,4 @@
-import { createEmployeeAPI, fetchEmployeeAPI, fetchUserAPI } from "src/services/api.me.service";
+import { fetchUserAPI } from "src/services/api.services";
 import { PaginationMeta } from "src/types/api";
 import { Employee } from "src/types/employee/Employee";
 import { User } from "src/types/user/User";

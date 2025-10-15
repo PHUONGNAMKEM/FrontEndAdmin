@@ -1,18 +1,18 @@
 export interface Employee {
-    id: string;
-    code: string;
-    full_name: string;
-    gender: 'male' | 'female' | 'other';
+    id?: string;
+    code?: string;
+    fullName: string;
+    gender: 0 | 1 | 2;
     dob: string;
     cccd: string;
     email: string;
     phone: string;
     address: string;
-    hire_date: string;
-    department_id: string;
-    position_id: string;
-    status: 'active' | 'inactive';
-    avatar_url?: string;
-    department: string;
-    position: string;
+    hireDate: string;
+    departmentId: string;
+    positionId: string;
+    status: 0 | 1 | 2; // active | unactive | khác
+    avatarUrl?: string;
+    departmentName?: string;
+    positionName?: string;
 }

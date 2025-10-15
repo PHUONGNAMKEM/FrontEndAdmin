@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { changePasswordAPI } from "src/services/api.me.service";
 
 type FieldType = {
-    oldPassword?: string;
+    currentPassword?: string;
     newPassword?: string;
     confirmPassword?: string;
 };
@@ -29,13 +29,13 @@ export const GuidePage = () => {
 
         try {
             setLoading(true);
-            const res = await changePasswordAPI(values.oldPassword, values.newPassword);
-            const data = res.data;
+            const res = await changePasswordAPI(values.currentPassword, values.newPassword);
+            console.log(">>> check response change pass: ", res);
 
-            if (data?.success && data?.statusCode === 200) {
+            if (res?.success && res?.statusCode === 200) {
                 notification.success({
                     message: "Đổi mật khẩu thành công",
-                    description: data?.message || "Bạn sẽ được chuyển về trang đăng nhập.",
+                    description: res?.message || "Bạn sẽ được chuyển về trang đăng nhập.",
                 });
 
                 // Lưu flag đánh dấu đã đổi mật khẩu lần đầu
@@ -45,7 +45,7 @@ export const GuidePage = () => {
             } else {
                 notification.error({
                     message: "Đổi mật khẩu thất bại",
-                    description: data?.message || "Không thể đổi mật khẩu.",
+                    description: res?.message || "Không thể đổi mật khẩu.",
                 });
             }
         } catch (error: any) {
@@ -81,7 +81,7 @@ export const GuidePage = () => {
         >
             <Form.Item<FieldType>
                 label="Mật khẩu cũ"
-                name="oldPassword"
+                name="currentPassword"
                 rules={[{ required: true, message: "Vui lòng nhập mật khẩu cũ!" }]}
             >
                 <Input.Password placeholder="Nhập mật khẩu cũ" />

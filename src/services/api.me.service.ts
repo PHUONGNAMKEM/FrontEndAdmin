@@ -8,13 +8,13 @@ import { ApiResponse } from "src/types/api";
 
 
 // Employee
-export const fetchEmployeeAPI = (current: number, pageSize: number) => {
-    const URL_BACKEND = `/api/employee?current=${current}&pageSize=${pageSize}`;
+export const fetchEmployeeAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Employee?current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }
 
-export const createEmployeeAPI = (formData: FormData) => {
-    const URL_BACKEND = "/api/employee";
+export const createEmployeeAPI = (formData: FormData): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/Employee";
     const config = {
         headers: {
             "Content-Type": "multipart/form-data",
@@ -23,7 +23,7 @@ export const createEmployeeAPI = (formData: FormData) => {
     return axios.post(`${URL_BACKEND}`, formData, config);
 };
 
-export const fetchFilteredEmployeesAPI = (filters: Record<string, any>, current = 1, pageSize = 10) => {
+export const fetchFilteredEmployeesAPI = (filters: Record<string, any>, current = 1, pageSize = 10): Promise<ApiResponse> => {
     const params = new URLSearchParams({ current: current.toString(), pageSize: pageSize.toString() });
     Object.entries(filters).forEach(([key, value]) => {
         if (value) params.append(key, value);
@@ -32,19 +32,26 @@ export const fetchFilteredEmployeesAPI = (filters: Record<string, any>, current 
 };
 
 
-
 // Change Password
-export const changePasswordAPI = (oldPassword: string | undefined, newPassword: string | undefined) => {
-    const URL_BACKEND = `/api/change-password`;
+export const changePasswordAPI = (currentPassword: string | undefined, newPassword: string | undefined): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Auth/change-password`;
     const data = {
-        oldPassword,
+        currentPassword,
         newPassword
     }
     return axios.post(URL_BACKEND, data);
 }
 
+
+// Department
+export const fetchDepartmentAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Department?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+}
+
+
 // User
-const fetchUserAPI = (current: number, pageSize: number) => {
+const fetchUserAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/user?current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Space, Tag, Button, Input, Avatar, Card, Descriptions, List, Typography, MenuProps, message, Dropdown, Pagination, } from "antd";
+import { Table, Space, Tag, Button, Input, Avatar, Card, Descriptions, List, Typography, MenuProps, message, Dropdown, Pagination, DatePicker, Select, Popconfirm, PopconfirmProps, } from "antd";
 import {
     SearchOutlined,
     SettingOutlined,
@@ -7,9 +7,10 @@ import {
     AppstoreOutlined,
     BarsOutlined,
     UserOutlined,
+    AntDesignOutlined,
 } from "@ant-design/icons";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { Funnel, Settings, List as LucideList, LayoutList, AlignJustify, PanelLeft, Search, CirclePlus, ListEnd, Ellipsis } from "lucide-react";
+import { Funnel, Settings, List as LucideList, LayoutList, AlignJustify, PanelLeft, Search, CirclePlus, ListEnd, Ellipsis, Edit3, Check, Delete, Trash } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useEmployeeStore } from "src/stores/useEmployeeStore";
@@ -30,53 +31,52 @@ const columns = [
     },
     {
         title: "Họ và tên",
-        dataIndex: "full_name",
-        key: "full_name",
+        dataIndex: "fullName",
+        key: "fullName",
         render: (text: string, record: Employee) => (
             <Space>
-                <Avatar src={record.avatar_url} />
+                <Avatar src={record.avatarUrl} />
                 {text}
             </Space>
         ),
     },
     {
         title: "Vị trí công việc",
-        dataIndex: "position",
-        key: "position",
+        dataIndex: "positionName",
+        key: "positionName",
     },
     {
         title: "Đơn vị công tác",
-        dataIndex: "department",
-        key: "department",
+        dataIndex: "departmentName",
+        key: "departmentName",
     },
     {
         title: "Ngày vào làm",
-        dataIndex: "hire_date",
-        key: "hire_dateee",
+        dataIndex: "hireDate",
+        key: "hireDate",
         render: (value: string) => value ? dayjs(value).format("DD/MM/YYYY") : "-",
     },
     {
         title: "Tình trạng",
         dataIndex: "status",
         key: "status",
-        render: (value: string) => value === "active" ? <Tag color="green">Đang làm việc</Tag> : <Tag color="red">Nghỉ việc</Tag>
+        render: (value: number) => value === 0 ? <Tag color="green">Đang làm việc</Tag> : <Tag color="red">Nghỉ việc</Tag>
     },
     {
         title: "Giới tính",
         dataIndex: "gender",
         key: "gender",
-        render: (value: string) => {
-            return value === "male" ? 'Nam' : value === "female" ? 'Nữ' : 'Khác'
+        render: (value: number) => {
+            return value === 1 ? 'Nam' : value === 0 ? 'Nữ' : 'Khác'
         },
     },
 ];
 
 const items = [
     {
-        label: '1st menu item',
+        label: '1st ',
         key: '1',
-        icon: <Button size="large" icon={<IconWrapper Icon={Funnel} />} />
-        ,
+        icon: <Button size="large" icon={<IconWrapper Icon={Funnel} />} />,
     },
     {
         label: '2nd menu item',
@@ -105,20 +105,21 @@ const EmployeePage = () => {
         null
     );
 
-    const { employees, meta, fetchEmployees, setModalOpen, isModalOpen } = useEmployeeStore();
+    const { employees, meta, fetchEmployees, setModalOpen, isModalOpen, updateEmployee, deleteEmployee } = useEmployeeStore();
 
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const currentPage = parseInt(searchParams.get("page") || "1");
+    const currentPage = parseInt(searchParams.get("current") || "1");
     const currentSize = parseInt(searchParams.get("pageSize") || "10");
 
     useEffect(() => {
         fetchEmployees(currentPage, currentSize);
-    }, [fetchEmployees, currentPage, currentSize]);
+    }, [currentPage, currentSize]);
 
-    const handlePageChange = (page: number, pageSize: number) => {
-        setSearchParams({ page: page.toString(), pageSize: pageSize.toString() });
-        fetchEmployees(page, pageSize);
+    const handlePageChange = (current: number, pageSize: number) => {
+        console.log(">>> check current:", current);
+        console.log(">>> check pageSize:", pageSize);
+        setSearchParams({ current: current.toString(), pageSize: pageSize.toString() });
     };
 
     //  Truyền header động vào layout chung
@@ -133,7 +134,69 @@ const EmployeePage = () => {
 
         // cleanup: khi rời khỏi page thì clear header
         return () => setHeaderContent(null);
-    }, [setHeaderContent]);
+    }, [setHeaderContent, meta?.total]);
+
+
+    // Logic editing Employee
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedEmployee, setEditedEmployee] = useState<Employee | null>(null);
+
+    const handleEditToggle = () => {
+        setIsEditing(!isEditing);
+        if (selectedEmployee) setEditedEmployee({ ...selectedEmployee });
+    };
+
+    const handleChange = (field: keyof Employee, value: any) => {
+        setEditedEmployee((prev) => prev ? { ...prev, [field]: value } : prev);
+    };
+
+    const handleUpdate = async () => {
+        if (!editedEmployee || !selectedEmployee) return;
+        const changedFields: Partial<Employee> = {};
+        Object.entries(editedEmployee).forEach(([key, newValue]) => { // Object.entires trả về mảng chứa các cặp [key, value]
+            const oldValue = selectedEmployee[key as keyof Employee];
+
+            // Nếu giá trị mới khác giá trị cũ và không undefined => thêm vào payload
+            if (newValue !== oldValue && newValue !== undefined) {
+                changedFields[key as keyof Employee] = newValue as any;
+            }
+        });
+
+        if (Object.keys(changedFields).length === 0) { // Object.keys trả về mảng -> .length
+            message.info("Không có thay đổi nào để cập nhật.");
+            return;
+        }
+
+        console.log(">>> Gửi payload:", changedFields);
+
+        await updateEmployee!(selectedEmployee.id!, changedFields);
+        message.success("Cập nhật nhân viên thành công!");
+
+        setSelectedEmployee((prev) => prev ? { ...prev, ...changedFields } : prev);  // cập nhật giao diện bên phải chi tiết nhân viên
+
+        setIsEditing(false);
+    };
+
+    // Reset form khi click đổi nhân viên
+    const handleChangeItem = (selectedEmployee: Employee) => {
+        if (selectedEmployee) {
+            setSelectedEmployee(selectedEmployee);
+            setEditedEmployee({ ...selectedEmployee });
+            setIsEditing(false); // tắt chế độ edit nếu đang bật
+        } else {
+            setEditedEmployee(null);
+        }
+    }
+
+    const confirmDelete: PopconfirmProps['onConfirm'] = async (e) => {
+        await deleteEmployee!(selectedEmployee?.id!);
+        setSelectedEmployee(null);
+        // làm gì đó ở đây
+    };
+
+    const cancelDelete: PopconfirmProps['onCancel'] = (e) => {
+        message.error('Click on No');
+    };
 
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
@@ -218,7 +281,8 @@ const EmployeePage = () => {
                                     dataSource={employees}
                                     renderItem={(item: Employee) => (
                                         <List.Item
-                                            onClick={() => setSelectedEmployee(item)}
+                                            onClick={() => handleChangeItem(item)}
+                                            // onClick={() => setSelectedEmployee(item)}
                                             style={{
                                                 cursor: "pointer",
                                                 background:
@@ -228,10 +292,10 @@ const EmployeePage = () => {
                                             }}
                                         >
                                             <Space>
-                                                <Avatar src={item.avatar_url} />
+                                                <Avatar src={item.avatarUrl} />
                                                 <div>
-                                                    <div style={{ fontWeight: 600 }}>{item.full_name}</div>
-                                                    <div style={{ fontSize: 12, color: "#888" }}>{item.position}</div>
+                                                    <div style={{ fontWeight: 600 }}>{item.fullName}</div>
+                                                    <div style={{ fontSize: 12, color: "#888" }}>{item.positionName}</div>
                                                 </div>
                                             </Space>
                                         </List.Item>
@@ -253,9 +317,46 @@ const EmployeePage = () => {
                         <Card style={{ flex: 1 }}>
                             {selectedEmployee ? (
                                 <>
-                                    <Title level={5}>
-                                        {selectedEmployee.full_name} ({selectedEmployee.code})
-                                    </Title>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center avatar-user-display">
+                                            <Avatar
+                                                src={selectedEmployee.avatarUrl}
+                                                size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
+                                                // icon={<AntDesignOutlined />}
+                                                className="!mr-4 border-2 border-blue-500 shadow-md"
+                                            />
+                                            <Title level={5} style={{ margin: 0 }}>
+                                                {
+                                                    isEditing ? (
+                                                        <Input
+                                                            value={editedEmployee?.fullName}
+                                                            onChange={(e) => handleChange("fullName", e.target.value)}
+                                                        />
+                                                    ) : (selectedEmployee.fullName)
+
+                                                } ({selectedEmployee.code})
+                                            </Title>
+                                        </div>
+                                        <div>
+
+                                            <Button
+                                                type="text"
+                                                icon={<Edit3 size={18} />}
+                                                onClick={handleEditToggle}
+                                            />
+
+                                            <Popconfirm
+                                                title="Delete A Employee"
+                                                description="Are you sure to delete this Employee?"
+                                                onConfirm={confirmDelete}
+                                                onCancel={cancelDelete}
+                                                okText="Yes"
+                                                cancelText="No"
+                                            >
+                                                <Button danger>Delete</Button>
+                                            </Popconfirm>
+                                        </div>
+                                    </div>
                                     <Descriptions
                                         bordered
                                         column={2}
@@ -266,19 +367,67 @@ const EmployeePage = () => {
                                             {selectedEmployee.code}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Giới tính">
-                                            {selectedEmployee.gender === 'male' ? 'Nam' : selectedEmployee.gender === 'female' ? 'Nữ' : 'Khác'}
+                                            {
+                                                isEditing ? (
+                                                    <Select
+                                                        value={editedEmployee?.gender}
+                                                        onChange={(value) => handleChange("gender", value)}
+                                                        style={{ width: "100%" }}
+                                                    >
+                                                        <Select.Option value={1}>Nam</Select.Option>
+                                                        <Select.Option value={0}>Nữ</Select.Option>
+                                                        <Select.Option value={2}>Khác</Select.Option>
+                                                    </Select>
+                                                ) : (
+                                                    selectedEmployee.gender === 1 ? 'Nam' : selectedEmployee.gender === 0 ? 'Nữ' : 'Khác'
+                                                )
+                                            }
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Vị trí công việc">
-                                            {selectedEmployee.position}
+                                            {isEditing ? (
+                                                <Input
+                                                    value={editedEmployee?.positionName}
+                                                    onChange={(e) => handleChange("positionName", e.target.value)}
+                                                />
+                                            ) : (
+                                                selectedEmployee.positionName || "Trống"
+                                            )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Đơn vị công tác">
-                                            {selectedEmployee.department}
+                                            {isEditing ? (
+                                                <Input
+                                                    value={editedEmployee?.departmentName}
+                                                    onChange={(e) => handleChange("departmentName", e.target.value)}
+                                                />
+                                            ) : (
+                                                selectedEmployee.departmentName || "Chưa được phân công"
+                                            )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Ngày vào làm">
-                                            {selectedEmployee.hire_date ? dayjs(selectedEmployee.hire_date).format("DD/MM/YYYY") : "-"}
+                                            {isEditing ? (
+                                                <DatePicker
+                                                    value={editedEmployee?.hireDate ? dayjs(editedEmployee.hireDate) : dayjs()}
+                                                    onChange={(date) =>
+                                                        handleChange("hireDate", date ? date.toISOString() : null)
+                                                    }
+                                                    format="YYYY/MM/DD"
+                                                />
+                                            ) : (
+                                                selectedEmployee.hireDate ? dayjs(selectedEmployee.hireDate).format("DD/MM/YYYY") : "-"
+                                            )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Tình trạng">
-                                            {selectedEmployee.status === "active" ? <Tag color="green">Đang làm việc</Tag> : <Tag color="red">Nghỉ việc</Tag>}
+                                            {isEditing ? (
+                                                <Select
+                                                    value={editedEmployee?.status}
+                                                    onChange={(value) => handleChange("status", value)}
+                                                    style={{ width: "100%" }}
+                                                >
+                                                    <Select.Option value={0}>Đang làm việc</Select.Option>
+                                                    <Select.Option value={1}>Nghỉ việc</Select.Option>
+                                                </Select>
+                                            ) : (selectedEmployee.status === 0 ? <Tag color="green">Đang làm việc</Tag> : <Tag color="red">Nghỉ việc</Tag>)}
+
                                         </Descriptions.Item>
                                     </Descriptions>
 
@@ -293,21 +442,70 @@ const EmployeePage = () => {
                                         labelStyle={{ fontWeight: 500 }}
                                     >
                                         <Descriptions.Item label="Ngày sinh">
-                                            {selectedEmployee.dob ? dayjs(selectedEmployee.dob).format("DD/MM/YYYY") : "-"}
+                                            {isEditing ? (
+                                                <DatePicker
+                                                    value={editedEmployee?.dob ? dayjs(editedEmployee?.dob) : null}
+                                                    onChange={(date) =>
+                                                        handleChange("dob", date ? date.toISOString() : "")
+                                                    }
+                                                    format="YYYY/MM/DD"
+                                                />
+                                            ) : (
+                                                selectedEmployee.dob ? dayjs(selectedEmployee.dob).format("DD/MM/YYYY") : "-"
+                                            )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="CCCD">
-                                            {selectedEmployee.cccd}
+                                            {isEditing ? (
+                                                <Input
+                                                    value={editedEmployee?.cccd}
+                                                    onChange={(e) => handleChange("cccd", e.target.value)}
+                                                />
+                                            ) : (
+                                                selectedEmployee.cccd || "-"
+                                            )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Email">
-                                            {selectedEmployee.email}
+                                            {isEditing ? (
+                                                <Input
+                                                    value={editedEmployee?.email}
+                                                    onChange={(e) => handleChange("email", e.target.value)}
+                                                />
+                                            ) : (
+                                                selectedEmployee.email
+                                            )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="SĐT">
-                                            {selectedEmployee.phone}
+                                            {isEditing ? (
+                                                <Input
+                                                    value={editedEmployee?.phone}
+                                                    onChange={(e) => handleChange("phone", e.target.value)}
+                                                />
+                                            ) : (
+                                                selectedEmployee.phone || "-"
+                                            )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Địa chỉ">
-                                            {selectedEmployee.address}
+                                            {isEditing ? (
+                                                <Input.TextArea
+                                                    value={editedEmployee?.address}
+                                                    onChange={(e) => handleChange("address", e.target.value)}
+                                                />
+                                            ) : (
+                                                selectedEmployee.address || "-"
+                                            )}
                                         </Descriptions.Item>
                                     </Descriptions>
+                                    {isEditing && (
+                                        <div className="flex justify-end mt-4">
+                                            <Button
+                                                type="primary"
+                                                icon={<Check size={16} />}
+                                                onClick={handleUpdate}
+                                            >
+                                                Cập nhật
+                                            </Button>
+                                        </div>
+                                    )}
                                 </>
                             ) : (
                                 <p>Chọn một nhân viên để xem chi tiết hồ sơ.</p>

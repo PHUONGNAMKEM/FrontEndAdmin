@@ -21,14 +21,15 @@ import {
     WarningOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme, MenuProps } from 'antd';
-import { useEffect, useState } from 'react';
-import { Link, Outlet, useParams } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import './layoutStyle/bodyPageStyle.scss'
 import { getGoalByIdAPI } from '../../services/api.me.service';
 import { ArrowLeftRight, ArrowRight, ChartColumn, CircleAlert, FileSpreadsheet, FileUser, Gift, GraduationCap, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX } from 'lucide-react';
 import ThemeToggle from '../theme/ThemeToggle';
 import { useTheme } from '@components/context/ThemeContext';
 import { IconWrapper } from '@components/customsIconLucide/IconWrapper';
+import { useHeaderStore } from 'src/stores/useHeaderStore';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -52,7 +53,7 @@ const BodyPage = () => {
     const [collapsed, setCollapsed] = useState(false);
 
     // Check role and display follow role
-    const role = localStorage.getItem("role") || "Staff";
+    const role = localStorage.getItem("role") || "Employee" || "User";
     // const { user } = useContext(AuthContext); và check if (user?.role?.name === "ADMIN") {
 
     const baseItems: MenuItem[] = [
@@ -90,8 +91,8 @@ const BodyPage = () => {
         items = [...hrAndAdminItems, ...adminExtraItems, ...baseItems];
     } else if (role === "HR") {
         items = [...hrAndAdminItems, ...baseItems]; // HR có tất cả trừ user-management
-    } else if (role === "Staff") {
-        items = [...baseItems]; // Staff chỉ có Hướng dẫn
+    } else if (role === "Employee" || role === "User") {
+        items = [...baseItems]; // Employee chỉ có Hướng dẫn
     }
 
     const {
@@ -135,11 +136,11 @@ const BodyPage = () => {
         }
     }
 
+    const { headerContent, setHeaderContent } = useHeaderStore();
     useEffect(() => {
         // getGoalById();
-    }, [idGoal]);
+    }, [headerContent]);
 
-    const [headerContent, setHeaderContent] = useState<React.ReactNode>(null);
 
     return (
         <Layout style={{ minHeight: '100vh' }}>

@@ -29,17 +29,28 @@ const Header = () => {
     const handleLogout = async () => {
         try {
             setIsLoggingOut(true);
-            const res = await logoutAPI();
-            if (res.data) {
-                // clear data
-                localStorage.removeItem("access_token")
-                localStorage.removeItem("role")
-                localStorage.removeItem("username")
-                setUser(null);
-                message.success("Logout successfully")
-                // redirect user to home page
-                navigate("/", { replace: true });
-            }
+            await new Promise(resolve => setTimeout(resolve, 500)); // giả lập delay như khi gọi BE
+            // const res = await logoutAPI();
+            // if (res.data) {
+            //     // clear data
+            //     localStorage.removeItem("access_token")
+            //     localStorage.removeItem("role")
+            //     localStorage.removeItem("username")
+            //     setUser(null);
+            //     message.success("Logout successfully")
+            //     // redirect user to home page
+            //     navigate("/", { replace: true });
+            // }
+
+            // clear data
+            localStorage.removeItem("access_token")
+            localStorage.removeItem("role")
+            localStorage.removeItem("username")
+            localStorage.removeItem("hasChangedPassword")
+            setUser(null);
+            message.success("Logout successfully")
+            // redirect user to home page
+            navigate("/", { replace: true });
         } catch (error) {
             message.error("Logout failed");
         }
@@ -96,6 +107,11 @@ const Header = () => {
 
         <div className="bg-[var(--background-header)] border-b border-b-[var(--border-default)]"
             style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            {isLoggingOut && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+                    <Spin size="large" tip="Logging out..." />
+                </div>
+            )}
             <Menu
                 style={{ borderBottom: "none", width: '100%', justifyContent: "flex-end" }}
                 onClick={onClick}

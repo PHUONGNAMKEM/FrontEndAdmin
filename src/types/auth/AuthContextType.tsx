@@ -1,8 +1,8 @@
-import { User } from "../user/UserType";
+import { UserAuth } from "../user/UserType";
 
 export type AuthContextType = {
-    user: User | null;
-    setUser: React.Dispatch<React.SetStateAction<User | null>>;
+    user: UserAuth | null;
+    setUser: React.Dispatch<React.SetStateAction<UserAuth | null>>;
     isAppLoading: boolean;
     setIsAppLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };

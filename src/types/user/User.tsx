@@ -10,8 +10,6 @@ export interface User {
     status: "active" | "inactive";
     is_first_login: boolean;
     last_login_at: string | null;
-
     employee?: Employee
-
     role?: Role
 }

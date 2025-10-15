@@ -1,5 +1,5 @@
 export interface Role {
     id: string;
-    name: "Admin" | "HR" | "Staff" | string;
+    name: "Admin" | "HR" | "User" | string;
     description?: string;
 }

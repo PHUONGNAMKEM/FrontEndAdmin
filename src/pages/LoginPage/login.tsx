@@ -1,10 +1,10 @@
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { Button, Col, Divider, Form, Input, message, notification, Row } from "antd";
 import { FormProps, Link, Navigate, useNavigate } from "react-router-dom";
-import { loginAPI } from "src/services/api.me.service";
 import { useContext, useState } from "react";
 import { AuthContext } from "@components/context/auth.context";
 import { IRegisterFormValues } from "src/interface/IRegisterFormValues";
+import { loginAPI } from "src/services/api.services";
 
 const LoginPage = () => {
 
@@ -29,9 +29,9 @@ const LoginPage = () => {
             localStorage.setItem("username", res.data.user.username);
             setUser(res.data.user);
 
-
+            console.log(">>> check first login: ", res.data.user.is_first_login);
             const hasChangedPassword = localStorage.getItem("hasChangedPassword");
-            if (res.data.user.role.name === "Staff") {
+            if (res.data.user.role.name === "Employee" || res.data.user.role.name === "User") {
                 if (res.data.user.is_first_login && !hasChangedPassword) {
                     navigate("/guide");
                 } else {

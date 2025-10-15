@@ -1,8 +1,8 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { AuthContextType } from '../../types/auth/AuthContextType';
 import { useQuery } from '@tanstack/react-query';
-import { getAccountAPI } from 'src/services/api.me.service';
-import { User } from 'src/types/user/UserType';
+import { DEFAULT_USER, UserAuth } from 'src/types/user/UserType';
+import { getAccountAPI } from 'src/services/api.services';
 
 
 export const AuthContext = createContext<AuthContextType>({
@@ -15,7 +15,7 @@ export const AuthContext = createContext<AuthContextType>({
 
 
 export const AuthWrapper = (props: { children: React.ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<UserAuth | null>(null);
     const [isAppLoading, setIsAppLoading] = useState(true);
 
     const { data, isLoading } = useQuery({
@@ -25,10 +25,13 @@ export const AuthWrapper = (props: { children: React.ReactNode }) => {
     });
 
     useEffect(() => {
-        if (data?.data?.user) {
-            setUser(data.data.user);
+        if (data?.data?.length > 0) {
+            console.log("check user auth me", data?.data)
+            console.log("check data", data)
+            console.log("check user name", data?.data[0].username)
+            setUser(data?.data[0]);
         } else {
-            setUser(null);
+            setUser(DEFAULT_USER);
         }
         setIsAppLoading(isLoading);
     }, [data, isLoading]);
