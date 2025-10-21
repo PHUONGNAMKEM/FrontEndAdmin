@@ -36,6 +36,7 @@ import OverviewPage from './pages/Overview.tsx';
 import { DepartmentPage } from './pages/Department/DepartmentPage.tsx';
 import { PositionPage } from './pages/Position/PositionPage.tsx';
 import { ContractPage } from './pages/Contract/ContractPage.tsx';
+import { ContractExpiresPage } from './pages/Contract/ContractExpires/ContractExpiresPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,7 @@ const router = createBrowserRouter([
           { path: "/position", element: <PositionPage /> },
           { path: "/profile", element: <ProfilePage /> },
           { path: "/contract", element: <ContractPage /> },
+          { path: "/contract/expiring", element: <ContractExpiresPage /> },
           { path: "/appointment", element: <AppointmentPage /> },
           { path: "/dismissal", element: <DismissalPage /> },
           { path: "/transfer", element: <TransferPage /> },

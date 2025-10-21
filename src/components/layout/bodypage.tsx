@@ -68,7 +68,11 @@ const BodyPage = () => {
         getItem(<Link to="/department">Phòng ban</Link>, "department", <IconWrapper Icon={Warehouse} />),
         getItem(<Link to="/position">Chức vụ</Link>, "position", <IconWrapper Icon={ChartNoAxesGantt} />),
         getItem(<Link to="/profile">Hồ sơ</Link>, "profile", <IconWrapper Icon={FileUser} />),
-        getItem(<Link to="/contract">Hợp đồng</Link>, "contract", <IconWrapper Icon={FileSpreadsheet} />),
+        getItem(<Link to="/contract">Hợp đồng</Link>, "contract", <IconWrapper Icon={FileSpreadsheet} />,
+            [
+                getItem(<Link to="/contract">Danh sách</Link>, "contract-list"),
+                getItem(<Link to="/contract/expiring">Sắp hết hạn</Link>, "contract-expiring"),
+            ]),
         getItem(<Link to="/appointment">Bổ nhiệm</Link>, "appointment", <IconWrapper Icon={UserRoundPlus} />),
         getItem(<Link to="/dismissal">Miễn nhiệm</Link>, "dismissal", <IconWrapper Icon={UserRoundX} />),
         getItem(<Link to="/transfer">Thuyên chuyển</Link>, "transfer", <IconWrapper Icon={ArrowLeftRight} />),

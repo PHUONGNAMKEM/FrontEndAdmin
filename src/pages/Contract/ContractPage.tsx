@@ -17,6 +17,8 @@ import {
     DatePicker,
     Avatar,
     Select,
+    Radio,
+    Tag,
 } from "antd";
 import {
     SearchOutlined,
@@ -25,13 +27,15 @@ import {
     PlusOutlined,
     EllipsisOutlined,
 } from "@ant-design/icons";
-import { AlignJustify, PanelLeft, Check, Ban } from "lucide-react";
+import { AlignJustify, PanelLeft, Check, Ban, ListEnd } from "lucide-react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useContractStore } from "src/stores/useContractStore";
 import { Contract } from "src/types/contract/Contract";
 import dayjs from "dayjs";
 import { useEmployeeStore } from "src/stores/useEmployeeStore";
+import ContractAdd from "./ContractAdd/ContractAdd";
+import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 
 const { Title } = Typography;
 
@@ -40,7 +44,7 @@ export const ContractPage = () => {
     const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedContract, setEditedContract] = useState<Contract | null>(null);
-    const [form] = Form.useForm();
+
 
     const {
         contracts,
@@ -88,23 +92,7 @@ export const ContractPage = () => {
 
     // ==================== CRUD ====================
 
-    const handleAdd = async () => {
-        try {
-            const values = await form.validateFields();
-            await addContract!(values);
-            notification.success({ message: "Thêm hợp đồng thành công!" });
 
-            setModalOpen(false);
-            form.resetFields();
-            fetchContract(currentPage, currentSize);
-        } catch (err: any) {
-            console.error("Add contract failed:", err);
-            notification.error({
-                message: "Thêm hợp đồng thất bại!",
-                description: err?.message || "Vui lòng thử lại.",
-            });
-        }
-    };
 
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
@@ -203,6 +191,13 @@ export const ContractPage = () => {
             key: "endDate",
             render: (text: string) => dayjs(text).format("DD/MM/YYYY"),
         },
+        {
+            title: "Trạng thái",
+            dataIndex: "status",
+            key: "status",
+            render: (value: number) => value === 0 ? <Tag color="green">Hiệu lực</Tag> : value === 1 ? <Tag color="red">Hết hạn</Tag> : value === 2 ? <Tag color="volcano">Đã chấm dứt</Tag> : <Tag color="blue">Bản nháp</Tag>
+
+        },
     ];
 
     const handleChangeItem = (item: Contract) => {
@@ -227,6 +222,11 @@ export const ContractPage = () => {
             avatarUrl: emp.avatarUrl,
         }));
 
+    // Hàm lọc ra những nhân viên sắp hết hạn hợp đồng trong vòng 30 ngày
+    const handleFilterExpire30 = () => {
+
+    }
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== TOOLBAR ===== */}
@@ -242,8 +242,9 @@ export const ContractPage = () => {
                     <Input
                         placeholder="Tìm kiếm hợp đồng..."
                         prefix={<SearchOutlined />}
-                        style={{ width: 280 }}
+                        style={{ width: 280, marginRight: "20px" }}
                     />
+                    {/* <Radio onChange={}>Những hợp đồng sắp hết hạn trong 30 ngày</Radio> */}
                 </div>
 
                 <Space>
@@ -270,12 +271,13 @@ export const ContractPage = () => {
                     <Dropdown
                         menu={{
                             items: [
-                                { key: "1", label: "Xuất Excel" },
-                                { key: "2", label: "Báo cáo" },
+                                { key: "1", label: "Những hợp đồng sẽ hết hạn sau 30 ngày" },
+                                { key: "2", label: "Xuất Excel" },
+                                { key: "3", label: "Báo cáo" },
                             ],
                         }}
                     >
-                        <Button icon={<EllipsisOutlined />} />
+                        <Button size="large" icon={<EllipsisOutlined />} />
                     </Dropdown>
                 </Space>
             </div>
@@ -379,14 +381,15 @@ export const ContractPage = () => {
                                         />
                                         <Popconfirm
                                             title="Xóa hợp đồng"
-                                            description="Bạn chắc chắn muốn xóa hợp đồng này?"
+                                            description="Bạn chắc chắn muốn chấm dứt hợp đồng này?"
                                             onConfirm={confirmDelete}
                                         >
                                             <Button
                                                 danger
+                                                iconPosition="end"
                                                 icon={<DeleteOutlined />}
                                             >
-                                                Xóa
+                                                Chấm dứt hợp đồng
                                             </Button>
                                         </Popconfirm>
                                     </Space>
@@ -432,35 +435,24 @@ export const ContractPage = () => {
                                                 selectedContract.signedDate
                                             ).format("DD/MM/YYYY")
                                         )} */}
-                                        {dayjs(
-                                            selectedContract.signedDate
-                                        ).format("DD/MM/YYYY")}
+                                        {dayjs(selectedContract.signedDate).format("DD/MM/YYYY")}
                                     </Descriptions.Item>
 
                                     <Descriptions.Item label="Ngày bắt đầu">
-                                        {dayjs(
-                                            selectedContract.startDate
-                                        ).format("DD/MM/YYYY")}
+                                        {dayjs(selectedContract.startDate).format("DD/MM/YYYY")}
                                     </Descriptions.Item>
 
                                     <Descriptions.Item label="Ngày kết thúc">
                                         {isEditing ? (
                                             <DatePicker
-                                                value={dayjs(
-                                                    editedContract?.endDate
-                                                )}
+                                                value={dayjs(editedContract?.endDate)}
                                                 onChange={(date) =>
-                                                    handleChange(
-                                                        "signedDate",
-                                                        date?.toISOString()
-                                                    )
+                                                    handleChange("endDate", date ? date.format("YYYY-MM-DD") : dayjs().add(1, "day").format("YYYY-MM-DD")) // nếu không điền thì lấy
                                                 }
                                                 format="DD/MM/YYYY"
                                             />
                                         ) : (
-                                            dayjs(
-                                                selectedContract.endDate
-                                            ).format("DD/MM/YYYY")
+                                            dayjs(selectedContract.endDate).format("DD/MM/YYYY")
                                         )}
                                     </Descriptions.Item>
 
@@ -474,7 +466,7 @@ export const ContractPage = () => {
                                                 className="w-full"
                                                 placeholder="Chọn mức lương cơ bản"
                                                 options={[1000000, 5000000, 10000000, 15000000, 20000000, 25000000, 30000000].map((num) => ({
-                                                    value: num * 1_000_000,
+                                                    value: num,
                                                     label: `${num.toLocaleString("vi-VN")} đ`,
                                                 }))}
                                                 value={editedContract?.basicSalary}
@@ -570,7 +562,7 @@ export const ContractPage = () => {
 
 
                                         ) : (
-                                            selectedContract.status === 0 ? "Đang có hiệu lực" : selectedContract.status === 1 ? "Hết hạn" : selectedContract.status === 2 ? "Đã chấm dứt" : "Bản nháp"
+                                            selectedContract.status === 0 ? <Tag color="green">Đang có hiệu lực</Tag> : selectedContract.status === 1 ? <Tag color="red">Hết hạn</Tag> : selectedContract.status === 2 ? <Tag color="volcano">Đã chấm dứt</Tag> : <Tag color="blue">Bản nháp</Tag>
                                         )}
                                     </Descriptions.Item>
                                 </Descriptions>
@@ -585,6 +577,7 @@ export const ContractPage = () => {
                                             Hủy
                                         </Button>
                                         <Button
+                                            className="ml-4"
                                             type="primary"
                                             icon={<Check size={16} />}
                                             onClick={handleUpdate}
@@ -602,63 +595,7 @@ export const ContractPage = () => {
             )}
 
             {/* MODAL THÊM MỚI */}
-            <Modal
-                title="Thêm hợp đồng mới"
-                open={isModalOpen}
-                onCancel={() => setModalOpen(false)}
-                onOk={handleAdd}
-                okText="Thêm"
-                cancelText="Hủy"
-            >
-                <Form form={form} layout="vertical" initialValues={{
-                    startDate: dayjs(),
-                    signedDate: dayjs(),
-                }}>
-                    <Form.Item
-                        label="Tiêu đề"
-                        name="title"
-                        rules={[{ required: true, message: "Vui lòng nhập tiêu đề!" }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item label="Mã hợp đồng" name="contractNumber">
-                        <Input />
-                    </Form.Item>
-                    <Form.Item label="Tên nhân viên" name="employeeName">
-                        <Input />
-                    </Form.Item>
-                    <Form.Item label="Ngày bắt đầu" name="startDate" >
-                        <DatePicker format="DD/MM/YYYY" className="w-full" />
-                    </Form.Item>
-                    <Form.Item label="Ngày ký" name="signedDate">
-                        <DatePicker format="DD/MM/YYYY" className="w-full" />
-                    </Form.Item>
-                    <Form.Item label="Ngày kết thúc" name="endDate" >
-                        <DatePicker format="DD/MM/YYYY" className="w-full" />
-                    </Form.Item>
-                    <Form.Item label="Lương cơ bản" name="basicSalary">
-                        {/* <Input type="number" /> */}
-                        <Select
-                            className="w-full"
-                            placeholder="Chọn mức lương cơ bản"
-                            options={[1000000, 5000000, 10000000, 15000000, 20000000, 25000000, 30000000].map((num) => ({
-                                value: num * 1_000_000,
-                                label: `${num.toLocaleString("vi-VN")} đ`,
-                            }))}
-                            value={editedContract?.basicSalary}
-                            onChange={(value) => handleChange("basicSalary", value)}
-                            showSearch // cho phép gõ để lọc
-                            optionFilterProp="label"
-                            filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
-                                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                            }
-                        />
-                    </Form.Item>
-                    <Form.Item label="Ghi chú" name="notes">
-                        <Input.TextArea rows={3} />
-                    </Form.Item>
-                </Form>
-            </Modal>
+            {isModalOpen && <ContractAdd />}
         </div>
     );
 };

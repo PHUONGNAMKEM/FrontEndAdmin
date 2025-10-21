@@ -105,7 +105,7 @@ const EmployeePage = () => {
     const [viewMode, setViewMode] = useState<"list" | "detail">("list");
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
-    const { employees, meta, fetchEmployees, setModalOpen, isModalOpen, updateEmployee, deleteEmployee } = useEmployeeStore();
+    const { employees, meta, fetchEmployees, fetchFilteredEmployees, filters, setModalOpen, isModalOpen, updateEmployee, deleteEmployee } = useEmployeeStore();
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -113,7 +113,14 @@ const EmployeePage = () => {
     const currentSize = parseInt(searchParams.get("pageSize") || "10");
 
     useEffect(() => {
-        fetchEmployees(currentPage, currentSize);
+        // fetchEmployees(currentPage, currentSize);
+        if (Object.keys(filters || {}).length > 0) {
+            // đang có filter → gọi API lọc
+            fetchFilteredEmployees!(filters, currentPage, currentSize);
+        } else {
+            // không có filter → gọi API toàn bộ
+            fetchEmployees(currentPage, currentSize);
+        }
         fetchDepartment(undefined, metaDepartment?.total);
         fetchPosition(undefined, metaPosition?.total);
     }, [currentPage, currentSize]);
@@ -370,11 +377,16 @@ const EmployeePage = () => {
                                                 } ({selectedEmployee.code})
                                             </Title>
                                         </div>
-                                        <div>
+                                        <Space>
 
-                                            <Button
+                                            {/* <Button
                                                 type="text"
                                                 icon={<Edit3 size={18} />}
+                                                onClick={handleEditToggle}
+                                            /> */}
+                                            <Button
+                                                type="text"
+                                                icon={<IconWrapper Icon={Edit3} />}
                                                 onClick={handleEditToggle}
                                             />
 
@@ -386,9 +398,9 @@ const EmployeePage = () => {
                                                 okText="Yes"
                                                 cancelText="No"
                                             >
-                                                <Button danger>Delete</Button>
+                                                <Button danger>Xóa</Button>
                                             </Popconfirm>
-                                        </div>
+                                        </Space>
                                     </div>
                                     <Descriptions
                                         bordered

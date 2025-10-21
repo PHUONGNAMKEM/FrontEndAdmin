@@ -135,6 +135,11 @@ export const fetchContractAPI = (current: number, pageSize: number): Promise<Api
     return axios.get(URL_BACKEND);
 }
 
+export const fetchContractExpiresAPI = (current: number, pageSize: number, withinDays: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Contract/expiring?withinDays=${withinDays}&current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+}
+
 export const createContractAPI = (payload: Contract): Promise<ApiResponse> => {
     const URL_BACKEND = "/api/Contract";
     return axios.post(`${URL_BACKEND}`, payload);
@@ -153,7 +158,7 @@ export const deleteContractAPI = (id: string): Promise<ApiResponse> => {
 
 // User
 export const fetchUserAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/user?current=${current}&pageSize=${pageSize}`;
+    const URL_BACKEND = `/api/Users/Search?current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }
 

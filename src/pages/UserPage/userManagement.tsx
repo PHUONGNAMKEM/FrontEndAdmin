@@ -18,9 +18,9 @@ const UserManagementPage = () => {
 
     useEffect(() => {
         if (filter === "company") {
-            setFilteredUsers(users.filter((u) => u.employee?.email?.endsWith("@company.com")));
+            setFilteredUsers(users.filter((u) => u.employeeEmail?.endsWith("@company.com")));
         } else if (filter === "noncompany") {
-            setFilteredUsers(users.filter((u) => !u.employee?.email?.endsWith("@company.com")));
+            setFilteredUsers(users.filter((u) => !u.employeeEmail?.endsWith("@company.com")));
         } else {
             setFilteredUsers(users);
         }

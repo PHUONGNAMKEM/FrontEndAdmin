@@ -21,7 +21,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     fetchUsers: async (current = 1, pageSize = 10) => {
         try {
             const res = await fetchUserAPI(current, pageSize);
-            const data = res.data;
+            const data = res.data[0];
             const users = data.result;
             const meta = data.meta;
 

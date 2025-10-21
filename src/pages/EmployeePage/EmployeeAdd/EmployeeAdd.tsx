@@ -157,11 +157,11 @@ export default function EmployeeAdd() {
             <Form layout="horizontal" form={form} className="text-2xl" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
                 <Splitter style={{}}>
                     <Splitter.Panel defaultSize="50%" min="20%" max="70%" style={{ paddingRight: 16 }}>
-                        <Form.Item name="fullName" label="Họ và tên" rules={[{ required: true }]}>
+                        <Form.Item name="fullName" label="Họ và tên" labelAlign="left" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>
 
-                        <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]}>
+                        <Form.Item name="gender" label="Giới tính" labelAlign="left" rules={[{ required: true }]}>
                             <Radio.Group>
                                 <Radio value={1}>Nam</Radio>
                                 <Radio value={0}>Nữ</Radio>
@@ -169,21 +169,22 @@ export default function EmployeeAdd() {
                             </Radio.Group>
                         </Form.Item>
 
-                        <Form.Item name="dob" label="Ngày sinh" rules={[{ required: true }]}>
+                        <Form.Item name="dob" label="Ngày sinh" labelAlign="left" rules={[{ required: true }]}>
                             <DatePicker style={{ width: "100%" }} />
                         </Form.Item>
 
-                        <Form.Item name="cccd" label="CCCD" rules={[{ required: true }]}>
+                        <Form.Item name="cccd" label="CCCD" labelAlign="left" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>
 
-                        <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
+                        <Form.Item name="email" label="Email" labelAlign="left" rules={[{ required: true, type: "email" }]}>
                             <Input />
                         </Form.Item>
 
                         <Form.Item
                             name="phone"
                             label="Số điện thoại"
+                            labelAlign="left"
                             rules={[
                                 { required: true, message: "Vui lòng nhập số điện thoại" },
                                 {
@@ -200,16 +201,16 @@ export default function EmployeeAdd() {
                             <Input maxLength={11} />
                         </Form.Item>
 
-                        <Form.Item name="address" label="Địa chỉ" rules={[{ required: true }]}>
+                        <Form.Item name="address" label="Địa chỉ" labelAlign="left" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>
                     </Splitter.Panel>
                     <Splitter.Panel style={{ paddingLeft: 16 }}>
-                        <Form.Item name="hireDate" label="Ngày vào làm" rules={[{ required: true }]}>
+                        <Form.Item name="hireDate" label="Ngày vào làm" labelAlign="left" rules={[{ required: true }]}>
                             <DatePicker style={{ width: "100%" }} />
                         </Form.Item>
 
-                        <Form.Item name="departmentId" label="Phòng ban" rules={[{ required: true }]}>
+                        <Form.Item name="departmentId" label="Phòng ban" labelAlign="left" rules={[{ required: true }]}>
                             <Select
                                 placeholder="Chọn phòng ban"
                                 options={departmentOptions}
@@ -221,7 +222,7 @@ export default function EmployeeAdd() {
                             />
                         </Form.Item>
 
-                        <Form.Item name="positionId" label="Vị trí" rules={[{ required: true }]}>
+                        <Form.Item name="positionId" label="Vị trí" labelAlign="left" rules={[{ required: true }]}>
                             <Select
                                 placeholder="Chọn vị trí"
                                 options={positionOptions}
@@ -233,7 +234,7 @@ export default function EmployeeAdd() {
                             />
                         </Form.Item>
 
-                        <Form.Item name="status" label="Tình trạng" rules={[{ required: true }]}>
+                        <Form.Item name="status" label="Tình trạng" labelAlign="left" rules={[{ required: true }]}>
                             <Select placeholder="Chọn tình trạng"
                                 options={[
                                     { value: 0, label: "Đang làm việc" },
@@ -242,12 +243,12 @@ export default function EmployeeAdd() {
                             />
                         </Form.Item>
 
-                        <Form.Item name="avatarUrl" label="Ảnh đại diện" rules={[{ required: true }]}>
+                        <Form.Item name="avatarUrl" label="Ảnh đại diện" labelAlign="left" rules={[{ required: true }]}>
                             <Input type="text" />
                         </Form.Item>
 
                         {/* Cách upload File lên backend */}
-                        <Form.Item label="Ảnh đại diện">
+                        <Form.Item label="Ảnh đại diện" labelAlign="left">
                             <Upload
                                 listType="picture-card"
                                 onPreview={handlePreview}

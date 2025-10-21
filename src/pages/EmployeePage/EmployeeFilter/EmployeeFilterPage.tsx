@@ -5,7 +5,7 @@ import { useDepartmentStore } from "src/stores/useDepartmentStore";
 import { usePositionStore } from "src/stores/usePositionStore";
 
 export const EmployeeFilterPage = () => {
-    const { fetchFilteredEmployees, setFilters } = useEmployeeStore();
+    const { meta, fetchFilteredEmployees, setFilters, fetchEmployees } = useEmployeeStore();
     const { departments } = useDepartmentStore();
     const { positions } = usePositionStore();
 
@@ -17,7 +17,7 @@ export const EmployeeFilterPage = () => {
     });
 
     const handleApply = async () => {
-        await fetchFilteredEmployees!(filters);
+        await fetchFilteredEmployees!(filters, meta?.current || 1, meta?.pageSize || 10);
         setFilters(filters);
     };
 
@@ -28,7 +28,8 @@ export const EmployeeFilterPage = () => {
             departmentId: "",
             positionId: "",
         });
-        fetchFilteredEmployees!({});
+        setFilters({});
+        fetchEmployees!(1, 10);
     };
 
     return (

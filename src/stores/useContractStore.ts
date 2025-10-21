@@ -1,13 +1,16 @@
-import { createContractAPI, deleteContractAPI, fetchContractAPI, updateContractAPI } from "src/services/api.services";
+import { createContractAPI, deleteContractAPI, fetchContractAPI, fetchContractExpiresAPI, updateContractAPI } from "src/services/api.services";
 import { PaginationMeta } from "src/types/api";
 import { Contract } from "src/types/contract/Contract";
+import { ContractExpires } from "src/types/contract/ContractExpires";
 import { create } from "zustand";
 
 interface ContractStore {
     contracts: Contract[];
+    contractExpires?: ContractExpires[];
     meta?: PaginationMeta | null;
     isModalOpen: boolean;
     fetchContract: (current?: number, pageSize?: number) => Promise<void>;
+    fetchContractExpires: (current?: number, pageSize?: number, withinDays?: number) => Promise<void>;
     addContract?: (payload: Contract) => Promise<void>;
     updateContract?: (id: string, data: Partial<Contract>) => Promise<void>;
     deleteContract?: (id: string) => Promise<void>;
@@ -16,6 +19,7 @@ interface ContractStore {
 
 export const useContractStore = create<ContractStore>((set, get) => ({
     contracts: [],
+    contractExpires: [],
     meta: null,
     isModalOpen: false,
 
@@ -31,6 +35,22 @@ export const useContractStore = create<ContractStore>((set, get) => ({
             set({ contracts, meta });
         } catch (err: any) {
             console.error("Fetch contracts failed:", err);
+            throw err;
+        }
+    },
+
+    fetchContractExpires: async (current = 1, pageSize = 10, withinDays = 30) => {
+        try {
+            const res = await fetchContractExpiresAPI(current, pageSize, withinDays);
+            const data = res.data[0];
+            const contractExpires = data.result;
+            const meta = data.meta;
+            console.log(">>> check res: ", res)
+            console.log(">>> check contractExpires: ", contractExpires)
+
+            set({ contractExpires, meta });
+        } catch (err: any) {
+            console.error("Fetch contract Expires failed:", err);
             throw err;
         }
     },
