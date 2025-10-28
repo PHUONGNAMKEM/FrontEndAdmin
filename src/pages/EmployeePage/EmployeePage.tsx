@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Space, Tag, Button, Input, Avatar, Card, Descriptions, List, Typography, MenuProps, message, Dropdown, Pagination, DatePicker, Select, Popconfirm, PopconfirmProps, } from "antd";
+import { Table, Space, Tag, Button, Input, Avatar, Card, Descriptions, List, Typography, MenuProps, message, Dropdown, Pagination, DatePicker, Select, Popconfirm, PopconfirmProps, Upload, UploadFile, Modal, Image, } from "antd";
 import {
     SearchOutlined,
     SettingOutlined,
@@ -23,6 +23,7 @@ import EmployeeAdd from "./EmployeeAdd/EmployeeAdd";
 import { EmployeeFilterPage } from "./EmployeeFilter/EmployeeFilterPage";
 import { useDepartmentStore } from "src/stores/useDepartmentStore";
 import { usePositionStore } from "src/stores/usePositionStore";
+import { RcFile, UploadProps } from "antd/es/upload";
 
 // ================== CỘT BẢNG NHÂN VIÊN ==================
 const columns = [
@@ -112,6 +113,31 @@ const EmployeePage = () => {
     const currentPage = parseInt(searchParams.get("current") || "1");
     const currentSize = parseInt(searchParams.get("pageSize") || "10");
 
+    // Logic upload file
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [previewImage, setPreviewImage] = useState("");
+    const [previewOpen, setPreviewOpen] = useState(false);
+
+    const handlePreview = async (file: UploadFile) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj as RcFile);
+        }
+        setPreviewImage(file.url || (file.preview as string));
+        setPreviewOpen(true);
+    };
+
+    const getBase64 = (file: RcFile): Promise<string> =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+        });
+
+    const handleChangeFile: UploadProps["onChange"] = ({ fileList: newList }) => {
+        setFileList(newList);
+    };
+
     useEffect(() => {
         // fetchEmployees(currentPage, currentSize);
         if (Object.keys(filters || {}).length > 0) {
@@ -165,34 +191,104 @@ const EmployeePage = () => {
         setIsEditing(!isEditing);
     }
 
+    // const handleUpdate = async () => {
+    //     if (!editedEmployee || !selectedEmployee) return;
+    //     const changedFields: Partial<Employee> = {};
+    //     Object.entries(editedEmployee).forEach(([key, newValue]) => { // Object.entires trả về mảng chứa các cặp [key, value]
+    //         const oldValue = selectedEmployee[key as keyof Employee];
+
+    //         // Nếu giá trị mới khác giá trị cũ và không undefined => thêm vào payload
+    //         if (newValue !== oldValue && newValue !== undefined) {
+    //             changedFields[key as keyof Employee] = newValue as any;
+    //         }
+    //     });
+
+    //     if (Object.keys(changedFields).length === 0) { // Object.keys trả về mảng -> .length
+    //         message.info("Không có thay đổi nào để cập nhật.");
+    //         return;
+    //     }
+
+    //     console.log(">>> Gửi payload:", changedFields);
+
+    //     await updateEmployee!(selectedEmployee.id!, changedFields);
+    //     message.success("Cập nhật nhân viên thành công!");
+
+    //     setSelectedEmployee((prev) => prev ? { ...prev, ...changedFields } : prev);  // cập nhật giao diện bên phải chi tiết nhân viên
+    //     await fetchEmployees!(currentPage, currentSize); // chỗ này nè
+    //     setIsEditing(false);
+    // };
+
+    // Reset form khi click đổi nhân viên
+
     const handleUpdate = async () => {
         if (!editedEmployee || !selectedEmployee) return;
-        const changedFields: Partial<Employee> = {};
-        Object.entries(editedEmployee).forEach(([key, newValue]) => { // Object.entires trả về mảng chứa các cặp [key, value]
-            const oldValue = selectedEmployee[key as keyof Employee];
 
-            // Nếu giá trị mới khác giá trị cũ và không undefined => thêm vào payload
-            if (newValue !== oldValue && newValue !== undefined) {
-                changedFields[key as keyof Employee] = newValue as any;
+        const formData = new FormData();
+
+        // Nếu có file mới
+        if (fileList.length > 0) {
+            const file = fileList[0].originFileObj as RcFile;
+            formData.append("avatarFile", file);
+            const previewUrl = URL.createObjectURL(file);
+            setSelectedEmployee(prev =>
+                prev ? { ...prev, avatarUrl: previewUrl } : prev
+            );
+        }
+
+        // Append các field thay đổi khác
+        Object.entries(editedEmployee).forEach(([key, value]) => {
+            const oldValue = selectedEmployee[key as keyof Employee];
+            if (value !== oldValue && value !== undefined && value !== null) {
+                if (key === "dob" || key === "hireDate") {
+                    // chuẩn hóa format ngày
+                    formData.append(key, dayjs(value).format("YYYY-MM-DD"));
+                } else {
+                    formData.append(key, String(value));
+                }
             }
         });
 
-        if (Object.keys(changedFields).length === 0) { // Object.keys trả về mảng -> .length
-            message.info("Không có thay đổi nào để cập nhật.");
+        if ([...formData.entries()].length === 0) {
+            message.info("Không có thay đổi nào để cập nhật");
             return;
         }
 
-        console.log(">>> Gửi payload:", changedFields);
+        try {
+            const updated = await updateEmployee!(selectedEmployee.id!, formData as any);
+            message.success("Cập nhật nhân viên thành công!");
 
-        await updateEmployee!(selectedEmployee.id!, changedFields);
-        message.success("Cập nhật nhân viên thành công!");
+            console.log(">>> updated:", updated);
 
-        setSelectedEmployee((prev) => prev ? { ...prev, ...changedFields } : prev);  // cập nhật giao diện bên phải chi tiết nhân viên
-        await fetchEmployees!(currentPage, currentSize); // chỗ này nè
-        setIsEditing(false);
+            // const newAvatarUrl = updated?.avatarUrl
+            //     ? `${updated.avatarUrl}?t=${Date.now()}`
+            //     : selectedEmployee.avatarUrl;
+
+            // setSelectedEmployee(prev =>
+            //     prev ? { ...prev, ...editedEmployee, avatarUrl: newAvatarUrl } : prev
+            // );
+
+            // setEditedEmployee(prev =>
+            //     prev ? { ...prev, avatarUrl: newAvatarUrl } : prev
+            // );
+            setSelectedEmployee(prev =>
+                prev
+                    ? {
+                        ...prev,
+                        ...editedEmployee,
+                        avatarUrl: prev.avatarUrl, // giữ nguyên avatar cũ
+                    }
+                    : prev
+            );
+
+            setFileList([]);
+            setIsEditing(false);
+            await fetchEmployees!(currentPage, currentSize);
+        } catch (err) {
+            console.error(err);
+            message.error("Cập nhật thất bại");
+        }
     };
 
-    // Reset form khi click đổi nhân viên
     const handleChangeItem = (selectedEmployee: Employee) => {
         if (selectedEmployee) {
             setSelectedEmployee(selectedEmployee);
@@ -359,12 +455,49 @@ const EmployeePage = () => {
                                 <>
                                     <div className="flex items-center justify-between mb-4">
                                         <div className="flex items-center avatar-user-display">
-                                            <Avatar
+                                            {/* <Avatar
                                                 src={selectedEmployee.avatarUrl}
                                                 size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
                                                 // icon={<AntDesignOutlined />}
                                                 className="!mr-4 border-2 border-blue-500 shadow-md"
-                                            />
+                                            /> */}
+
+
+
+                                            {isEditing ? (
+                                                <>
+                                                    <Avatar
+                                                        src={editedEmployee?.avatarUrl}
+                                                        size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
+                                                        className="!mr-4 border-2 border-blue-500 shadow-md"
+                                                    />
+                                                    <Upload
+                                                        listType="picture-card"
+                                                        fileList={fileList}
+                                                        onPreview={handlePreview}
+                                                        onChange={handleChangeFile}
+                                                        beforeUpload={() => false}
+                                                        style={{ marginRight: "16px" }}
+                                                    >
+                                                        {fileList.length >= 1 ? null : (
+                                                            <div>
+                                                                <span>Thay ảnh</span>
+                                                            </div>
+                                                        )}
+                                                    </Upload>
+                                                </>
+                                            )
+                                                : <Avatar
+                                                    src={selectedEmployee.avatarUrl}
+                                                    size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
+                                                    className="!mr-4 border-2 border-blue-500 shadow-md"
+                                                />
+                                            }
+
+                                            <Modal open={previewOpen} footer={null} onCancel={() => setPreviewOpen(false)}>
+                                                <Image alt="preview" src={previewImage} style={{ width: "100%" }} />
+                                            </Modal>
+
                                             <Title level={5} style={{ margin: 0 }}>
                                                 {
                                                     isEditing ? (
@@ -485,7 +618,7 @@ const EmployeePage = () => {
                                                 <DatePicker
                                                     value={editedEmployee?.hireDate ? dayjs(editedEmployee.hireDate) : dayjs()}
                                                     onChange={(date) =>
-                                                        handleChange("hireDate", date ? date.toISOString() : null)
+                                                        handleChange("hireDate", date ? dayjs(date).format("YYYY-MM-DD") : null)
                                                     }
                                                     format="YYYY/MM/DD"
                                                 />
@@ -523,7 +656,7 @@ const EmployeePage = () => {
                                                 <DatePicker
                                                     value={editedEmployee?.dob ? dayjs(editedEmployee?.dob) : null}
                                                     onChange={(date) =>
-                                                        handleChange("dob", date ? date.toISOString() : "")
+                                                        handleChange("dob", date ? dayjs(date).format("YYYY-MM-DD") : "")
                                                     }
                                                     format="YYYY/MM/DD"
                                                 />

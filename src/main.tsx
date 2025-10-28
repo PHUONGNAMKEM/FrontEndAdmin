@@ -37,6 +37,10 @@ import { DepartmentPage } from './pages/Department/DepartmentPage.tsx';
 import { PositionPage } from './pages/Position/PositionPage.tsx';
 import { ContractPage } from './pages/Contract/ContractPage.tsx';
 import { ContractExpiresPage } from './pages/Contract/ContractExpires/ContractExpiresPage.tsx';
+import { SalaryPage } from './pages/Salary/SalaryPage.tsx';
+import { SalaryConfigPage } from './pages/Salary/SalaryConfig/SalaryConfigPage.tsx';
+import { SalaryTablePage } from './pages/Salary/SalaryTable/SalaryTablePage.tsx';
+import { RequestPage } from './pages/Request/RequestPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -55,6 +59,10 @@ const router = createBrowserRouter([
           { path: "/profile", element: <ProfilePage /> },
           { path: "/contract", element: <ContractPage /> },
           { path: "/contract/expiring", element: <ContractExpiresPage /> },
+          { path: "/salary", element: <SalaryPage /> },
+          { path: "/salary/config", element: <SalaryConfigPage /> },
+          { path: "/salary/table", element: <SalaryTablePage /> },
+          { path: "/request", element: <RequestPage /> },
           { path: "/appointment", element: <AppointmentPage /> },
           { path: "/dismissal", element: <DismissalPage /> },
           { path: "/transfer", element: <TransferPage /> },

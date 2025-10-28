@@ -68,58 +68,58 @@ export default function EmployeeAdd() {
     };
 
     const handleChangeFile: UploadProps["onChange"] = ({ fileList: newList }) => {
-        // setFileList(newList); // ở đây theo cách truyền file lên
-        setFileName(newList[0].originFileObj?.name); // ở đây theo cách truyền chuỗi là name của file lên 
+        setFileList(newList); // ở đây theo cách truyền file lên
+        // setFileName(newList[0].originFileObj?.name); // ở đây theo cách truyền chuỗi là name của file lên 
     };
 
     /** Submit form */
     const handleSubmit = async () => {
         try {
             const values = await form.validateFields();
-            // if (!fileList[0]) {
-            //     notification.warning({ message: "Vui lòng chọn ảnh đại diện!" });
-            //     return;
-            // }
+            if (!fileList[0]) {
+                notification.warning({ message: "Vui lòng chọn ảnh đại diện!" });
+                return;
+            }
 
-            // const formData = new FormData();
-            // // append tất cả field
-            // formData.append("fullName", values.fullName);
-            // formData.append("gender", values.gender);
-            // formData.append("dob", values.dob.toISOString());
-            // formData.append("cccd", values.cccd);
-            // formData.append("email", values.email);
-            // formData.append("phone", values.phone);
-            // formData.append("address", values.address);
-            // formData.append("hireDate", values.hireDate.toISOString());
-            // formData.append("departmentId", values.departmentId);
-            // formData.append("positionId", values.positionId);
-            // formData.append("status", values.status);
-            // // formData.append("avatar_url", fileList[0].originFileObj as RcFile);
+            const formData = new FormData();
+            // append tất cả field
+            formData.append("fullName", values.fullName);
+            formData.append("gender", String(values.gender));
+            formData.append("dob", dayjs(values.dob).format("YYYY-MM-DD"));
+            formData.append("cccd", values.cccd);
+            formData.append("email", values.email);
+            formData.append("phone", values.phone);
+            formData.append("address", values.address);
+            formData.append("hireDate", dayjs(values.hireDate).format("YYYY-MM-DD"));
+            formData.append("departmentId", values.departmentId);
+            formData.append("positionId", values.positionId);
+            formData.append("status", String(values.status));
+            formData.append("avatarFile", fileList[0].originFileObj as RcFile);
             // formData.append("avatarUrl", values.avatarUrl ? values.avatarUrl : values.gender === 0 ? "https://randomuser.me/api/portraits/women/1.jpg" : "https://randomuser.me/api/portraits/men/1.jpg");
 
-            const payload = {
-                // departmentName: departmentOptions.find(opt => opt.value === values.departmentId)?.label || "",
-                // positionName: positionOptions.find(opt => opt.value === values.positionId)?.label || "",
-                fullName: values.fullName,
-                gender: values.gender,
-                dob: dayjs(values.dob).format("YYYY-MM-DD"),
-                cccd: values.cccd,
-                email: values.email,
-                phone: values.phone,
-                address: values.address,
-                hireDate: dayjs(values.hireDate).format("YYYY-MM-DD"),
-                departmentId: values.departmentId,
-                positionId: values.positionId,
-                status: values.status,
-                avatarUrl:
-                    values.avatarUrl ||
-                    (values.gender === 0
-                        ? "https://randomuser.me/api/portraits/women/1.jpg"
-                        : "https://randomuser.me/api/portraits/men/1.jpg"),
-            };
+            // const payload = {
+            //     // departmentName: departmentOptions.find(opt => opt.value === values.departmentId)?.label || "",
+            //     // positionName: positionOptions.find(opt => opt.value === values.positionId)?.label || "",
+            //     fullName: values.fullName,
+            //     gender: values.gender,
+            //     dob: dayjs(values.dob).format("YYYY-MM-DD"),
+            //     cccd: values.cccd,
+            //     email: values.email,
+            //     phone: values.phone,
+            //     address: values.address,
+            //     hireDate: dayjs(values.hireDate).format("YYYY-MM-DD"),
+            //     departmentId: values.departmentId,
+            //     positionId: values.positionId,
+            //     status: values.status,
+            //     avatarUrl:
+            //         values.avatarUrl ||
+            //         (values.gender === 0
+            //             ? "https://randomuser.me/api/portraits/women/1.jpg"
+            //             : "https://randomuser.me/api/portraits/men/1.jpg"),
+            // };
 
             setLoading(true);
-            await addEmployee!(payload); // Gọi hàm trong store
+            await addEmployee!(formData as any); // Gọi hàm trong store
             notification.success({ message: "Thêm nhân viên thành công!" });
             setModalOpen(false);
             form.resetFields();
@@ -243,9 +243,9 @@ export default function EmployeeAdd() {
                             />
                         </Form.Item>
 
-                        <Form.Item name="avatarUrl" label="Ảnh đại diện" labelAlign="left" rules={[{ required: true }]}>
+                        {/* <Form.Item name="avatarUrl" label="Ảnh đại diện" labelAlign="left" rules={[{ required: true }]}>
                             <Input type="text" />
-                        </Form.Item>
+                        </Form.Item> */}
 
                         {/* Cách upload File lên backend */}
                         <Form.Item label="Ảnh đại diện" labelAlign="left">
@@ -253,6 +253,8 @@ export default function EmployeeAdd() {
                                 listType="picture-card"
                                 onPreview={handlePreview}
                                 onChange={handleChangeFile}
+                                beforeUpload={() => false}
+                                fileList={fileList}
                             >
                                 {fileList.length >= 1 ? null : (
                                     <div>

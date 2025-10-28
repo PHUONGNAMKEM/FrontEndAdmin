@@ -1,5 +1,5 @@
 import { createEmployeeAPI, deleteEmployeeAPI, fetchEmployeeAPI, fetchFilteredEmployeesAPI, updateEmployeeAPI } from "src/services/api.services";
-import { PaginationMeta } from "src/types/api";
+import { ApiResponse, PaginationMeta } from "src/types/api";
 import { Employee } from "src/types/employee/Employee";
 import { create } from "zustand";
 
@@ -10,8 +10,8 @@ interface EmployeeStore {
     filters: Record<string, any>;
     fetchEmployees: (current?: number, pageSize?: number) => Promise<void>;
     fetchFilteredEmployees?: (filters: Record<string, any>, current?: number, pageSize?: number) => Promise<void>;
-    addEmployee?: (payload: Employee) => Promise<void>;
-    updateEmployee?: (id: string, data: Partial<Employee>) => Promise<void>;
+    addEmployee?: (payload: FormData) => Promise<void>;
+    updateEmployee?: (id: string, data: FormData) => Promise<void>;
     deleteEmployee?: (id: string) => Promise<void>;
     setModalOpen: (value: boolean) => void;
     setFilters: (filters: Record<string, any>) => void;
@@ -83,6 +83,7 @@ export const useEmployeeStore = create<EmployeeStore>((set, get) => ({
                     e.id === id ? { ...e, ...updated } : e
                 ),
             });
+            return updated;
         } catch (err: any) {
             console.error("Cập nhật nhân viên không thành công:", err);
             throw err;

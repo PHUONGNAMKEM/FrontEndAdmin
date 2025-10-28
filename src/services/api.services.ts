@@ -19,25 +19,25 @@ export const fetchEmployeeAPI = (current: number, pageSize: number): Promise<Api
     return axios.get(URL_BACKEND);
 }
 
-export const createEmployeeAPI = (payload: Employee): Promise<ApiResponse> => {
+export const createEmployeeAPI = (payload: FormData): Promise<ApiResponse> => {
     const URL_BACKEND = "/api/Employee";
-    // const config = {
-    //     headers: {
-    //         "Content-Type": "multipart/form-data",
-    //     },
-    // };
-    return axios.post(`${URL_BACKEND}`, payload);
+    const config = {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    };
+    return axios.post(`${URL_BACKEND}`, payload, config);
 };
 
-export const updateEmployeeAPI = (id: string, payload: Partial<Employee>): Promise<ApiResponse> => {
+export const updateEmployeeAPI = (id: string, payload: FormData): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Employee/${id}`;
-    // const config = {
-    //     headers: {
-    //         "Content-Type": "multipart/form-data",
-    //     },
-    // };
-    const data = { ...payload };
-    return axios.put(`${URL_BACKEND}`, data);
+    const config = {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    };
+    // const data = { ...payload };
+    return axios.put(`${URL_BACKEND}`, payload, config);
 };
 
 //https://hrmadmin.huynhthanhson.io.vn/api/Employee/filter?fields=fullname&q=Hu%E1%BB%B3nh&current=1&pageSize=20
@@ -50,9 +50,9 @@ export const fetchFilteredEmployeesAPI = (filters: Record<string, any>, current 
     );
 
     // Object.keys trả về mảng các key hợp lý -> thêm các key hợp lý vào fields
-    if (validKeys.length > 0) {
-        params.append("fields", validKeys.join(','));
-    }
+    // if (validKeys.length > 0) {
+    //     params.append("fields", validKeys.join(','));
+    // }
 
     // Thêm các query (key=value) vào url cách 1 (ở đây có validKeys rồi nên dùng lại luôn)
     validKeys.forEach((key) => {
@@ -155,6 +155,17 @@ export const deleteContractAPI = (id: string): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Contract/${id}`;
     return axios.delete(`${URL_BACKEND}`);
 }
+
+// Request
+export const fetchRequestAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Request?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+};
+
+export const updateRequestStatusAPI = (id: string, newStatus: string | number, approverUserId: string, reason: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Request/process/${id}`;
+    return axios.put(URL_BACKEND, { newStatus, approverUserId, reason });
+};
 
 // User
 export const fetchUserAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
