@@ -13,6 +13,7 @@ import { RewardPenalty } from "src/types/rewardPenalty/RequardPenalty";
 import { RewardPenaltyDetail } from "src/types/rewardPenalty/RewardPenaltyDetail";
 import { SalaryConfig } from "src/types/salary/SalaryConfig";
 import { SalaryRecord } from "src/types/salary/SalaryRecord";
+import { Overtime } from "src/types/overtime/Overtime";
 
 
 // Employee
@@ -258,6 +259,28 @@ export const fetchSalaryDetailAPI = (employeeId: string, month: string): Promise
 export const fetchSalaryDailyAPI = (employeeId: string, month: string): Promise<ApiResponse> => {
     const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/daily/${employeeId}?month=${month}`;
     return axios.get(URL_BACKEND);
+};
+
+// Overtime
+export const fetchOvertimeAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Overtimes?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+};
+
+export const createOvertimeAPI = (payload: Overtime): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/Overtimes";
+    return axios.post(URL_BACKEND, payload);
+};
+
+export const updateOvertimeAPI = (id: string, payload: Partial<Overtime>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Overtimes/${id}`;
+    const data = { ...payload };
+    return axios.put(URL_BACKEND, data);
+};
+
+export const deleteOvertimeAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Overtimes/${id}`;
+    return axios.delete(URL_BACKEND);
 };
 
 // User

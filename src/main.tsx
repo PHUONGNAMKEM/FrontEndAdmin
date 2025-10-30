@@ -43,6 +43,7 @@ import { SalaryTablePage } from './pages/Salary/SalaryTable/SalaryTablePage.tsx'
 import { RequestPage } from './pages/Request/RequestPage.tsx';
 import { RewardPenaltyPage } from './pages/RewardPenalty/RewardPenaltyPage.tsx';
 import { RewardPenaltiesPage } from './pages/RewardPenalty/RewardPenaltiesPage.tsx';
+import { OvertimePage } from './pages/Overtime/OvertimePage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,7 @@ const router = createBrowserRouter([
           { path: "/reward-penalty", element: <RewardPenaltyPage /> },
           { path: "/reward-penalty/rules", element: <RewardPenaltyPage /> },
           { path: "/reward-penalty/list", element: <RewardPenaltiesPage /> },
+          { path: "/overtime", element: <OvertimePage /> },
           { path: "/appointment", element: <AppointmentPage /> },
           { path: "/dismissal", element: <DismissalPage /> },
           { path: "/transfer", element: <TransferPage /> },

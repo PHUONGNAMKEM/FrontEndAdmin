@@ -25,7 +25,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import './layoutStyle/bodyPageStyle.scss'
 import { getGoalByIdAPI } from '../../services/api.me.service';
-import { ArrowLeftRight, ArrowRight, ChartColumn, ChartNoAxesGantt, CircleAlert, CircleCheckBig, CreditCard, FileSpreadsheet, FileUser, Gift, GiftIcon, GraduationCap, HandCoins, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, Warehouse } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, ChartColumn, ChartNoAxesGantt, CircleAlert, CircleCheckBig, ClockArrowUp, CreditCard, FileSpreadsheet, FileUser, Gift, GiftIcon, GraduationCap, HandCoins, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, Warehouse } from 'lucide-react';
 import ThemeToggle from '../theme/ThemeToggle';
 import { useTheme } from '@components/context/ThemeContext';
 import { IconWrapper } from '@components/customsIconLucide/IconWrapper';
@@ -86,6 +86,7 @@ const BodyPage = () => {
                 getItem(<Link to="/reward-penalty/list">Danh sách</Link>, "table"),
             ]
         ),
+        getItem(<Link to="/overtime">Overtime</Link>, "overtime", <IconWrapper Icon={ClockArrowUp} />),
         getItem(<Link to="/appointment">Bổ nhiệm</Link>, "appointment", <IconWrapper Icon={UserRoundPlus} />),
         getItem(<Link to="/dismissal">Miễn nhiệm</Link>, "dismissal", <IconWrapper Icon={UserRoundX} />),
         getItem(<Link to="/transfer">Thuyên chuyển</Link>, "transfer", <IconWrapper Icon={ArrowLeftRight} />),
