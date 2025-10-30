@@ -459,9 +459,6 @@ const EmployeePage = () => {
                                                 // icon={<AntDesignOutlined />}
                                                 className="!mr-4 border-2 border-blue-500 shadow-md"
                                             /> */}
-
-
-
                                             {isEditing ? (
                                                 <>
                                                     <Avatar

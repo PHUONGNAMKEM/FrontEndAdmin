@@ -4,13 +4,12 @@ import {
     Tag,
     Space,
     Button,
-    Select,
     Typography,
     notification,
     Popconfirm,
 } from "antd";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { RefreshCcw, Check, Ban } from "lucide-react";
+import { RefreshCcw, Check, Ban, CircleCheck, BanIcon } from "lucide-react";
 import { useRequestStore } from "src/stores/useRequestStore";
 import { useSearchParams } from "react-router-dom";
 
@@ -19,7 +18,6 @@ const { Title } = Typography;
 export const RequestPage = () => {
     const { requests, meta, fetchRequests, updateStatus } = useRequestStore();
     const [loading, setLoading] = useState(false);
-    const [pendingChange, setPendingChange] = useState<{ id: string; value: string } | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
 
     const currentPage = parseInt(searchParams.get("current") || "1");
@@ -37,31 +35,32 @@ export const RequestPage = () => {
         });
     };
 
-    const handleStatusChange = async (id: string, value: string) => {
-        setPendingChange({ id, value });
-    };
-
-    const confirmChange = async () => {
-        if (!pendingChange) return;
-        const { id, value } = pendingChange;
-
+    // Khi chấp nhận yêu cầu
+    const handleApprove = async (id: string) => {
         try {
-            await updateStatus(id, value as any);
-            notification.success({
-                message: "Cập nhật trạng thái thành công!",
-            });
+            await updateStatus(id, "approved");
+            notification.success({ message: "Yêu cầu đã được duyệt!" });
+            fetchRequests(currentPage, currentSize);
         } catch (err) {
             notification.error({
-                message: "Cập nhật trạng thái thất bại!",
+                message: "Duyệt thất bại!",
                 description: (err as any)?.message || "Vui lòng thử lại.",
             });
-        } finally {
-            setPendingChange(null);
         }
     };
 
-    const cancelChange = () => {
-        setPendingChange(null);
+    // Khi từ chối yêu cầu - vì API backend chỉ chấp nhận 2 trạng thái approve và reject
+    const handleReject = async (id: string) => {
+        try {
+            await updateStatus(id, "rejected");
+            notification.warning({ message: "Yêu cầu đã bị từ chối!" });
+            fetchRequests(currentPage, currentSize);
+        } catch (err) {
+            notification.error({
+                message: "Từ chối thất bại!",
+                description: (err as any)?.message || "Vui lòng thử lại.",
+            });
+        }
     };
 
     const statusColors: Record<string, string> = {
@@ -103,35 +102,59 @@ export const RequestPage = () => {
             dataIndex: "status",
             key: "status",
             render: (status: string) => (
-                <Tag color={statusColors[status]}>{status.toUpperCase()}</Tag>
+                <Tag color={statusColors[status]} style={{ textTransform: "capitalize" }}>
+                    {status}
+                </Tag>
             ),
         },
         {
-            title: "Cập nhật trạng thái",
+            title: "Duyệt yêu cầu",
             key: "action",
-            render: (record: any) => (
-                <Popconfirm
-                    title="Xác nhận cập nhật trạng thái"
-                    description={`Bạn có chắc muốn đổi trạng thái sang "${pendingChange?.value || ""}"?`}
-                    open={pendingChange?.id === record.id}
-                    onConfirm={confirmChange}
-                    onCancel={cancelChange}
-                    okText="Xác nhận"
-                    cancelText="Hủy"
-                >
-                    <Select
-                        defaultValue={record.status}
-                        onChange={(value) => handleStatusChange(record.id, value)}
-                        style={{ width: 140 }}
-                        options={[
-                            { value: 0, label: "Pending" },
-                            { value: 1, label: "Approved" },
-                            { value: 2, label: "Rejected" },
-                            { value: 3, label: "Cancelled" },
-                        ]}
-                    />
-                </Popconfirm>
-            ),
+            render: (record: any) => {
+                const status = record.status;
+
+                if (status === "approved") {
+                    return (
+                        <Space>
+                            <IconWrapper Icon={CircleCheck} color="#53C41B" />
+                        </Space>
+                    );
+                }
+
+                if (status === "pending") {
+                    return (
+                        <Space>
+                            <Popconfirm
+                                title="Xác nhận duyệt yêu cầu"
+                                onConfirm={() => handleApprove(record.id)}
+                                okText="Duyệt"
+                                cancelText="Hủy"
+                            >
+                                <Button
+                                    type="text"
+                                    icon={<IconWrapper Icon={CircleCheck} color="#53C41B" />}
+                                />
+                            </Popconfirm>
+
+                            <Popconfirm
+                                title="Xác nhận từ chối yêu cầu"
+                                onConfirm={() => handleReject(record.id)}
+                                okText="Từ chối"
+                                cancelText="Hủy"
+                            >
+                                <Button
+                                    type="text"
+                                    danger
+                                    icon={<IconWrapper Icon={BanIcon} color="red" />}
+                                />
+                            </Popconfirm>
+                        </Space>
+                    );
+                }
+
+                // Các trạng thái khác (rejected, cancelled)
+                return <IconWrapper Icon={BanIcon} color="red" />;
+            },
         },
     ];
 
@@ -152,6 +175,7 @@ export const RequestPage = () => {
                     icon={<IconWrapper Icon={RefreshCcw} />}
                     onClick={() => fetchRequests(currentPage, currentSize)}
                     loading={loading}
+                    size="large"
                 >
                     Làm mới
                 </Button>

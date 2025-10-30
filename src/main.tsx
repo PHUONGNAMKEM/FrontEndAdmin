@@ -41,6 +41,8 @@ import { SalaryPage } from './pages/Salary/SalaryPage.tsx';
 import { SalaryConfigPage } from './pages/Salary/SalaryConfig/SalaryConfigPage.tsx';
 import { SalaryTablePage } from './pages/Salary/SalaryTable/SalaryTablePage.tsx';
 import { RequestPage } from './pages/Request/RequestPage.tsx';
+import { RewardPenaltyPage } from './pages/RewardPenalty/RewardPenaltyPage.tsx';
+import { RewardPenaltiesPage } from './pages/RewardPenalty/RewardPenaltiesPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -63,6 +65,9 @@ const router = createBrowserRouter([
           { path: "/salary/config", element: <SalaryConfigPage /> },
           { path: "/salary/table", element: <SalaryTablePage /> },
           { path: "/request", element: <RequestPage /> },
+          { path: "/reward-penalty", element: <RewardPenaltyPage /> },
+          { path: "/reward-penalty/rules", element: <RewardPenaltyPage /> },
+          { path: "/reward-penalty/list", element: <RewardPenaltiesPage /> },
           { path: "/appointment", element: <AppointmentPage /> },
           { path: "/dismissal", element: <DismissalPage /> },
           { path: "/transfer", element: <TransferPage /> },

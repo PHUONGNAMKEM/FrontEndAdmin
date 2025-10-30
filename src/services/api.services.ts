@@ -9,6 +9,10 @@ import { Employee } from "src/types/employee/Employee";
 import { Department } from "src/types/department/Department";
 import { Position } from "src/types/position/Position";
 import { Contract } from "src/types/contract/Contract";
+import { RewardPenalty } from "src/types/rewardPenalty/RequardPenalty";
+import { RewardPenaltyDetail } from "src/types/rewardPenalty/RewardPenaltyDetail";
+import { SalaryConfig } from "src/types/salary/SalaryConfig";
+import { SalaryRecord } from "src/types/salary/SalaryRecord";
 
 
 // Employee
@@ -165,6 +169,95 @@ export const fetchRequestAPI = (current: number, pageSize: number): Promise<ApiR
 export const updateRequestStatusAPI = (id: string, newStatus: string | number, approverUserId: string, reason: string): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Request/process/${id}`;
     return axios.put(URL_BACKEND, { newStatus, approverUserId, reason });
+};
+
+// Salary Config
+export const fetchSalaryConfigAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/GlobalSettings?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+};
+
+export const createSalaryConfigAPI = (payload: SalaryConfig): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/GlobalSettings";
+    return axios.post(`${URL_BACKEND}`, payload);
+};
+
+export const updateSalaryConfigAPI = (id: string, payload: Partial<SalaryConfig>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/GlobalSettings/${id}`;
+    const data = { ...payload };
+    return axios.put(`${URL_BACKEND}`, data);
+};
+
+export const deleteSalaryConfigAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/GlobalSettings/${id}`;
+    return axios.delete(`${URL_BACKEND}`);
+};
+
+// RewardPenaltyType
+export const fetchRewardPenaltyAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/RewardPenaltyTypes?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+};
+
+export const filterRewardPenaltyAPI = (current: number, pageSize: number, type: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/RewardPenaltyTypes?type=${type}&current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+};
+
+export const createRewardPenaltyAPI = (payload: RewardPenalty): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/RewardPenaltyTypes";
+    return axios.post(`${URL_BACKEND}`, payload);
+};
+
+export const updateRewardPenaltyAPI = (id: string, payload: Partial<RewardPenalty>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/RewardPenaltyTypes/${id}`;
+    const data = { ...payload };
+    return axios.put(`${URL_BACKEND}`, data);
+};
+
+export const deleteRewardPenaltyAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/RewardPenaltyTypes/${id}`;
+    return axios.delete(`${URL_BACKEND}`);
+};
+
+// RewardPenalties
+export const fetchRewardPenaltiesAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/RewardPenalties?current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+};
+
+export const filterRewardPenaltiesAPI = (current: number, pageSize: number, type: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/RewardPenalties?type=${type}&current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+};
+
+export const createRewardPenaltiesAPI = (payload: RewardPenaltyDetail): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/RewardPenalties";
+    return axios.post(`${URL_BACKEND}`, payload);
+};
+
+export const updateRewardPenaltiesAPI = (id: string, payload: Partial<RewardPenaltyDetail>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/RewardPenalties/${id}`;
+    const data = { ...payload };
+    return axios.put(`${URL_BACKEND}`, data);
+};
+
+export const deleteRewardPenaltiesAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/RewardPenalties/${id}`;
+    return axios.delete(`${URL_BACKEND}`);
+};
+
+// Salary
+// Salary for employee and month detail
+export const fetchSalaryDetailAPI = (employeeId: string, month: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/performance/${employeeId}?month=${month}`;
+    return axios.get(URL_BACKEND);
+};
+
+// Salary DAILY of employee and month detail
+export const fetchSalaryDailyAPI = (employeeId: string, month: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/daily/${employeeId}?month=${month}`;
+    return axios.get(URL_BACKEND);
 };
 
 // User

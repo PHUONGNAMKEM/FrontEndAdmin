@@ -400,6 +400,44 @@ export const ContractPage = () => {
                                         {selectedContract.contractNumber}
                                     </Descriptions.Item>
 
+                                    <Descriptions.Item label="Loại hợp đồng">
+                                        {isEditing ? (
+                                            // <Input.TextArea
+                                            //     value={editedDept?.managerName}
+                                            //     onChange={(e) =>
+                                            //         handleChange(
+                                            //             "description",
+                                            //             e.target.value
+                                            //         )
+                                            //     }
+                                            // />
+                                            <Select
+                                                value={editedContract?.type}
+                                                className="w-full"
+                                                placeholder="Chọn người đại diện"
+                                                options={employeeOptions}
+                                                showSearch // cho phép gõ để lọc
+                                                optionFilterProp="label"
+                                                filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
+                                                    (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                                }
+                                                optionRender={(option) =>
+                                                (
+                                                    <div className="flex items-center gap-2">
+                                                        <Avatar src={option.data.avatarUrl} />
+                                                        <div>
+                                                            <div style={{ fontWeight: 500 }}>{option.data.label}</div>
+                                                            <div style={{ fontSize: 12, color: "#888" }}>{option.data.email}</div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                onChange={(value) => handleChange("representativeUserName", value)}
+                                            />
+                                        ) : (
+                                            selectedContract.type === 0 ? "Full-Time" : selectedContract.type === 1 ? "Part-Time" : selectedContract.type === 2 ? "Thực tập" : selectedContract.type === 3 ? "Thử việc" : selectedContract.type === 4 ? "Có thời hạn" : "Thời vụ"
+                                        )}
+                                    </Descriptions.Item>
+
                                     <Descriptions.Item label="Tên nhân viên">
                                         {isEditing ? (
                                             <Input
