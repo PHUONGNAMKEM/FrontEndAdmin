@@ -225,7 +225,6 @@ const EmployeePage = () => {
 
         const formData = new FormData();
 
-        // Nếu có file mới
         if (fileList.length > 0) {
             const file = fileList[0].originFileObj as RcFile;
             formData.append("avatarFile", file);
@@ -235,7 +234,6 @@ const EmployeePage = () => {
             );
         }
 
-        // Append các field thay đổi khác
         Object.entries(editedEmployee).forEach(([key, value]) => {
             const oldValue = selectedEmployee[key as keyof Employee];
             if (value !== oldValue && value !== undefined && value !== null) {
@@ -471,20 +469,21 @@ const EmployeePage = () => {
                                                         size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
                                                         className="!mr-4 border-2 border-blue-500 shadow-md"
                                                     />
-                                                    <Upload
-                                                        listType="picture-card"
-                                                        fileList={fileList}
-                                                        onPreview={handlePreview}
-                                                        onChange={handleChangeFile}
-                                                        beforeUpload={() => false}
-                                                        style={{ marginRight: "16px" }}
-                                                    >
-                                                        {fileList.length >= 1 ? null : (
-                                                            <div>
-                                                                <span>Thay ảnh</span>
-                                                            </div>
-                                                        )}
-                                                    </Upload>
+                                                    <div className="mr-4">
+                                                        <Upload
+                                                            listType="picture-card"
+                                                            fileList={fileList}
+                                                            onPreview={handlePreview}
+                                                            onChange={handleChangeFile}
+                                                            beforeUpload={() => false}
+                                                        >
+                                                            {fileList.length >= 1 ? null : (
+                                                                <div>
+                                                                    <span>Thay ảnh</span>
+                                                                </div>
+                                                            )}
+                                                        </Upload>
+                                                    </div>
                                                 </>
                                             )
                                                 : <Avatar
