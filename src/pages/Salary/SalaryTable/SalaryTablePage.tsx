@@ -14,7 +14,7 @@ import {
 } from "antd";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { RefreshCcw, PanelLeft, AlignJustify, Icon, Ellipsis, NotebookTabs } from "lucide-react";
-import { useSearchParams, useOutletContext } from "react-router-dom";
+import { useSearchParams, useOutletContext, useNavigate } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useSalaryTableStore } from "src/stores/useSalaryTableStore";
 import { SalaryRecord } from "src/types/salary/SalaryRecord";
@@ -86,7 +86,7 @@ export const SalaryTablePage = () => {
         setHeaderContent(
             <div className="flex items-center gap-2">
                 <h2 className="text-xl font-bold">
-                    Bảng lương tháng 10 ({salaryRecords.length} nhân viên)
+                    Bảng lương tháng {month.format("MM/YYYY")} ({salaryRecords.length} nhân viên)
                 </h2>
             </div>
         );
@@ -132,6 +132,8 @@ export const SalaryTablePage = () => {
             icon: <IconWrapper Icon={NotebookTabs} className="!mr-2 !ml-0 !mb-0 !mt-0" size={24} />,
         },
     ];
+
+    const navigate = useNavigate();
 
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
@@ -222,7 +224,27 @@ export const SalaryTablePage = () => {
                                         {selectedRecord.thongTinNhanVien.employeeId}
                                     </Tag>
                                 </Title>
-                                <Dropdown menu={{ items }} placement="bottomRight" arrow>
+                                {/* <Dropdown menu={{ items }} placement="bottomRight" arrow>
+                                    <Button
+                                        size="large"
+                                        icon={<IconWrapper Icon={Ellipsis} size={24} />}
+                                        type="default"
+                                    />
+                                </Dropdown> */}
+                                <Dropdown
+                                    menu={{
+                                        items,
+                                        onClick: ({ key }) => {
+                                            if (key === "daily") {
+                                                const monthStr = month.format("YYYY-MM");
+                                                const empId = selectedRecord.thongTinNhanVien.employeeId;
+                                                navigate(`http://localhost:3000//salary/daily?employeeId=${encodeURIComponent(empId)}&month=${encodeURIComponent(monthStr)}`);
+                                            }
+                                        },
+                                    }}
+                                    placement="bottomRight"
+                                    arrow
+                                >
                                     <Button
                                         size="large"
                                         icon={<IconWrapper Icon={Ellipsis} size={24} />}
