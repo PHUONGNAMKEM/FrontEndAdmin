@@ -305,7 +305,7 @@ export const ContractPage = () => {
                 <div style={{ display: "flex", gap: 16 }}>
                     {/* DANH SÁCH BÊN TRÁI */}
                     <Card
-                        style={{ flex: "1 0 25%", minWidth: 320 }}
+                        style={{ flex: "1 0 5%", minWidth: 320 }}
                         bodyStyle={{ padding: 8 }}
                     >
                         <List

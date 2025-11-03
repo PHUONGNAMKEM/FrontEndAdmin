@@ -249,6 +249,11 @@ export const deleteRewardPenaltiesAPI = (id: string): Promise<ApiResponse> => {
 };
 
 // Salary
+export const fetchSalaryAllAPI = (month: string, current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/performance-batch?month=${month}&current=${current}&pageSize=${pageSize}`;
+    return axios.get(URL_BACKEND);
+};
+
 // Salary for employee and month detail
 export const fetchSalaryDetailAPI = (employeeId: string, month: string): Promise<ApiResponse> => {
     const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/performance/${employeeId}?month=${month}`;
@@ -282,6 +287,23 @@ export const deleteOvertimeAPI = (id: string): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Overtimes/${id}`;
     return axios.delete(URL_BACKEND);
 };
+
+// Payroll Run
+export const fetchPayrollRunAllAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/payrollruns?current=${current}&pageSize=${pageSize}&sort=Period%20desc`;
+    return axios.get(URL_BACKEND);
+};
+
+export const fetchPayrollRunSalaryAPI = (idPayRollRun: string, current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Salary?q=${idPayRollRun}&current=${current}&pageSize=${pageSize}&sort=PayrollRun.Period%20desc`;
+    return axios.get(URL_BACKEND);
+};
+
+export const fetchPayrollRunSalaryDetailAPI = (salaryId: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Salary/details/${salaryId}`;
+    return axios.get(URL_BACKEND);
+};
+
 
 // User
 export const fetchUserAPI = (current: number, pageSize: number): Promise<ApiResponse> => {

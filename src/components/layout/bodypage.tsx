@@ -76,7 +76,8 @@ const BodyPage = () => {
         getItem(<Link to="/salary">Tính lương</Link>, "salary", <IconWrapper Icon={CreditCard} />,
             [
                 getItem(<Link to="/salary/config">Cấu hình</Link>, "config"),
-                getItem(<Link to="/salary/table">Bảng lương</Link>, "table"),
+                getItem(<Link to="/salary/table">Bảng tính lương</Link>, "table"),
+                getItem(<Link to="/salary/accept">Chốt lương</Link>, "accept"),
             ]
         ),
         getItem(<Link to="/request">Yêu cầu</Link>, "request", <IconWrapper Icon={CircleCheckBig} />),

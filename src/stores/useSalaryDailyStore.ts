@@ -24,6 +24,7 @@ export const useSalaryDailyStore = create<SalaryDailyStore>((set) => ({
             const data = res.data?.[0];
             const result = (data?.result ?? []) as SalaryDaily[];
             set({ records: result });
+
         } catch (err: any) {
             console.error("Fetch salary daily failed:", err);
             set({ error: err?.message ?? "Lỗi không xác định" });

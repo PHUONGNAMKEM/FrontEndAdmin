@@ -2,6 +2,7 @@ export interface SalaryRecord {
     month: string;
     thongTinNhanVien: {
         employeeId: string;
+        fullName: string;
         contractType: string;
         basicSalary: number;
         insuranceSalary: number;

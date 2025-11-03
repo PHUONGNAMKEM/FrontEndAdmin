@@ -25,7 +25,7 @@ const { Title } = Typography;
 const { MonthPicker } = DatePicker;
 
 export const SalaryTablePage = () => {
-    const { salaryRecords, fetchSalaryTable, clearSalaryRecords } = useSalaryTableStore();
+    const { salaryRecords, fetchSalaryTable, fetchSalaryAll, meta } = useSalaryTableStore();
     const [viewMode, setViewMode] = useState<"list" | "detail">("list");
     const [selectedRecord, setSelectedRecord] = useState<SalaryRecord | null>(null);
     const [loading, setLoading] = useState(false);
@@ -45,33 +45,8 @@ export const SalaryTablePage = () => {
     }, [currentPage, metaEmployee?.total]);
 
     useEffect(() => {
-        if (employees.length === 0) return;
-
-        const fetchAll = async () => {
-            setLoading(true);
-            try {
-                const monthStr = month.format("YYYY-MM");
-
-                // Xoá dữ liệu cũ trước khi refetch lại
-                const results: SalaryRecord[] = [];
-
-                // Promise.all để gọi song song cho tất cả nhân viên
-                await Promise.all(
-                    employees.map(async (emp) => {
-                        try {
-                            await fetchSalaryTable(emp.id!, monthStr);
-                        } catch (err) {
-                            console.warn(`Lấy lương thất bại cho ${emp.fullName}`, err);
-                        }
-                    })
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAll();
-    }, [employees, month]);
+        fetchSalaryAll(month.format("YYYY-MM"), currentPage, currentSize);
+    }, [month, currentPage, currentSize]);
 
     const handlePageChange = (current: number, pageSize: number) => {
         setSearchParams({
@@ -86,12 +61,12 @@ export const SalaryTablePage = () => {
         setHeaderContent(
             <div className="flex items-center gap-2">
                 <h2 className="text-xl font-bold">
-                    Bảng lương tháng {month.format("MM/YYYY")} ({salaryRecords.length} nhân viên)
+                    Bảng lương tháng {month.format("MM/YYYY")} ({salaryRecords?.length ?? 0} nhân viên)
                 </h2>
             </div>
         );
         return () => setHeaderContent(null);
-    }, [setHeaderContent, salaryRecords.length]);
+    }, [setHeaderContent, meta?.total]);
 
     const columns = [
         {
@@ -178,13 +153,7 @@ export const SalaryTablePage = () => {
                         size="large"
                         icon={<IconWrapper Icon={RefreshCcw} />}
                         onClick={() => {
-                            if (employees.length === 0) {
-                                message.warning("Chưa có nhân viên để tính lương.");
-                                return;
-                            }
-                            employees.forEach((emp) =>
-                                fetchSalaryTable(emp.id!, month.format("YYYY-MM"))
-                            );
+                            fetchSalaryAll(month.format("YYYY-MM"), currentPage, currentSize);
                         }}
                         loading={loading}
                     >
@@ -201,9 +170,9 @@ export const SalaryTablePage = () => {
                     rowKey={(record) => record.thongTinNhanVien.employeeId}
                     loading={loading}
                     pagination={{
-                        current: currentPage,
-                        pageSize: currentSize,
-                        total: salaryRecords.length,
+                        current: meta?.current || 1,
+                        pageSize: meta?.pageSize || 10,
+                        total: meta?.total || 0,
                         onChange: handlePageChange,
                     }}
                     onRow={(record) => ({
