@@ -47,6 +47,9 @@ import { OvertimePage } from './pages/Overtime/OvertimePage.tsx';
 import { PayrollRunPage } from './pages/PayrollRun/PayrollRunPage.tsx';
 import { PayrollRunSalaryPage } from './pages/PayrollRun/PayrollRunSalaryPage.tsx';
 import { PayrollRunSalaryDetailPage } from './pages/PayrollRun/PayrollRunSalaryDetailPage.tsx';
+import { CoursePage } from './pages/Course/CoursePage.tsx';
+import { CourseQuestionForm } from './pages/Course/CourseQuestionForm.tsx';
+import { CourseQuestionList } from './pages/Course/CourseQuestionList.tsx';
 
 const router = createBrowserRouter([
   {
@@ -76,6 +79,9 @@ const router = createBrowserRouter([
           { path: "/reward-penalty/rules", element: <RewardPenaltyPage /> },
           { path: "/reward-penalty/list", element: <RewardPenaltiesPage /> },
           { path: "/overtime", element: <OvertimePage /> },
+          { path: "/course", element: <CoursePage /> },
+          { path: "/courses/:courseId/questions", element: <CourseQuestionList /> },
+          { path: "/courses/:courseId/questions/create", element: <CourseQuestionForm /> },
           { path: "/appointment", element: <AppointmentPage /> },
           { path: "/dismissal", element: <DismissalPage /> },
           { path: "/transfer", element: <TransferPage /> },

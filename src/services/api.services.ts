@@ -14,6 +14,8 @@ import { RewardPenaltyDetail } from "src/types/rewardPenalty/RewardPenaltyDetail
 import { SalaryConfig } from "src/types/salary/SalaryConfig";
 import { SalaryRecord } from "src/types/salary/SalaryRecord";
 import { Overtime } from "src/types/overtime/Overtime";
+import { Course } from "src/types/course/Course";
+import { CourseQuestion } from "src/types/course/CourseQuestion";
 
 
 // Employee
@@ -228,7 +230,7 @@ export const fetchRewardPenaltiesAPI = (current: number, pageSize: number): Prom
 };
 
 export const filterRewardPenaltiesAPI = (current: number, pageSize: number, type: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/RewardPenalties?type=${type}&current=${current}&pageSize=${pageSize}`;
+    const URL_BACKEND = `/api/RewardPenalties?kind=${type}&current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 };
 
@@ -304,6 +306,50 @@ export const fetchPayrollRunSalaryDetailAPI = (salaryId: string): Promise<ApiRes
     return axios.get(URL_BACKEND);
 };
 
+
+// Course
+export const fetchCourseAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `&q=${encodeURIComponent(q)}` : "";
+    const URL_BACKEND = `/api/Course?current=${current}&pageSize=${pageSize}${query}&sort=Name`;
+    return axios.get(URL_BACKEND);
+};
+
+export const createCourseAPI = (payload: Partial<Course>): Promise<ApiResponse> => {
+    const URL_BACKEND = "/api/Course";
+    return axios.post(URL_BACKEND, payload);
+};
+
+export const updateCourseAPI = (id: string, payload: Partial<Course>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Course/${id}`;
+    return axios.put(URL_BACKEND, payload);
+};
+
+export const deleteCourseAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Course/${id}`;
+    return axios.delete(URL_BACKEND);
+};
+
+// Course Question
+export const fetchCourseQuestionsAPI = (courseId: string, current = 1, pageSize = 20, q?: string): Promise<ApiResponse> => {
+    let URL_BACKEND = `/api/CourseQuestions?courseId=${courseId}&current=${current}&pageSize=${pageSize}&sort=Content`;
+    if (q && q.trim()) URL_BACKEND += `&q=${encodeURIComponent(q.trim())}`;
+    return axios.get(URL_BACKEND);
+};
+
+export const createCourseQuestionAPI = (payload: CourseQuestion): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/CourseQuestions`;
+    return axios.post(URL_BACKEND, payload);
+};
+
+export const updateCourseQuestionAPI = (id: string, payload: Partial<CourseQuestion>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/CourseQuestions/${id}`;
+    return axios.put(URL_BACKEND, payload);
+};
+
+export const deleteCourseQuestionAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/CourseQuestions/${id}`;
+    return axios.delete(URL_BACKEND);
+};
 
 // User
 export const fetchUserAPI = (current: number, pageSize: number): Promise<ApiResponse> => {

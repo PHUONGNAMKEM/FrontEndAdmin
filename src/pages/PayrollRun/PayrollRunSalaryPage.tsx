@@ -31,7 +31,7 @@ export const PayrollRunSalaryPage = () => {
         setHeaderContent(
             <div className="flex items-center gap-2">
                 <Button
-                    icon={<IconWrapper Icon={StepBack} />}
+                    icon={<IconWrapper Icon={StepBack} className="!mt-2.5" />}
                     onClick={() => navigate(-1)}
                 >
                     Trở về

@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-    Table,
-    Tag,
-    Space,
-    Button,
-    Typography,
-    notification,
-    Popconfirm,
-} from "antd";
+import { Table, Tag, Space, Button, Typography, notification, Popconfirm, Modal, } from "antd";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { RefreshCcw, Check, Ban, CircleCheck, BanIcon } from "lucide-react";
 import { useRequestStore } from "src/stores/useRequestStore";
 import { useSearchParams } from "react-router-dom";
+import TextArea from "antd/es/input/TextArea";
 
 const { Title } = Typography;
 
@@ -35,30 +28,74 @@ export const RequestPage = () => {
         });
     };
 
+    const approverUserId = localStorage.getItem("userId");
+    const [rejectModalOpen, setRejectModalOpen] = useState(false);
+    const [rejectReason, setRejectReason] = useState("");
+    const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+
     // Khi chấp nhận yêu cầu
     const handleApprove = async (id: string) => {
         try {
-            await updateStatus(id, "approved");
-            notification.success({ message: "Yêu cầu đã được duyệt!" });
-            fetchRequests(currentPage, currentSize);
+            const res = await updateStatus(id, 1, approverUserId!);
+            if (res?.success) {
+                notification.success({
+                    message: "Thành công",
+                    description: res.message || "Yêu cầu đã được duyệt!",
+                });
+                fetchRequests(currentPage, currentSize);
+            } else {
+                notification.error({
+                    message: "Duyệt thất bại",
+                    description: res?.message || "Vui lòng thử lại",
+                });
+            }
         } catch (err) {
             notification.error({
                 message: "Duyệt thất bại!",
-                description: (err as any)?.message || "Vui lòng thử lại.",
+                description: (err as any)?.message || "Vui lòng thử lại",
             });
         }
     };
 
+    const openRejectModal = (id: string) => {
+        setSelectedRequestId(id);
+        setRejectReason("");
+        setRejectModalOpen(true);
+    };
+
+    const closeRejectModal = () => {
+        setRejectModalOpen(false);
+        setRejectReason("");
+        setSelectedRequestId(null);
+    };
+
     // Khi từ chối yêu cầu - vì API backend chỉ chấp nhận 2 trạng thái approve và reject
-    const handleReject = async (id: string) => {
+    const handleReject = async () => {
+        if (!rejectReason.trim()) {
+            notification.warning({ message: "Vui lòng nhập lý do từ chối!" });
+            return;
+        }
+
         try {
-            await updateStatus(id, "rejected");
-            notification.warning({ message: "Yêu cầu đã bị từ chối!" });
-            fetchRequests(currentPage, currentSize);
+            const res = await updateStatus(selectedRequestId!, 2, approverUserId!, rejectReason);
+            console.log("Response from updateStatus:", res);
+            if (res?.success) {
+                notification.success({
+                    message: "Yêu cầu đã bị từ chối!",
+                    description: res.message || "Đã gửi lý do từ chối",
+                });
+                closeRejectModal();
+                fetchRequests(currentPage, currentSize);
+            } else {
+                notification.error({
+                    message: "Từ chối thất bại",
+                    description: res?.message || "Vui lòng thử lại",
+                });
+            }
         } catch (err) {
             notification.error({
                 message: "Từ chối thất bại!",
-                description: (err as any)?.message || "Vui lòng thử lại.",
+                description: (err as any)?.message || "Vui lòng thử lại",
             });
         }
     };
@@ -71,13 +108,13 @@ export const RequestPage = () => {
     };
 
     const columns = [
+        // {
+        //     title: "Mã NV",
+        //     dataIndex: "employeeCode",
+        //     key: "employeeCode",
+        // },
         {
-            title: "Mã NV",
-            dataIndex: "employeeCode",
-            key: "employeeCode",
-        },
-        {
-            title: "Tên nhân viên",
+            title: "Nhân viên",
             dataIndex: "employeeName",
             key: "employeeName",
         },
@@ -91,6 +128,12 @@ export const RequestPage = () => {
             dataIndex: "category",
             key: "category",
             render: (text: string) => text.toUpperCase(),
+        },
+        {
+            title: "Nội dung",
+            dataIndex: "description",
+            key: "description",
+            // render: (text: string) => text.toUpperCase(),
         },
         {
             title: "Ngày tạo",
@@ -138,7 +181,7 @@ export const RequestPage = () => {
 
                             <Popconfirm
                                 title="Xác nhận từ chối yêu cầu"
-                                onConfirm={() => handleReject(record.id)}
+                                onConfirm={() => openRejectModal(record.id)}
                                 okText="Từ chối"
                                 cancelText="Hủy"
                             >
@@ -193,6 +236,23 @@ export const RequestPage = () => {
                     onChange: handlePageChange,
                 }}
             />
+
+            {/* Nếu từ chối thì nhập lý do  */}
+            <Modal
+                title="Nhập lý do từ chối"
+                open={rejectModalOpen}
+                onOk={handleReject}
+                onCancel={() => setRejectModalOpen(false)}
+                okText="Gửi"
+                cancelText="Hủy"
+            >
+                <TextArea
+                    rows={4}
+                    placeholder="Nhập lý do từ chối yêu cầu này..."
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                />
+            </Modal>
         </div>
     );
 };

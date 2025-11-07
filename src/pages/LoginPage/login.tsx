@@ -27,6 +27,7 @@ const LoginPage = () => {
             localStorage.setItem("access_token", res.data.access_token);
             localStorage.setItem("role", res.data.user.role.name);
             localStorage.setItem("username", res.data.user.username);
+            localStorage.setItem("userId", res.data.user.id);
             setUser(res.data.user);
 
             console.log(">>> check first login: ", res.data.user.is_first_login);

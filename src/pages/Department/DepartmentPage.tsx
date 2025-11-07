@@ -334,6 +334,7 @@ export const DepartmentPage = () => {
                                     <Title level={4} style={{ margin: 0 }}>
                                         {isEditing ? (
                                             <Input
+                                                className="!w-60"
                                                 value={editedDept?.name}
                                                 onChange={(e) =>
                                                     handleChange(

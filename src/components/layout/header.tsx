@@ -46,6 +46,7 @@ const Header = () => {
             localStorage.removeItem("access_token")
             localStorage.removeItem("role")
             localStorage.removeItem("username")
+            localStorage.removeItem("userId")
             localStorage.removeItem("hasChangedPassword")
             setUser(null);
             message.success("Logout successfully")

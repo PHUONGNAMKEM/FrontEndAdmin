@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { fetchRequestAPI, updateRequestStatusAPI } from "src/services/api.services";
-import { PaginationMeta } from "src/types/api";
+import { ApiResponse, PaginationMeta } from "src/types/api";
 import { Request } from "src/types/request/Request";
 
 
@@ -8,7 +8,7 @@ interface RequestStore {
     requests: Request[];
     meta?: PaginationMeta | null;
     fetchRequests: (current?: number, pageSize?: number) => Promise<void>;
-    updateStatus: (id: string, status: Request["status"]) => Promise<void>;
+    updateStatus: (id: string, status: Request["status"], approverUserId: string, reason?: string) => Promise<ApiResponse>;
 }
 
 export const useRequestStore = create<RequestStore>((set, get) => ({
@@ -28,14 +28,21 @@ export const useRequestStore = create<RequestStore>((set, get) => ({
         }
     },
 
-    updateStatus: async (id, status) => {
+    updateStatus: async (id, status, approverUserId, reason = "") => {
         try {
-            await updateRequestStatusAPI(id, status);
+            const res = await updateRequestStatusAPI(id, status, approverUserId, reason);
+            const data = res.data;
+            if (!data.success) {
+                throw new Error(data.message || "Duyệt thất bại");
+            }
+
             set({
                 requests: get().requests.map((r) =>
                     r.id === id ? { ...r, status } : r
                 ),
             });
+
+            return data;
         } catch (err: any) {
             console.error("Update request status failed:", err);
             throw err;

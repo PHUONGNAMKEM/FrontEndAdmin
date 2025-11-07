@@ -149,13 +149,13 @@ export const RewardPenaltiesPage = () => {
                 <div className="flex items-center">
                     <Input placeholder="Tìm kiếm..." prefix={<IconWrapper Icon={Search} />} style={{ width: 320, marginRight: "16px" }} />
                     <Select
-                        defaultValue={0}
+                        defaultValue={2}
                         style={{ width: 100 }}
                         onChange={(value) => filterRewardPenalties(1, 10, value)}
                         options={[
+                            { value: 2, label: "Tất cả" },
                             { value: 0, label: "Thưởng" },
                             { value: 1, label: "Phạt" },
-                            { value: 2, label: "Tất cả" },
                         ]}
                     />
                 </div>
