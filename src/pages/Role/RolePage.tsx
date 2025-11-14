@@ -199,7 +199,12 @@ export const RolePage = () => {
                         {roles.map((role) => (
                             <Col key={role.id} xs={24} sm={12} md={8} lg={6}>
                                 <Card
-                                    hoverable
+                                    hoverable={false}
+                                    className="
+                                    transition-shadow
+                                    duration-300 
+                                    cursor-pointer 
+                                    hover:shadow-[0_2px_8px_rgba(99,99,99,0.2)]"
                                     onClick={() => {
                                         setSelectedRole(role);
                                         setViewMode("detail");
