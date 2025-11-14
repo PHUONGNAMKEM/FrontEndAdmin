@@ -123,7 +123,7 @@ export const CourseQuestionList = () => {
     ];
 
     return (
-        <div className="p-6 bg-white rounded-md shadow-sm">
+        <div>
             <div className="flex items-center justify-between mb-4">
                 <Space>
                     <Button icon={<ArrowLeft size={18} />} onClick={() => navigate(-1)}>

@@ -45,6 +45,15 @@ export const PositionPage = () => {
         fetchPosition(currentPage, currentSize);
     }, [currentPage, currentSize]);
 
+    useEffect(() => {
+        if (selectedPos) {
+            const updated = positions.find(p => p.id === selectedPos.id);
+            if (updated) {
+                setSelectedPos(updated);
+            }
+        }
+    }, [positions]);
+
     const handlePageChange = (current: number, pageSize: number) => {
         setSearchParams({
             current: current.toString(),

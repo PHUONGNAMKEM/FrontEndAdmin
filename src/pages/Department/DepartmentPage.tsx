@@ -51,6 +51,16 @@ export const DepartmentPage = () => {
         fetchEmployees(undefined, metaEmployee?.total);
     }, [currentPage, currentSize]);
 
+    // Update selectedDept khi departments thay đổi, cho view Detail bên phải thay đổi
+    useEffect(() => {
+        if (selectedDept) {
+            const updated = departments.find(p => p.id === selectedDept.id);
+            if (updated) {
+                setSelectedDept(updated);
+            }
+        }
+    }, [departments]);
+
     const handlePageChange = (current: number, pageSize: number) => {
         setSearchParams({
             current: current.toString(),

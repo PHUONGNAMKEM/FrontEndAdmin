@@ -171,6 +171,16 @@ const EmployeePage = () => {
         return () => setHeaderContent(null);
     }, [setHeaderContent, meta?.total]);
 
+    // Update selectedEmployee khi employees thay đổi, cho view Detail bên phải thay đổi
+    useEffect(() => {
+        if (selectedEmployee) {
+            const updated = employees.find(p => p.id === selectedEmployee.id);
+            if (updated) {
+                setSelectedEmployee(updated);
+            }
+        }
+    }, [employees]);
+
     // Logic filter Open
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 

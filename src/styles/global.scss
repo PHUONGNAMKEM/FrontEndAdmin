@@ -15,3 +15,9 @@ body {
     --theme-third: #ee525a;
     --theme-current: var(--theme-primary);
 }
+
+.ant-btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

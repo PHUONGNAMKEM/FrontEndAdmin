@@ -59,7 +59,7 @@ export const CourseQuestionForm = () => {
     };
 
     return (
-        <div className="p-6 bg-white rounded-md shadow-sm">
+        <div>
             <div className="flex items-center justify-between mb-4">
                 <Title level={3}>Tạo đề thi cho khóa học</Title>
                 <Button
@@ -75,7 +75,7 @@ export const CourseQuestionForm = () => {
                     key={index}
                     title={`Câu hỏi ${index + 1}`}
                     bordered
-                    className="mb-4"
+                    className="!mb-4"
                 >
                     <Form layout="vertical">
                         <Form.Item label="Nội dung câu hỏi">

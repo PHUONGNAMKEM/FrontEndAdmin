@@ -169,7 +169,7 @@ const BodyPage = () => {
             <Sider collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}
                 style={{
                     background: "var(--background-sider)",
-                    borderRight: "1px solid #ccc"
+                    borderRight: "1px solid #ccc",
                 }}
                 trigger={
                     <div
@@ -181,6 +181,7 @@ const BodyPage = () => {
                             lineHeight: '48px',
                             textAlign: 'center',
                             cursor: 'pointer',
+                            border: "1px solid rgba(5, 5, 5, 0.06)",
                         }}
                     >
                         {collapsed ? <LeftOutlined /> : <RightOutlined />}
