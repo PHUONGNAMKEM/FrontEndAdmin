@@ -16,6 +16,8 @@ import { SalaryRecord } from "src/types/salary/SalaryRecord";
 import { Overtime } from "src/types/overtime/Overtime";
 import { Course } from "src/types/course/Course";
 import { CourseQuestion } from "src/types/course/CourseQuestion";
+import { User } from "src/types/user/User";
+import { Role } from "src/types/user/Role";
 
 
 // Employee
@@ -306,7 +308,6 @@ export const fetchPayrollRunSalaryDetailAPI = (salaryId: string): Promise<ApiRes
     return axios.get(URL_BACKEND);
 };
 
-
 // Course
 export const fetchCourseAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
     const query = q ? `&q=${encodeURIComponent(q)}` : "";
@@ -351,55 +352,52 @@ export const deleteCourseQuestionAPI = (id: string): Promise<ApiResponse> => {
     return axios.delete(URL_BACKEND);
 };
 
+// Role
+export const fetchRolesAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/Role?${query}current=${current}&pageSize=${pageSize}&sort=Name`;
+    return axios.get(URL_BACKEND);
+};
+
+export const createRoleAPI = (payload: Partial<Role>): Promise<ApiResponse> => {
+    return axios.post("/api/Role", payload);
+};
+
+export const updateRoleAPI = (id: string, payload: Partial<Role>): Promise<ApiResponse> => {
+    return axios.put(`/api/Role/${id}`, payload);
+};
+
+export const deleteRoleAPI = (id: string): Promise<ApiResponse> => {
+    return axios.delete(`/api/Role/${id}`);
+};
+
 // User
-export const fetchUserAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/Users/Search?current=${current}&pageSize=${pageSize}`;
+export const fetchUsersAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `&q=${encodeURIComponent(q)}` : ""; // encodeURIComponent là để mã hóa các ký tự đặc biệt trong chuỗi tìm kiếm
+    const URL_BACKEND = `/api/Users/Search?${query}&current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }
 
+export const filterUsersAPI = (current: number, pageSize: number, q?: string, role?: string): Promise<ApiResponse> => {
+    const queryQ = q ? `&q=${encodeURIComponent(q)}` : "";
+    const queryRole = role ? `&role=${encodeURIComponent(role)}` : "";
 
-const createUserAPI = (username: string, email: string, password: string) => {
-    const URL_BACKEND = "/api/user";
-    const data = {
-        fullName: username,
-        email: email,
-        password: password,
-    }
+    const URL_BACKEND = `/api/Users/Search?current=${current}&pageSize=${pageSize}${queryQ}${queryRole}`;
 
-    return axios.post(URL_BACKEND, data);
-}
+    return axios.get(URL_BACKEND);
+};
 
-const updateUserAPI = (_id: string, fullName: string, phone: string) => {
-    const URL_BACKEND = "/api/user";
-    const data = {
-        _id: _id,
-        fullName: fullName,
-        phone: phone
-    }
+export const createUserAPI = (payload: Partial<User>): Promise<ApiResponse> => {
+    return axios.post("/api/Users", payload);
+};
 
-    return axios.put(URL_BACKEND, data)
-}
+export const updateUserAPI = (id: string, payload: Partial<User>): Promise<ApiResponse> => {
+    return axios.put(`/api/Users/${id}`, payload);
+};
 
-const deleteUserAPI = (_id: string) => {
-    const URL_BACKEND = `/api/user/${_id}`;
-    return axios.delete(URL_BACKEND)
-}
-
-// const fetchUserAPI = (current: number, pageSize: number) => {
-//     const URL_BACKEND = `/api/user?current=${current}&pageSize=${pageSize}`;
-//     return axios.get(URL_BACKEND)
-// }
-
-const registerUserAPI = (username: string, email: string, password: string) => {
-    const URL_BACKEND = "/api/user/register";
-    const data = {
-        username,
-        email,
-        password,
-    }
-
-    return axios.post(URL_BACKEND, data)
-}
+export const deleteUserAPI = (id: string): Promise<ApiResponse> => {
+    return axios.delete(`/api/Users/${id}`);
+};
 
 export const loginAPI = (email: string, password: string): Promise<ApiResponse> => {
     const URL_BACKEND = "/api/Auth/login";

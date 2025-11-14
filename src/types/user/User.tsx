@@ -14,15 +14,29 @@ import { Role } from "./Role";
 //     role?: Role
 // }
 
+// export interface User {
+//     id: string,
+//     userName: string,
+//     roleId: string,
+//     roleName: string,
+//     status: 0 | 1 | 2,
+//     lastLoginAt: string,
+//     employeeId: string,
+//     employeeCode: string,
+//     employeeName: string,
+//     employeeEmail: string
+// }
+
+
 export interface User {
-    id: string,
-    userName: string,
-    roleId: string,
-    roleName: string,
-    status: 0 | 1 | 2,
-    lastLoginAt: string,
-    employeeId: string,
-    employeeCode: string,
-    employeeName: string,
-    employeeEmail: string
+    id: string;
+    userName: string;
+    roleId: string;
+    roleName: string;
+    status: 0 | 1;              // 0 = active, 1 = locked
+    lastLoginAt: string | null;
+    employeeId: string;
+    employeeCode: string;
+    employeeName: string;
+    employeeEmail: string;
 }

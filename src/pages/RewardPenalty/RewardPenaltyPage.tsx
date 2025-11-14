@@ -21,17 +21,7 @@ export const RewardPenaltyPage = () => {
     const [editedItem, setEditedItem] = useState<RewardPenalty | null>(null);
     const [form] = Form.useForm();
 
-    const {
-        rewardPenalties,
-        meta,
-        fetchRewardPenalty,
-        filterRewardPenalty,
-        addRewardPenalty,
-        updateRewardPenalty,
-        deleteRewardPenalty,
-        isModalOpen,
-        setModalOpen,
-    } = useRewardPenaltyStore();
+    const { rewardPenalties, meta, fetchRewardPenalty, filterRewardPenalty, addRewardPenalty, updateRewardPenalty, deleteRewardPenalty, isModalOpen, setModalOpen } = useRewardPenaltyStore();
 
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get("current") || "1");

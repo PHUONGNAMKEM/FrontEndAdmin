@@ -27,7 +27,6 @@ import DisciplinePage from './pages/Unused/Discipline.tsx';
 import IncidentPage from './pages/Unused/Incident.tsx';
 import PlanningPage from './pages/Unused/Planning.tsx';
 import ReportPage from './pages/Unused/Report.tsx';
-import UserManagementPage from './pages/UserPage/userManagement.tsx';
 import EmployeePage from './pages/EmployeePage/EmployeePage.tsx';
 import { GuidePage } from './pages/Guide/GuidePage.tsx';
 import { CongratsPage } from './pages/Guide/CongratsPage.tsx';
@@ -50,6 +49,8 @@ import { PayrollRunSalaryDetailPage } from './pages/PayrollRun/PayrollRunSalaryD
 import { CoursePage } from './pages/Course/CoursePage.tsx';
 import { CourseQuestionForm } from './pages/Course/CourseQuestionForm.tsx';
 import { CourseQuestionList } from './pages/Course/CourseQuestionList.tsx';
+import { UserManagementPage } from './pages/UserPage/userManagement.tsx';
+import { RolePage } from './pages/Role/RolePage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -92,6 +93,7 @@ const router = createBrowserRouter([
           { path: "/planning", element: <PlanningPage /> },
           { path: "/report", element: <ReportPage /> },
           { path: "/user-management", element: <UserManagementPage /> },
+          { path: "/role", element: <RolePage /> },
           {
             index: true,
             path: "/settings",

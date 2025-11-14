@@ -1,17 +1,17 @@
-export enum Role {
-    ADMIN = "ADMIN",
-    USER = "USER"
-}
+// export enum Role {
+//     ADMIN = "ADMIN",
+//     USER = "USER"
+// }
 
-export enum Rank {
-    BRONZE = "BRONZE",
-    SILVER = "SILVER",
-    GOLD = "GOLD",
-    DIAMOND = "DIAMOND",
-    ELITE = "ELITE",
-    MASTER = "MASTER",
-    WARLORD = "WARLORD"
-}
+// export enum Rank {
+//     BRONZE = "BRONZE",
+//     SILVER = "SILVER",
+//     GOLD = "GOLD",
+//     DIAMOND = "DIAMOND",
+//     ELITE = "ELITE",
+//     MASTER = "MASTER",
+//     WARLORD = "WARLORD"
+// }
 
 
 export interface UserAuth {
