@@ -4,7 +4,7 @@ let token = localStorage.getItem("access_token") || "";
 console.log(">>> Check token SignalR: ", token);
 
 export const hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl("https://hrmadmin.huynhthanhson.io.vn/notificationHub", {
+    .withUrl("https://hrmadmin.huynhthanhson.io.vn/notificationHubTable", {
         accessTokenFactory: () => token // Hàm này sẽ được gọi mỗi khi kết nối hoặc reconnect, trả về token mới nhất, Nó trả token để SignalR tự gắn vào query string khi chuyển sang WebSocket.
     }) // URL từ backend ASP.NET Core
     .withAutomaticReconnect() // tự động reconnect khi mất kết nối
