@@ -67,8 +67,6 @@ export const useUserStore = create<UserStore>((set, get) => {
             }
         },
 
-
-
         addUser: async (payload) => {
             try {
                 const res = await createUserAPI(payload);

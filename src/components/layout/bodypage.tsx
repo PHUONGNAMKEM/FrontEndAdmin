@@ -25,7 +25,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import './layoutStyle/bodyPageStyle.scss'
 import { getGoalByIdAPI } from '../../services/api.me.service';
-import { ArrowLeftRight, ArrowRight, BookOpenCheck, ChartColumn, ChartNoAxesGantt, CircleAlert, CircleCheckBig, ClockArrowUp, CreditCard, FileSpreadsheet, FileUser, Gift, GiftIcon, GraduationCap, HandCoins, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, UserStar, Warehouse } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, Bell, BookOpenCheck, ChartColumn, ChartNoAxesGantt, CircleAlert, CircleCheckBig, ClockArrowUp, CreditCard, FileSpreadsheet, FileUser, Gift, GiftIcon, GraduationCap, HandCoins, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, UserStar, Warehouse } from 'lucide-react';
 import ThemeToggle from '../theme/ThemeToggle';
 import { useTheme } from '@components/context/ThemeContext';
 import { IconWrapper } from '@components/customsIconLucide/IconWrapper';
@@ -89,6 +89,7 @@ const BodyPage = () => {
         ),
         getItem(<Link to="/overtime">Làm thêm</Link>, "overtime", <IconWrapper Icon={ClockArrowUp} />),
         getItem(<Link to="/course">Khóa học</Link>, "course", <IconWrapper Icon={BookOpenCheck} />),
+        getItem(<Link to="/notification">Thông báo</Link>, "notification", <IconWrapper Icon={Bell} />),
         getItem(<Link to="/appointment">Bổ nhiệm</Link>, "appointment", <IconWrapper Icon={UserRoundPlus} />),
         getItem(<Link to="/dismissal">Miễn nhiệm</Link>, "dismissal", <IconWrapper Icon={UserRoundX} />),
         getItem(<Link to="/transfer">Thuyên chuyển</Link>, "transfer", <IconWrapper Icon={ArrowLeftRight} />),
@@ -182,7 +183,7 @@ const BodyPage = () => {
                             lineHeight: '48px',
                             textAlign: 'center',
                             cursor: 'pointer',
-                            border: "1px solid rgba(5, 5, 5, 0.06)",
+                            border: "1px solid #CDCDCC",
                         }}
                     >
                         {collapsed ? <LeftOutlined /> : <RightOutlined />}

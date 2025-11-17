@@ -51,6 +51,7 @@ import { CourseQuestionForm } from './pages/Course/CourseQuestionForm.tsx';
 import { CourseQuestionList } from './pages/Course/CourseQuestionList.tsx';
 import { UserManagementPage } from './pages/UserPage/userManagement.tsx';
 import { RolePage } from './pages/Role/RolePage.tsx';
+import { NotificationPage } from './pages/Notification/NotificationPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -94,6 +95,7 @@ const router = createBrowserRouter([
           { path: "/report", element: <ReportPage /> },
           { path: "/user-management", element: <UserManagementPage /> },
           { path: "/role", element: <RolePage /> },
+          { path: "/notification", element: <NotificationPage /> },
           {
             index: true,
             path: "/settings",

@@ -123,7 +123,7 @@ export const DepartmentPage = () => {
             console.error("Update department failed:", err);
             notification.error({
                 message: "Cập nhật phòng ban thất bại!",
-                description: (err as any)?.message || "Vui lòng thử lại.",
+                description: (err as any)?.message || "Vui lòng thử lại",
             });
         }
     };

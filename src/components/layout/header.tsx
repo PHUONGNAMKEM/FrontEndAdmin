@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 // import "./header.css"
-import { Menu, MenuProps, message, Spin } from "antd";
+import { Badge, Menu, MenuProps, message, Spin } from "antd";
 import {
     HomeOutlined,
     UsergroupDeleteOutlined,
@@ -9,12 +9,16 @@ import {
     LoginOutlined,
     AliwangwangOutlined
 } from '@ant-design/icons';
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AuthContext } from "../context/auth.context";
 import { logoutAPI } from "../../services/api.me.service";
 import "./layoutStyle/header.scss"
 import { useTheme } from "@components/context/ThemeContext";
+import { ArrowBigRightDash, Bell, BellDot, BellRing, Cannabis, CircleArrowRight, Crown, House, KeyRound, List, ListTodo, LogIn, LogOut, PartyPopper, Settings, UserSquare2 } from "lucide-react";
+import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
+import './header.scss';
+import { useNotificationStore } from "src/stores/useNotificationStore";
 
 const Header = () => {
     const location = useLocation();
@@ -67,29 +71,68 @@ const Header = () => {
         }
     };
 
+    const role = localStorage.getItem('role');
+    // const unreadCount = useNotificationStore((s) => s.unreadCount); //-> chỉ render khi unreadCount thay đổi
+    const { unreadCount, fetchAllNotifications, meta } = useNotificationStore(); //-> đây là useNotificationStore(), tức là lấy toàn bộ store ra, field nào thay đổi trong store thì component redender 
+
+    useEffect(() => {
+        fetchAllNotifications!(1, meta?.total); // total là tất cả, 1 là lấy ra 1 trang cho fetchAll để tính đúng tổng số noti chưa được duyệt
+    }, []);
     const items = [
         {
             label: <Link to={"/overview"}>Home</Link>,
             key: 'overview',
-            icon: <HomeOutlined />,
+            icon: <IconWrapper Icon={House} />,
         },
         ...(!user ? [
             {
                 label: <Link to={"/login"}>Login</Link>,
                 key: 'login',
-                icon: <LoginOutlined />,
+                icon: <IconWrapper Icon={LogIn} />,
             },
             {
                 label: <Link to={"/register"}>Register</Link>,
                 key: 'register',
-                icon: <UsergroupDeleteOutlined />,
+                icon: <IconWrapper Icon={UserSquare2} />,
             },] : []),
 
         ...(user ? [
             {
-                label: `Welcome ${user.username}`,
+                label: `Chào ${user.username}`,
                 key: 'settings',
-                icon: <AliwangwangOutlined />,
+                icon: role === "Admin" ? <IconWrapper Icon={Crown} color="#ffc401" /> : <IconWrapper Icon={Cannabis} color="#1f96f8" />,
+            },
+
+            {
+                label: (
+                    <Badge count={unreadCount} offset={[10, -2]} color="red">
+                        Thông báo
+                    </Badge>
+                ),
+                key: 'notification',
+                icon: <IconWrapper Icon={BellRing} />,
+                children: [
+                    {
+                        label: 'Tất cả thông báo',
+                        key: 'noti-all',
+                        icon: <IconWrapper Icon={ListTodo} />,
+                    },
+                    {
+                        label: (
+                            <div className="flex">
+                                <span>Thông báo chưa đọc</span>
+                                <Badge count={unreadCount} color="red" />
+                            </div>
+                        ),
+                        key: 'noti-unread',
+                        icon: <IconWrapper Icon={BellDot} />,
+                    },
+                    {
+                        label: 'Cài đặt thông báo',
+                        key: 'noti-settings',
+                        icon: <IconWrapper Icon={Settings} />,
+                    }
+                ]
             },
             {
                 label: isLoggingOut ? (
@@ -99,8 +142,8 @@ const Header = () => {
                 ),
                 key: 'logout',
                 disabled: isLoggingOut, // ngăn spam click
-                icon: <LoginOutlined />,
-            }
+                icon: <IconWrapper Icon={LogOut} />,
+            },
         ] : []),
 
     ];

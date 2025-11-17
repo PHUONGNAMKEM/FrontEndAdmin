@@ -352,6 +352,31 @@ export const deleteCourseQuestionAPI = (id: string): Promise<ApiResponse> => {
     return axios.delete(URL_BACKEND);
 };
 
+// Notification
+export const fetchAllNotificationsAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/Notifications/list?current=${current}&pageSize=${pageSize}&sort=Id desc`;
+    return axios.get(URL_BACKEND);
+};
+
+export const fetchNotificationsAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `&q=${encodeURIComponent(q)}` : "";
+    const URL_BACKEND = `/api/Notifications/list?current=${current}&pageSize=${pageSize}${query}&sort=Id desc`;
+
+    return axios.get(URL_BACKEND);
+};
+
+export const markNotificationAsReadAPI = (id: string) => {
+    return axios.put(`/api/Notifications/mark-read/${id}`);
+};
+
+export const deleteNotificationAPI = (id: string) => {
+    return axios.delete(`/api/Notifications/${id}`);
+};
+
+export const createNotificationAPI = (payload: Partial<Notification>) => {
+    return axios.post(`/api/Notifications`, payload);
+};
+
 // Role
 export const fetchRolesAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
     const query = q ? `q=${encodeURIComponent(q)}&` : "";
