@@ -18,6 +18,9 @@ import { Course } from "src/types/course/Course";
 import { CourseQuestion } from "src/types/course/CourseQuestion";
 import { User } from "src/types/user/User";
 import { Role } from "src/types/user/Role";
+import { CreateNotificationPayload } from "src/types/notification/CreateNotificationPayload";
+import { UpdateNotificationPayload } from "src/types/notification/UpdateNotificationPayload";
+import { Dashboard } from "src/types/dashboard/Dashboard";
 
 
 // Employee
@@ -353,12 +356,12 @@ export const deleteCourseQuestionAPI = (id: string): Promise<ApiResponse> => {
 };
 
 // Notification
-export const fetchAllNotificationsAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+export const fetchAllNotificationsHistoryAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Notifications/list?current=${current}&pageSize=${pageSize}&sort=Id desc`;
     return axios.get(URL_BACKEND);
 };
 
-export const fetchNotificationsAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+export const fetchNotificationsHistoryAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
     const query = q ? `&q=${encodeURIComponent(q)}` : "";
     const URL_BACKEND = `/api/Notifications/list?current=${current}&pageSize=${pageSize}${query}&sort=Id desc`;
 
@@ -369,12 +372,42 @@ export const markNotificationAsReadAPI = (id: string) => {
     return axios.put(`/api/Notifications/mark-read/${id}`);
 };
 
-export const deleteNotificationAPI = (id: string) => {
-    return axios.delete(`/api/Notifications/${id}`);
+// export const deleteNotificationAPI = (id: string) => {
+//     return axios.delete(`/api/Notifications/${id}`);
+// };
+
+// export const createNotificationAPI = (payload: Partial<Notification>) => {
+//     return axios.post(`/api/Notifications`, payload);
+// };
+
+// ====================================
+// FETCH LIST Notification
+export const fetchNotificationsAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `&q=${encodeURIComponent(q)}` : "";
+    const URL_BACKEND = `/api/Notifications?current=${current}&pageSize=${pageSize}${query}&sort=CreatedAt desc`;
+    return axios.get(URL_BACKEND);
 };
 
-export const createNotificationAPI = (payload: Partial<Notification>) => {
-    return axios.post(`/api/Notifications`, payload);
+export const createNotificationAPI = (payload: Partial<CreateNotificationPayload>): Promise<ApiResponse> => {
+    const actorId = localStorage.getItem("userId");
+    const URL_BACKEND = `/api/Notifications/create-hr`;
+    return axios.post(URL_BACKEND, { ...payload, actorId, });
+};
+
+export const updateNotificationAPI = (id: string, payload: Partial<UpdateNotificationPayload>): Promise<ApiResponse> => {
+    const actorId = localStorage.getItem("userId");
+    const URL_BACKEND = `/api/Notifications/${id}`;
+    return axios.put(URL_BACKEND, { ...payload, actorId });
+};
+
+export const deleteNotificationAPI = (id: string, userDeleteId: string): Promise<ApiResponse> => {
+    return axios.delete(`/api/Notifications/${id}/user/${userDeleteId}`);
+};
+
+// Dashboard
+export const fetchDashboardAPI = (expiringWithinDays: number = 30): Promise<{ data: { result: Dashboard } }> => {
+    const URL = `/api/Dashboard?expiringWithinDays=${expiringWithinDays}`;
+    return axios.get(URL);
 };
 
 // Role

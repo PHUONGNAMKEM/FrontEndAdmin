@@ -18,7 +18,7 @@ import { useTheme } from "@components/context/ThemeContext";
 import { ArrowBigRightDash, Bell, BellDot, BellRing, Cannabis, CircleArrowRight, Crown, House, KeyRound, List, ListTodo, LogIn, LogOut, PartyPopper, Settings, UserSquare2 } from "lucide-react";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import './header.scss';
-import { useNotificationStore } from "src/stores/useNotificationStore";
+import { useNotificationHistoryStore } from "src/stores/notification/useNotificationHistoryStore";
 
 const Header = () => {
     const location = useLocation();
@@ -73,10 +73,10 @@ const Header = () => {
 
     const role = localStorage.getItem('role');
     // const unreadCount = useNotificationStore((s) => s.unreadCount); //-> chỉ render khi unreadCount thay đổi
-    const { unreadCount, fetchAllNotifications, meta } = useNotificationStore(); //-> đây là useNotificationStore(), tức là lấy toàn bộ store ra, field nào thay đổi trong store thì component redender 
+    const { unreadCount, fetchAllNotificationsHistory, meta } = useNotificationHistoryStore(); //-> đây là useNotificationStore(), tức là lấy toàn bộ store ra, field nào thay đổi trong store thì component redender 
 
     useEffect(() => {
-        fetchAllNotifications!(1, meta?.total); // total là tất cả, 1 là lấy ra 1 trang cho fetchAll để tính đúng tổng số noti chưa được duyệt
+        fetchAllNotificationsHistory!(1, meta?.total); // total là tất cả, 1 là lấy ra 1 trang cho fetchAll để tính đúng tổng số noti chưa được duyệt
     }, []);
     const items = [
         {

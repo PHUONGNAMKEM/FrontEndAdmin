@@ -83,13 +83,18 @@ const BodyPage = () => {
         getItem(<Link to="/request">Yêu cầu</Link>, "request", <IconWrapper Icon={CircleCheckBig} />),
         getItem(<Link to="/reward-penalty">Thưởng phạt</Link>, "reward-penalty", <IconWrapper Icon={GiftIcon} />,
             [
-                getItem(<Link to="/reward-penalty/rules">Nội quy</Link>, "config"),
-                getItem(<Link to="/reward-penalty/list">Danh sách</Link>, "table"),
+                getItem(<Link to="/reward-penalty/rules">Nội quy</Link>, "rules"),
+                getItem(<Link to="/reward-penalty/list">Danh sách</Link>, "reward-penalty-list"),
             ]
         ),
         getItem(<Link to="/overtime">Làm thêm</Link>, "overtime", <IconWrapper Icon={ClockArrowUp} />),
         getItem(<Link to="/course">Khóa học</Link>, "course", <IconWrapper Icon={BookOpenCheck} />),
-        getItem(<Link to="/notification">Thông báo</Link>, "notification", <IconWrapper Icon={Bell} />),
+        getItem(<Link to="/notification">Thông báo</Link>, "notification", <IconWrapper Icon={Bell} />,
+            [
+                getItem(<Link to="/notification/history">Lịch sử</Link>, "history"),
+                getItem(<Link to="/notification/list">Danh sách</Link>, "notification-list"),
+            ]
+        ),
         getItem(<Link to="/appointment">Bổ nhiệm</Link>, "appointment", <IconWrapper Icon={UserRoundPlus} />),
         getItem(<Link to="/dismissal">Miễn nhiệm</Link>, "dismissal", <IconWrapper Icon={UserRoundX} />),
         getItem(<Link to="/transfer">Thuyên chuyển</Link>, "transfer", <IconWrapper Icon={ArrowLeftRight} />),
