@@ -6,22 +6,13 @@ import { NotificationHistory } from "src/types/notification/NotificationHistory"
 import { ApiResponse } from "src/types/api";
 import { useSearchParams } from "react-router-dom";
 import { useNotificationHistoryStore } from "src/stores/notification/useNotificationHistoryStore";
+import './Notification.scss';
 
 const { Title } = Typography;
 
 export const NotificationHistoryPage = () => {
 
-    const {
-        notifications,
-        meta,
-        fetchNotificationsHistory,
-        searchText,
-        setSearchText,
-        markAsRead,
-        deleteNotification,
-        addNotification,
-        isModalOpen,
-        setModalOpen
+    const { notifications, meta, fetchNotificationsHistory, searchText, setSearchText, isModalOpen, setModalOpen
     } = useNotificationHistoryStore();
 
     const [filterUnread, setFilterUnread] = useState(false);
@@ -30,6 +21,14 @@ export const NotificationHistoryPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get("current") || "1");
     const currentSize = parseInt(searchParams.get("pageSize") || "10");
+
+    // Này để bên header truyền unread qua -> hiển thị danh sách những noti chưa đọc của nvien
+    const unreadFlag = searchParams.get("unread") === "true";
+    useEffect(() => {
+        if (unreadFlag) {
+            setFilterUnread(true);
+        }
+    }, [unreadFlag]);
 
     // Fetch lần đầu
     useEffect(() => {
@@ -91,30 +90,33 @@ export const NotificationHistoryPage = () => {
                     onChange={(e) => setSearchText(e.target.value)}
                     onPressEnter={handleSearch}
                     style={{ width: 320 }}
+                    className="w-[320]"
                 />
 
                 <Space>
                     <Button
                         size="large"
                         type={filterUnread ? "primary" : "default"}
-                        icon={<IconWrapper Icon={BellDot} color="#fff" />}
+                        icon={<IconWrapper Icon={BellDot} color={filterUnread ? "#fff" : undefined} />}
                         onClick={() => setFilterUnread(!filterUnread)}
                     >
                         Chưa đọc
                     </Button>
 
-                    <Button
+                    {/* <Button
                         type="primary"
                         size="large"
                         icon={<IconWrapper Icon={PlusCircle} color="#fff" />}
                         onClick={() => setModalOpen(true)}
                     >
                         Tạo thông báo
-                    </Button>
+                    </Button> */}
                 </Space>
             </div>
 
             {/* ===== LIST ===== */}
+            <Title level={4} className="!my-6">Lịch sử thông báo</Title>
+
             <Card>
                 <List
                     dataSource={visibleNotifications}
@@ -122,7 +124,7 @@ export const NotificationHistoryPage = () => {
                         <List.Item
                             extra={
                                 <Space>
-                                    {!item.readAt && (
+                                    {/* {!item.readAt && (
                                         <Button
                                             type="text"
                                             icon={<IconWrapper Icon={Check} />}
@@ -130,18 +132,19 @@ export const NotificationHistoryPage = () => {
                                         >
                                             Đánh dấu đã đọc
                                         </Button>
-                                    )}
+                                    )} */}
 
-                                    <Popconfirm
+                                    {/* <Popconfirm
                                         title="Bạn chắc chắn muốn xóa?"
                                     // onConfirm={() => deleteNotification(item.id)}
                                     >
                                         <Button danger icon={<IconWrapper Icon={Trash} color="#ff4d4f" />} />
-                                    </Popconfirm>
+                                    </Popconfirm> */}
                                 </Space>
                             }
                         >
                             <List.Item.Meta
+                                className="align-item-center"
                                 avatar={
                                     <div className="w-8 text-right text-gray-500">
                                         <Tag color="blue">{index + 1 + (currentPage - 1) * currentSize}</Tag>
@@ -152,7 +155,7 @@ export const NotificationHistoryPage = () => {
                                         <span style={{ fontWeight: 600 }}>
                                             {item.title}
                                         </span>
-                                        {!item.readAt && <Badge color="red" />}
+                                        {!item.readAt && <Badge color="#ff4d4f" />}
                                     </Space>
                                 }
                                 description={

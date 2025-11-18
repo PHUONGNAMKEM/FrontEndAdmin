@@ -14,6 +14,7 @@ import {
 import { LineChart, BarChart, PieChart, RadarChart } from "@mui/x-charts";
 import dayjs from "dayjs";
 import { useDashboardStore } from "src/stores/useDashboardStore";
+import { TiltWrapper } from "@components/TiltWrapper/TiltWrapper";
 
 const OverviewPage = () => {
     const { dashboard, fetchDashboard } = useDashboardStore();
@@ -108,41 +109,44 @@ const OverviewPage = () => {
             <Row gutter={[16, 16]}>
                 {summaryItems.map((item, index) => (
                     <Col xs={24} sm={12} md={6} key={index}>
-                        <Card
-                            sx={{
-                                borderRadius: 3,
-                                padding: 1.5,
-                                transition: "0.2s",
-                                "&:hover": { boxShadow: "0 4px 14px rgba(0,0,0,0.12)" },
-                            }}
-                        >
-                            <Stack direction="row" spacing={2} alignItems="center">
-                                <Box
-                                    sx={{
-                                        width: 56,
-                                        height: 56,
-                                        borderRadius: "50%",
-                                        background: item.bg,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    {item.icon}
-                                </Box>
-                                <Box>
-                                    <Typography sx={{ fontSize: 14, color: "text.secondary" }}>
-                                        {item.title}
-                                    </Typography>
-                                    <Typography sx={{ fontSize: 28, fontWeight: 700 }}>
-                                        {item.value}
-                                    </Typography>
-                                    <Typography sx={{ fontSize: 13, color: "#8c8c8c" }}>
-                                        {item.diff}
-                                    </Typography>
-                                </Box>
-                            </Stack>
-                        </Card>
+                        <TiltWrapper>
+                            <Card
+                                sx={{
+                                    borderRadius: 3,
+                                    padding: 1.5,
+                                    transition: "0.2s",
+                                    boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                                    "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                                }}
+                            >
+                                <Stack direction="row" spacing={2} alignItems="center">
+                                    <Box
+                                        sx={{
+                                            width: 56,
+                                            height: 56,
+                                            borderRadius: "50%",
+                                            background: item.bg,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        {item.icon}
+                                    </Box>
+                                    <Box>
+                                        <Typography sx={{ fontSize: 14, color: "text.secondary" }}>
+                                            {item.title}
+                                        </Typography>
+                                        <Typography sx={{ fontSize: 28, fontWeight: 700 }}>
+                                            {item.value}
+                                        </Typography>
+                                        <Typography sx={{ fontSize: 13, color: "#8c8c8c" }}>
+                                            {item.diff}
+                                        </Typography>
+                                    </Box>
+                                </Stack>
+                            </Card>
+                        </TiltWrapper>
                     </Col>
                 ))}
             </Row>
@@ -150,7 +154,11 @@ const OverviewPage = () => {
             {/* ======================= CHARTS ======================= */}
             <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
                 <Col xs={24} md={14}>
-                    <Card sx={{ borderRadius: 3 }}>
+                    <Card sx={{
+                        borderRadius: 3,
+                        boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                        "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                    }}>
                         <CardContent>
                             <Typography sx={{ fontWeight: 600, mb: 1 }}>
                                 Tuyển dụng & Nghỉ việc
@@ -188,7 +196,11 @@ const OverviewPage = () => {
                 </Col>
 
                 <Col xs={24} md={10}>
-                    <Card sx={{ borderRadius: 3 }}>
+                    <Card sx={{
+                        borderRadius: 3,
+                        boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                        "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                    }}>
                         <CardContent>
                             <Typography sx={{ fontWeight: 600, mb: 1 }}>
                                 Nhân sự theo phòng ban
@@ -229,7 +241,11 @@ const OverviewPage = () => {
             {/* ======================= ATTENDANCE & CONTRACTS ======================= */}
             <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
                 <Col xs={24} md={14}>
-                    <Card sx={{ borderRadius: 3 }}>
+                    <Card sx={{
+                        borderRadius: 3,
+                        boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                        "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                    }}>
                         <CardContent>
                             <Typography sx={{ fontWeight: 600, mb: 1 }}>
                                 Chấm công hôm nay ({dayjs().format("DD/MM/YYYY")})
@@ -266,7 +282,11 @@ const OverviewPage = () => {
                 </Col>
 
                 <Col xs={24} md={10}>
-                    <Card sx={{ borderRadius: 3 }}>
+                    <Card sx={{
+                        borderRadius: 3,
+                        boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                        "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                    }}>
                         <CardContent>
                             <Typography sx={{ fontWeight: 600, mb: 1 }}>
                                 Hợp đồng sắp hết hạn
@@ -304,7 +324,11 @@ const OverviewPage = () => {
                     { label: "Lương tháng", value: salaryStats.totalNet.toLocaleString(), color: "#722ed1" },
                 ].map((item, i) => (
                     <Col xs={24} sm={12} md={6} key={i}>
-                        <Card sx={{ borderRadius: 3 }}>
+                        <Card sx={{
+                            borderRadius: 3,
+                            boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                            "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                        }}>
                             <CardContent>
                                 <Typography sx={{ fontSize: 14, fontWeight: 600, color: item.color }}>
                                     {item.label}

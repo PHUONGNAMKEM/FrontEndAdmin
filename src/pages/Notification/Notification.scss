@@ -1,0 +1,11 @@
+.align-item-center {
+    align-items: center !important;
+}
+
+.card-notification .ant-card-body {
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    padding: 18px;
+}

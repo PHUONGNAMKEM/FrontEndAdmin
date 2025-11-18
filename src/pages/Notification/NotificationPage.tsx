@@ -8,6 +8,7 @@ import {
     AlignJustify, PanelLeft, CirclePlus, Edit3, Trash, Ban, Check, Search, Grid2X2
 } from "lucide-react";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
+import { motion } from "framer-motion";
 
 import { Notification as Noti } from "src/types/notification/Notification";
 import { useSearchParams, useOutletContext } from "react-router-dom";
@@ -281,21 +282,31 @@ export const NotificationPage = () => {
             {/* ===== Dashboard ===== */}
             {viewMode === "dashboard" ? (
                 <div>
-                    <Title level={4}>Danh sách thông báo</Title>
+                    <Title level={4} className="!my-6">Danh sách thông báo</Title>
+                    {/* Test Framer motion */}
+                    {/* <motion.div
+                        whileHover={{ scale: 1.03 }}
+                        className="p-4 bg-white rounded-lg shadow-md"
+                    >
+                        <h3 className="font-bold">Notifications</h3>
+                    </motion.div> */}
                     <Row gutter={[16, 16]} style={{ marginTop: 8 }}>
                         {notifications.map((item) => (
                             <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
                                 <Card
                                     hoverable
-                                    className="transition-shadow duration-300 cursor-pointer hover:shadow-[0_2px_8px_rgba(99,99,99,0.2)]"
+                                    // className="transition-shadow duration-300 cursor-pointer hover:shadow-[0_2px_8px_rgba(99,99,99,0.2)]"
+                                    className="card-notification h-52 transition-shadow duration-300 cursor-pointer hover:shadow-[0_2px_8px_rgba(99,99,99,0.2)]"
                                     onClick={() => {
                                         setSelected(item);
                                         setViewMode("detail");
                                     }}
                                 >
-                                    <Title level={5}>{item.title}</Title>
-                                    <p>{item.content}</p>
-                                    <Tag color="blue">{item.actorName}</Tag>
+                                    <div className="flex-1">
+                                        <Title level={5}>{item.title}</Title>
+                                        <p>{item.content}</p>
+                                    </div>
+                                    <Tag className="h-3.5" color="blue">{item.actorName}</Tag>
                                 </Card>
                             </Col>
                         ))}
@@ -336,7 +347,7 @@ export const NotificationPage = () => {
                 <div style={{ display: "flex", gap: 16 }}>
 
                     {/* LEFT */}
-                    <Card style={{ flex: "1 0 25%", minWidth: 280 }} bodyStyle={{ padding: 8 }}>
+                    <Card style={{ flex: "1 0 15%", minWidth: 280 }} bodyStyle={{ padding: 8 }}>
                         <List
                             dataSource={notifications}
                             renderItem={(item) => (

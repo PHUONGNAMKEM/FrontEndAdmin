@@ -76,8 +76,18 @@ const Header = () => {
     const { unreadCount, fetchAllNotificationsHistory, meta } = useNotificationHistoryStore(); //-> đây là useNotificationStore(), tức là lấy toàn bộ store ra, field nào thay đổi trong store thì component redender 
 
     useEffect(() => {
-        fetchAllNotificationsHistory!(1, meta?.total); // total là tất cả, 1 là lấy ra 1 trang cho fetchAll để tính đúng tổng số noti chưa được duyệt
-    }, []);
+        const load = async () => {
+            if (!meta?.total) {
+                // fetch meta trước
+                await fetchAllNotificationsHistory!(1, 9999); // nếu chưa load kịp total thì cho là 9999, vì nếu không thì nó sẽ fetch mặc định là 10 trước (tầm 0.5s) rồi mới load lại đúng được
+                return;
+            }
+
+            await fetchAllNotificationsHistory!(1, meta?.total); // total là tất cả, 1 là lấy ra 1 trang cho fetchAll để tính đúng tổng số noti chưa được duyệt
+        };
+
+        load();
+    }, [meta?.total]);
     const items = [
         {
             label: <Link to={"/overview"}>Home</Link>,
@@ -113,16 +123,18 @@ const Header = () => {
                 icon: <IconWrapper Icon={BellRing} />,
                 children: [
                     {
-                        label: 'Tất cả thông báo',
+                        label: <Link to={"/notification/history"}>Lịch sử thông báo</Link>,
                         key: 'noti-all',
                         icon: <IconWrapper Icon={ListTodo} />,
                     },
                     {
                         label: (
-                            <div className="flex">
-                                <span>Thông báo chưa đọc</span>
-                                <Badge count={unreadCount} color="red" />
-                            </div>
+                            <Link to="/notification/history?unread=true">
+                                <div className="flex">
+                                    <span>Thông báo chưa đọc của nhân viên</span>
+                                    <Badge count={unreadCount} color="red" />
+                                </div>
+                            </Link>
                         ),
                         key: 'noti-unread',
                         icon: <IconWrapper Icon={BellDot} />,
