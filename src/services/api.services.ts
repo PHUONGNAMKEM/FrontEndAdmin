@@ -400,8 +400,10 @@ export const updateNotificationAPI = (id: string, payload: Partial<UpdateNotific
     return axios.put(URL_BACKEND, { ...payload, actorId });
 };
 
-export const deleteNotificationAPI = (id: string, userDeleteId: string): Promise<ApiResponse> => {
-    return axios.delete(`/api/Notifications/${id}/user/${userDeleteId}`);
+export const deleteNotificationAPI = (id: string, payload: Partial<UpdateNotificationPayload>): Promise<ApiResponse> => {
+    const actorId = localStorage.getItem("userId");
+    const URL_BACKEND = `/api/Notifications/${id}`;
+    return axios.put(URL_BACKEND, { ...payload, actorId });
 };
 
 // Dashboard

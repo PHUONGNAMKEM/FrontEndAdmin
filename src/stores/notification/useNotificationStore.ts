@@ -19,7 +19,7 @@ interface NotificationStore {
     fetchNotifications: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     addNotification: (payload: Partial<CreateNotificationPayload>) => Promise<void>;
     updateNotification: (id: string, payload: Partial<UpdateNotificationPayload>) => Promise<void>;
-    deleteNotification: (id: string, userDeleteId?: string) => Promise<void>;
+    deleteNotification?: (id: string, userDeleteId?: string) => Promise<void>;
     setSearchText: (v: string) => void;
     setModalOpen: (v: boolean) => void;
 }
@@ -109,18 +109,19 @@ export const useNotificationStore = create<NotificationStore>((set, get) => {
             }
         },
 
-        deleteNotification: async (id, userDeleteId) => {
-            try {
-                const res = await deleteNotificationAPI(id, userDeleteId ?? "");
-
-                if (!res?.data?.success) {
-                    throw new Error(res?.message || "API trả về lỗi.");
-                }
-
-            } catch (err) {
-                throw err;
-            }
-        },
+        // deleteNotification: async (id: string, userDeleteId?: string) => {
+        //     try {
+        //         const res = await deleteNotificationAPI(id, userDeleteId ?? "");
+        //         if (!res?.data?.success) {
+        //             throw new Error(res?.message || "API trả về lỗi.");
+        //         }
+        //         set({
+        //             notifications: get().notifications.filter((n) => n.id !== id),
+        //         });
+        //     } catch (err) {
+        //         throw err;
+        //     }
+        // },
 
 
         setSearchText: (v) => set({ searchText: v }),

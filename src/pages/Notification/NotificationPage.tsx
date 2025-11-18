@@ -154,21 +154,21 @@ export const NotificationPage = () => {
     };
 
 
-    const confirmDelete = async () => {
-        if (!selected) return;
-        try {
-            await deleteNotification(selected.id);
-            notification.success({ message: "Xóa thành công!" });
-            setSelected(null);
-            fetchNotifications(currentPage, currentSize, searchText);
-        } catch (err: any) {
-            console.error("Delete contract failed:", err);
-            notification.error({
-                message: "Xóa thông báo thất bại!",
-                description: err?.message || "Vui lòng thử lại.",
-            });
-        }
-    };
+    // const confirmDelete = async () => {
+    //     if (!selected) return;
+    //     try {
+    //         await deleteNotification(selected.id);
+    //         notification.success({ message: "Xóa thành công!" });
+    //         setSelected(null);
+    //         fetchNotifications(currentPage, currentSize, searchText);
+    //     } catch (err: any) {
+    //         console.error("Delete contract failed:", err);
+    //         notification.error({
+    //             message: "Xóa thông báo thất bại!",
+    //             description: err?.message || "Vui lòng thử lại.",
+    //         });
+    //     }
+    // };
 
     // const confirmDelete = async () => {
     //     if (!selectedContract?.id) return;
@@ -405,7 +405,7 @@ export const NotificationPage = () => {
 
                                         <Popconfirm
                                             title="Xóa thông báo?"
-                                            onConfirm={confirmDelete}
+                                            onConfirm={handleUpdate}
                                         >
                                             <Button danger icon={<IconWrapper Icon={Trash} color="#ff4d4f" />}>
                                                 Xóa
