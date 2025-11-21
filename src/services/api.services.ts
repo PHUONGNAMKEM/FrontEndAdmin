@@ -257,20 +257,26 @@ export const deleteRewardPenaltiesAPI = (id: string): Promise<ApiResponse> => {
 
 // Salary
 export const fetchSalaryAllAPI = (month: string, current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/performance-batch?month=${month}&current=${current}&pageSize=${pageSize}`;
+    const URL_BACKEND = `/api/Payroll/performance-batch?month=${month}&current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 };
 
 // Salary for employee and month detail
 export const fetchSalaryDetailAPI = (employeeId: string, month: string): Promise<ApiResponse> => {
-    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/performance/${employeeId}?month=${month}`;
+    const URL_BACKEND = `/api/Payroll/performance/${employeeId}?month=${month}`;
     return axios.get(URL_BACKEND);
 };
 
 // Salary DAILY of employee and month detail
 export const fetchSalaryDailyAPI = (employeeId: string, month: string): Promise<ApiResponse> => {
-    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/daily/${employeeId}?month=${month}`;
+    const URL_BACKEND = `/api/Payroll/daily/${employeeId}?month=${month}`;
     return axios.get(URL_BACKEND);
+};
+
+// Final batch salary
+export const finalBatchSalaryAPI = (month: string): Promise<ApiResponse> => {
+    const payload = { month };
+    return axios.post(`/api/Payroll/finalize-batch`, payload);
 };
 
 // Overtime
@@ -355,7 +361,7 @@ export const deleteCourseQuestionAPI = (id: string): Promise<ApiResponse> => {
     return axios.delete(URL_BACKEND);
 };
 
-// Notification
+// Notification History
 export const fetchAllNotificationsHistoryAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Notifications/list?current=${current}&pageSize=${pageSize}&sort=Id desc`;
     return axios.get(URL_BACKEND);
@@ -368,20 +374,7 @@ export const fetchNotificationsHistoryAPI = (current: number, pageSize: number, 
     return axios.get(URL_BACKEND);
 };
 
-export const markNotificationAsReadAPI = (id: string) => {
-    return axios.put(`/api/Notifications/mark-read/${id}`);
-};
-
-// export const deleteNotificationAPI = (id: string) => {
-//     return axios.delete(`/api/Notifications/${id}`);
-// };
-
-// export const createNotificationAPI = (payload: Partial<Notification>) => {
-//     return axios.post(`/api/Notifications`, payload);
-// };
-
-// ====================================
-// FETCH LIST Notification
+// Fetch List Notification
 export const fetchNotificationsAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
     const query = q ? `&q=${encodeURIComponent(q)}` : "";
     const URL_BACKEND = `/api/Notifications?current=${current}&pageSize=${pageSize}${query}&sort=CreatedAt desc`;
@@ -410,6 +403,75 @@ export const deleteNotificationAPI = (id: string, payload: Partial<UpdateNotific
 export const fetchDashboardAPI = (expiringWithinDays: number = 30): Promise<{ data: { result: Dashboard } }> => {
     const URL = `/api/Dashboard?expiringWithinDays=${expiringWithinDays}`;
     return axios.get(URL);
+};
+
+// Report PDF
+export const fetchPayslipEmployeeAPI = (salaryId: string) => {
+    return axios.get(`/api/PdfReport/payslip-report-pdf/${salaryId}`, {
+        responseType: "blob", // do responseType: "blob"
+    });
+};
+// vì axios coi response về mặc định là JSON, mà PDF với excel đồ á là data dạng binary, nên dùng response type là blob (Binary Large Object) kiểu dạng nhị phân
+
+export const fetchProfileEmployeeAPI = (employeeId: string) => {
+    return axios.get(`/api/PdfReport/profile-report-pdf/${employeeId}`, {
+        responseType: "blob", // do responseType: "blob"
+    });
+};
+
+export const fetchGeneralReportAPI = (month: string, year: string, returnType = "stream") => {
+    return axios.get(`/api/PdfReport/general-report-pdf?month=${month}&year=${year}&returnType=${returnType}`, {
+        responseType: "blob", // do responseType: "blob"
+    });
+};
+
+// Report Excel
+export const fetchEmployeesReportAPI = () => {
+    return axios.get(`/api/Report/employees-report`, {
+        responseType: "blob", // do responseType: "blob"
+    });
+};
+
+export const fetchTrainingResultsAPI = (courseId?: string, status?: number) => {
+    return axios.get(`/api/Report/training-record-report`, {
+        params: { courseId, status },
+        responseType: "blob",
+    });
+};
+
+export const fetchCourseSummaryReportAPI = () => {
+    return axios.get(`/api/Report/course-summary-report`, {
+        responseType: "blob",
+    });
+};
+
+export const fetchPersonalTranscriptAPI = (employeeId: string) => {
+    return axios.get(`/api/Report/personal-training-record-report/${employeeId}`, {
+        responseType: "blob",
+    });
+};
+
+export const fetchAttendanceReportAPI = (params: { fromDate?: string; toDate?: string; departmentId?: string; employeeId?: string; }) => {
+    return axios.get(`/api/Report/attendance-report`, {
+        params,
+        responseType: "blob",
+    });
+};
+
+export const fetchSalaryTableReportAPI = (params: {
+    fromDate?: string; toDate?: string; departmentId?: string; employeeId?: string; kind?: number; // 0 reward, 1 penalty
+}) => {
+    return axios.get(`/api/Report/salaries-table-report`, {
+        params,
+        responseType: "blob",
+    });
+};
+
+export const fetchSalarySummaryAPI = (payrollRunId: string) => {
+    return axios.get(`/api/Report/export-summary`, {
+        params: { payrollRunId },
+        responseType: "blob",
+    });
 };
 
 // Role

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Box, Card, CardContent, Typography, Stack } from "@mui/material";
-import { Row, Col, Table, Tag } from "antd";
+import { Row, Col, Table, Tag, Button } from "antd";
 import {
     Users,
     Building2,
@@ -10,11 +10,13 @@ import {
     Award,
     ShieldAlert,
     Timer,
+    Download,
 } from "lucide-react";
 import { LineChart, BarChart, PieChart, RadarChart } from "@mui/x-charts";
 import dayjs from "dayjs";
 import { useDashboardStore } from "src/stores/useDashboardStore";
-import { TiltWrapper } from "@components/TiltWrapper/TiltWrapper";
+import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
+import { usePDFStore } from "src/stores/report/pdf";
 
 const OverviewPage = () => {
     const { dashboard, fetchDashboard } = useDashboardStore();
@@ -70,83 +72,79 @@ const OverviewPage = () => {
         },
     ];
 
-    // ===================== EXTRA STAT CARDS =====================
-    // const extraStats = [
-    //     {
-    //         label: "Đào tạo",
-    //         value: `${courseStats.completed}/${courseStats.total} khóa`,
-    //         icon: <GraduationCap size={30} color="#1677ff" />,
-    //         bg: "#e6f4ff",
-    //     },
-    //     {
-    //         label: "Khen thưởng",
-    //         value: disciplineStats.rewardsThisMonth,
-    //         icon: <Award size={30} color="#52c41a" />,
-    //         bg: "#f6ffed",
-    //     },
-    //     {
-    //         label: "Kỷ luật",
-    //         value: disciplineStats.penaltiesThisMonth,
-    //         icon: <ShieldAlert size={30} color="#ff4d4f" />,
-    //         bg: "#fff1f0",
-    //     },
-    //     {
-    //         label: "Tăng ca",
-    //         value: `${salaryStats.overtimeHours} giờ`,
-    //         icon: <Timer size={30} color="#722ed1" />,
-    //         bg: "#f9f0ff",
-    //     },
-    // ];
+    const pieColors = [
+        "#1677ff",
+        "#fa8c16",
+        "#ff4d4f",
+        "#13c2c2",
+        "#52c41a",
+        "#722ed1",
+        "#eb2f96",
+        "#ffc400",
+    ];
+
+    const { downloadGeneralReport } = usePDFStore();
 
     return (
         <Box sx={{ minHeight: "100vh" }}>
             {/* ======================= HEADER ======================= */}
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: 700 }}>
-                Tổng quan công ty
-            </Typography>
+            <div className="flex justify-between">
+                <Typography variant="h5" sx={{ mb: 2, fontWeight: 700 }}>
+                    Tổng quan công ty
+                </Typography>
+
+                <Button
+                    size="large"
+                    icon={<IconWrapper Icon={Download} />}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        downloadGeneralReport(dayjs().format("MM"), dayjs().format("YYYY")); // dayjs().month() trả về tháng từ 0-11 -> number, ở đây nhận string nên phải format
+                    }}
+                >
+                    Xuất file PDF
+                </Button>
+            </div>
 
             {/* ======================= SUMMARY ======================= */}
             <Row gutter={[16, 16]}>
                 {summaryItems.map((item, index) => (
                     <Col xs={24} sm={12} md={6} key={index}>
-                        <TiltWrapper>
-                            <Card
-                                sx={{
-                                    borderRadius: 3,
-                                    padding: 1.5,
-                                    transition: "0.2s",
-                                    boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
-                                    "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
-                                }}
-                            >
-                                <Stack direction="row" spacing={2} alignItems="center">
-                                    <Box
-                                        sx={{
-                                            width: 56,
-                                            height: 56,
-                                            borderRadius: "50%",
-                                            background: item.bg,
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        {item.icon}
-                                    </Box>
-                                    <Box>
-                                        <Typography sx={{ fontSize: 14, color: "text.secondary" }}>
-                                            {item.title}
-                                        </Typography>
-                                        <Typography sx={{ fontSize: 28, fontWeight: 700 }}>
-                                            {item.value}
-                                        </Typography>
-                                        <Typography sx={{ fontSize: 13, color: "#8c8c8c" }}>
-                                            {item.diff}
-                                        </Typography>
-                                    </Box>
-                                </Stack>
-                            </Card>
-                        </TiltWrapper>
+                        <Card
+                            sx={{
+                                borderRadius: 3,
+                                padding: 1.5,
+                                transition: "0.2s",
+                                boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                                "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                            }}
+                        >
+                            <Stack direction="row" spacing={2} alignItems="center">
+                                <Box
+                                    sx={{
+                                        width: 56,
+                                        height: 56,
+                                        borderRadius: "50%",
+                                        background: item.bg,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    {item.icon}
+                                </Box>
+                                <Box>
+                                    <Typography sx={{ fontSize: 14, color: "text.secondary" }}>
+                                        {item.title}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: 28, fontWeight: 700 }}>
+                                        {item.value}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: 13, color: "#8c8c8c" }}>
+                                        {item.diff}
+                                    </Typography>
+                                </Box>
+                            </Stack>
+                        </Card>
                     </Col>
                 ))}
             </Row>
@@ -229,6 +227,7 @@ const OverviewPage = () => {
                                             id: idx,
                                             value: d.count,
                                             label: d.departmentName,
+                                            color: pieColors[idx % pieColors.length],
                                         })),
                                     },
                                 ]}
@@ -315,7 +314,6 @@ const OverviewPage = () => {
             </Row>
 
             {/* ======================= EXTRA STATS ======================= */}
-            {/* ================== Extra Stats ================== */}
             <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
                 {[
                     { label: "Nghỉ phép", value: leaveStats.approvedThisMonth, color: "#1677ff" },

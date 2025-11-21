@@ -7,6 +7,7 @@ import { useOutletContext } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { usePayrollRunSalaryStore } from "src/stores/payroll/usePayrollRunSalaryStore";
 import dayjs from "dayjs";
+import { usePDFStore } from "src/stores/report/pdf";
 
 const { Title } = Typography;
 
@@ -48,6 +49,8 @@ export const PayrollRunSalaryPage = () => {
         setSearchParams({ current: current.toString(), pageSize: pageSize.toString() });
     };
 
+    const { downloadPayslipEmployee } = usePDFStore();
+
     const columns = [
         {
             title: "Tên nhân viên",
@@ -80,6 +83,21 @@ export const PayrollRunSalaryPage = () => {
             key: "details",
             render: (text: string) => <span style={{ whiteSpace: "pre-line" }}>{text}</span>,
         },
+        {
+            title: "Tải PDF",
+            key: "download",
+            width: 120,
+            render: (_: any, record: any) => (
+                <Button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        downloadPayslipEmployee(record.id);
+                    }}
+                >
+                    PDF
+                </Button>
+            ),
+        }
     ];
 
     return (

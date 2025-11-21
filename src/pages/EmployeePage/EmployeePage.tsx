@@ -8,9 +8,10 @@ import {
     BarsOutlined,
     UserOutlined,
     AntDesignOutlined,
+    FileDoneOutlined,
 } from "@ant-design/icons";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { Funnel, Settings, List as LucideList, LayoutList, AlignJustify, PanelLeft, Search, CirclePlus, ListEnd, Ellipsis, Edit3, Check, Delete, Trash, Ban } from "lucide-react";
+import { Funnel, Settings, List as LucideList, LayoutList, AlignJustify, PanelLeft, Search, CirclePlus, ListEnd, Ellipsis, Edit3, Check, Delete, Trash, Ban, FileDown, Download } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useEmployeeStore } from "src/stores/useEmployeeStore";
@@ -24,6 +25,8 @@ import { EmployeeFilterPage } from "./EmployeeFilter/EmployeeFilterPage";
 import { useDepartmentStore } from "src/stores/useDepartmentStore";
 import { usePositionStore } from "src/stores/usePositionStore";
 import { RcFile, UploadProps } from "antd/es/upload";
+import { usePDFStore } from "src/stores/report/pdf";
+import { useExcelStore } from "src/stores/report/excel";
 
 // ================== CỘT BẢNG NHÂN VIÊN ==================
 const columns = [
@@ -75,31 +78,7 @@ const columns = [
     },
 ];
 
-const items = [
-    {
-        label: '1st ',
-        key: '1',
-        icon: <Button size="large" icon={<IconWrapper Icon={Funnel} />} />,
-    },
-    {
-        label: '2nd menu item',
-        key: '2',
-        icon: <Button size="large" icon={<IconWrapper Icon={Settings} />} />,
-    },
-    {
-        label: '3rd menu item',
-        key: '3',
-        icon: <UserOutlined />,
-        danger: true,
-    },
-    {
-        label: '4rd menu item',
-        key: '4',
-        icon: <UserOutlined />,
-        danger: true,
-        disabled: true,
-    },
-];
+
 
 
 const EmployeePage = () => {
@@ -332,6 +311,42 @@ const EmployeePage = () => {
         label: dept.name,
     }));
 
+    // Tải hồ sơ nhân viên PDF
+    const { downloadProfileEmployee } = usePDFStore();
+
+    // Tải báo cáo nhân viên dạng excel
+    const { downloadEmployeesReport } = useExcelStore();
+
+    const items = [
+        {
+            label: 'Xuất ra file Excel',
+            key: '1',
+            icon: <IconWrapper Icon={FileDown} />,
+            onClick: ({ domEvent }: any) => {
+                domEvent.stopPropagation();
+                downloadEmployeesReport();
+            },
+        },
+        {
+            label: '2nd menu item',
+            key: '2',
+            icon: <Button size="large" icon={<IconWrapper Icon={Settings} />} />,
+        },
+        {
+            label: '3rd menu item',
+            key: '3',
+            icon: <UserOutlined />,
+            danger: true,
+        },
+        {
+            label: '4rd menu item',
+            key: '4',
+            icon: <UserOutlined />,
+            danger: true,
+            disabled: true,
+        },
+    ];
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== HEADER TOOLBAR ===== */}
@@ -539,6 +554,17 @@ const EmployeePage = () => {
                                             >
                                                 <Button danger>Xóa</Button>
                                             </Popconfirm>
+
+                                            <Button
+                                                icon={<IconWrapper Icon={Download} />}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    downloadProfileEmployee(selectedEmployee.id!);
+                                                }}
+                                            >
+                                                PDF
+                                            </Button>
+
                                         </Space>
                                     </div>
                                     <Descriptions

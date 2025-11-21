@@ -19,13 +19,14 @@ import {
 } from "antd";
 import { SearchOutlined, EditOutlined, DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { AlignJustify, PanelLeft, Check, CirclePlus, Edit3, Trash, Ban, FastForward, FastForwardIcon } from "lucide-react";
+import { AlignJustify, PanelLeft, Check, CirclePlus, Edit3, Trash, Ban, FastForward, FastForwardIcon, FileDown } from "lucide-react";
 import { useSearchParams, useOutletContext, useNavigate } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 
 import { PayrollRun } from "src/types/payroll/PayrollRun";
 import dayjs from "dayjs";
 import { usePayrollRunStore } from "src/stores/payroll/usePayrollRunStore";
+import { useExcelStore } from "src/stores/report/excel";
 
 const { Title } = Typography;
 
@@ -123,6 +124,8 @@ export const PayrollRunPage = () => {
         }
     };
 
+    const { downloadSalarySummary } = useExcelStore();
+
     const columns = [
         { title: "Kỳ lương", dataIndex: "period", key: "period" },
         {
@@ -145,6 +148,20 @@ export const PayrollRunPage = () => {
                     icon={<IconWrapper Icon={FastForward} className="!mt-2.5" />
                     }
                 >Chi tiết kỳ lương</Button>
+            }
+        },
+        {
+            title: "Xuất file Excel", key: "export-batch-salary", render: (_: any, record: PayrollRun) => {
+                return <Button
+                    size="large"
+                    icon={<IconWrapper Icon={FileDown} />}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        downloadSalarySummary(record.id);
+                    }}
+                >
+                    PDF
+                </Button>
             }
         }
     ];

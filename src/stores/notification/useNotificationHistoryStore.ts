@@ -2,7 +2,6 @@ import { create } from "zustand";
 import {
     fetchNotificationsHistoryAPI,
     deleteNotificationAPI,
-    markNotificationAsReadAPI,
     createNotificationAPI,
     fetchAllNotificationsHistoryAPI,
 } from "src/services/api.services";

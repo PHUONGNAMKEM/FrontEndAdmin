@@ -4,6 +4,7 @@ import {
     notification,
     Select,
     Avatar,
+    Divider,
 } from "antd";
 import {
     SearchOutlined,
@@ -12,12 +13,14 @@ import {
     EllipsisOutlined,
 } from "@ant-design/icons";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { AlignJustify, PanelLeft, Check, CirclePlus, Edit3, Trash, Search, Ban } from "lucide-react";
+import { AlignJustify, PanelLeft, Check, CirclePlus, Edit3, Trash, Search, Ban, Download } from "lucide-react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useDepartmentStore } from "src/stores/useDepartmentStore";
 import { Department } from "src/types/department/Department";
 import { useEmployeeStore } from "src/stores/useEmployeeStore";
+import { useExcelStore } from "src/stores/report/excel";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -212,6 +215,9 @@ export const DepartmentPage = () => {
             setSelectedDept(null);
         }
     }
+
+    // Tải báo cáo chấm công theo phòng ban
+    const { downloadAttendanceReport, downloadSalaryTableReport } = useExcelStore();
 
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
@@ -478,6 +484,31 @@ export const DepartmentPage = () => {
                                         </Button>
                                     </div>
                                 )}
+
+                                <div className="flex flex-col">
+                                    <Button
+                                        className="mt-4 w-[50%]"
+                                        size="large"
+                                        icon={<IconWrapper Icon={Download} />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            downloadAttendanceReport({ fromDate: dayjs().format("YYYY-MM-DD"), endDate: dayjs().format("YYYY-MM-DD"), departmentId: selectedDept.id! });
+                                        }}
+                                    >
+                                        Xuất danh sách chấm công hôm nay ra file Excel
+                                    </Button>
+                                    <Button
+                                        className="mt-4 w-[50%]"
+                                        size="large"
+                                        icon={<IconWrapper Icon={Download} />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            downloadSalaryTableReport({ fromDate: dayjs().format("YYYY-MM-DD"), endDate: dayjs().format("YYYY-MM-DD"), departmentId: selectedDept.id! });
+                                        }}
+                                    >
+                                        Xuất danh sách khen thưởng / kỷ luật hôm nay ra file Excel
+                                    </Button>
+                                </div>
                             </>
                         ) : (
                             <p>Chọn một phòng ban để xem chi tiết.</p>

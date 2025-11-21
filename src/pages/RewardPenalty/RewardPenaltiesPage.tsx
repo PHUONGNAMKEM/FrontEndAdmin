@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 import {
     Table, Space, Button, Input, Card, Descriptions, List, Typography, message, Dropdown, Pagination, Popconfirm, Modal, Form,
     notification, Select, DatePicker,
-    Avatar
+    Avatar,
+    Tag
 } from "antd";
 import { SearchOutlined, EllipsisOutlined } from "@ant-design/icons";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { AlignJustify, PanelLeft, Check, CirclePlus, Edit3, Trash, Search, Ban } from "lucide-react";
+import { AlignJustify, PanelLeft, Check, CirclePlus, Edit3, Trash, Search, Ban, FileDown } from "lucide-react";
 import { useSearchParams, useOutletContext } from "react-router-dom";
 import { useRewardPenaltiesStore } from "src/stores/useRewardPenaltiesStore";
 import { RewardPenaltyDetail } from "src/types/rewardPenalty/RewardPenaltyDetail";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import dayjs from "dayjs";
 import { render } from "react-dom";
+import { useExcelStore } from "src/stores/report/excel";
 
 const { Title } = Typography;
 
@@ -142,6 +144,13 @@ export const RewardPenaltiesPage = () => {
         setIsEditing(false);
     };
 
+    // Xuất báo cáo bảng chấm công ra file Excel
+    const [exportModalOpen, setExportModalOpen] = useState(false);
+    const [fromDate, setFromDate] = useState(dayjs());
+    const [toDate, setToDate] = useState(dayjs());
+
+    const { downloadAttendanceReport, downloadSalaryTableReport } = useExcelStore();
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== TOOLBAR ===== */}
@@ -180,7 +189,39 @@ export const RewardPenaltiesPage = () => {
                     >
                         Thêm mới
                     </Button>
-                    <Dropdown menu={{ items: [{ key: "1", label: "Tùy chọn 1" }] }}>
+                    <Dropdown
+                        menu={{
+                            items: [
+                                {
+                                    type: "group",
+                                    label: (
+                                        <div className="w-full py-1 font-semibold text-center text-black cursor-default pointer-events-none select-none">
+                                            Xuất file Excel Tháng này
+                                        </div>
+                                    ),
+                                    children: []
+                                },
+                                {
+                                    key: "attendance",
+                                    label: "Xuất file Excel Chấm công",
+                                    icon: <IconWrapper Icon={FileDown} />,
+                                    onClick: ({ domEvent }) => {
+                                        domEvent.stopPropagation();
+                                        setExportModalOpen(true);
+                                    },
+                                },
+                                {
+                                    key: "attendance-reward-penalty",
+                                    label: "Xuất file Excel Khen thưởng / Kỷ luật",
+                                    icon: <IconWrapper Icon={FileDown} />,
+                                    onClick: ({ domEvent }) => {
+                                        domEvent.stopPropagation();
+                                        setExportModalOpen(true);
+                                    },
+                                },
+                            ],
+                        }}
+                    >
                         <Button size="large" icon={<EllipsisOutlined />} />
                     </Dropdown>
                 </Space>
@@ -327,6 +368,87 @@ export const RewardPenaltiesPage = () => {
                     </Form.Item>
                 </Form>
             </Modal>
-        </div>
+
+            {/* Modal Export Excel Chấm công */}
+            <Modal
+                title="Xuất file Excel Chấm công"
+                open={exportModalOpen}
+                onCancel={() => setExportModalOpen(false)}
+                onOk={() => {
+                    const from = fromDate ? fromDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+                    const to = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+                    console.log("From:", from, "To:", to);
+                    downloadAttendanceReport({
+                        fromDate: from,
+                        toDate: to
+                    });
+
+                    setExportModalOpen(false);
+                }}
+                okText="Xuất file"
+                cancelText="Hủy"
+            >
+                <Form layout="vertical">
+                    <Form.Item label="Từ ngày">
+                        <DatePicker
+                            className="w-full"
+                            value={fromDate}
+                            onChange={(val) => setFromDate(val || dayjs())}
+                            format="YYYY-MM-DD"
+                        />
+                    </Form.Item>
+
+                    <Form.Item label="Đến ngày">
+                        <DatePicker
+                            className="w-full"
+                            value={toDate}
+                            onChange={(val) => setToDate(val || dayjs())}
+                            format="YYYY-MM-DD"
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            {/* Modal Export Excel Khen thưởng / Kỷ luật */}
+            <Modal
+                title={<p>Xuất file Excel Khen thưởng / Kỷ luật</p>}
+                open={exportModalOpen}
+                onCancel={() => setExportModalOpen(false)}
+                onOk={() => {
+                    const from = fromDate ? fromDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+                    const to = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+                    console.log("From:", from, "To:", to);
+                    downloadSalaryTableReport({
+                        fromDate: from,
+                        toDate: to
+                    });
+
+                    setExportModalOpen(false);
+                }}
+                okText="Xuất file"
+                cancelText="Hủy"
+            >
+                <Form layout="vertical">
+                    <Form.Item label="Từ ngày">
+                        <DatePicker
+                            className="w-full"
+                            value={fromDate}
+                            onChange={(val) => setFromDate(val || dayjs())}
+                            format="YYYY-MM-DD"
+                        />
+                    </Form.Item>
+
+                    <Form.Item label="Đến ngày">
+                        <DatePicker
+                            className="w-full"
+                            value={toDate}
+                            onChange={(val) => setToDate(val || dayjs())}
+                            format="YYYY-MM-DD"
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+        </div >
     );
 };

@@ -11,21 +11,25 @@ import {
     Dropdown,
     DatePicker,
     message,
+    Popconfirm,
 } from "antd";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { RefreshCcw, PanelLeft, AlignJustify, Icon, Ellipsis, NotebookTabs } from "lucide-react";
+import { RefreshCcw, PanelLeft, AlignJustify, Icon, Ellipsis, NotebookTabs, BadgeCheck } from "lucide-react";
 import { useSearchParams, useOutletContext, useNavigate } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useSalaryTableStore } from "src/stores/useSalaryTableStore";
 import { SalaryRecord } from "src/types/salary/SalaryRecord";
 import { useEmployeeStore } from "src/stores/useEmployeeStore";
 import dayjs from "dayjs";
+import './SalaryTablePage.scss';
+import { usePayrollRunStore } from "src/stores/payroll/usePayrollRunStore";
+import { PayrollRun } from "src/types/payroll/PayrollRun";
 
 const { Title } = Typography;
 const { MonthPicker } = DatePicker;
 
 export const SalaryTablePage = () => {
-    const { salaryRecords, fetchSalaryTable, fetchSalaryAll, meta } = useSalaryTableStore();
+    const { salaryRecords, fetchSalaryTable, fetchSalaryAll, meta, finalBatchSalary } = useSalaryTableStore();
     const [viewMode, setViewMode] = useState<"list" | "detail">("list");
     const [selectedRecord, setSelectedRecord] = useState<SalaryRecord | null>(null);
     const [loading, setLoading] = useState(false);
@@ -70,9 +74,16 @@ export const SalaryTablePage = () => {
 
     const columns = [
         {
-            title: "Mã nhân viên",
-            dataIndex: ["thongTinNhanVien", "employeeId"],
-            key: "employeeId",
+            title: "STT",
+            key: "index",
+            // width: 70,
+            // render (text, record, index)
+            render: (_: any, __: any, index: number) => index + 1,
+        },
+        {
+            title: "Nhân viên",
+            dataIndex: ["thongTinNhanVien", "fullName"],
+            key: "fullName",
         },
         {
             title: "Loại hợp đồng",
@@ -109,6 +120,40 @@ export const SalaryTablePage = () => {
     ];
 
     const navigate = useNavigate();
+
+    // Lấy ra danh sách kỳ lương đã chốt rồi
+    const { payrollRuns } = usePayrollRunStore();
+    const [isMonthProcessed, setIsMonthProcessed] = useState(false); // kiểm tra trạng thái tháng hiện tại - xem chốt chưa
+
+    // Kiểm tra nếu trong danh sách kỳ lương đã chốt mà mình MonthPicker vô tháng đã chốt đó -> thì hiển thị tháng này đã chốt rồi
+    useEffect(() => {
+        const monthStr = month.format("YYYY-MM");
+        const exists = payrollRuns?.some(
+            (run) => run.period === monthStr && run.status === "processed"
+        );
+        setIsMonthProcessed(exists);
+    }, [payrollRuns, month]);
+
+    const confirmFinishBatchSalary = async () => {
+        try {
+            setLoading(true);
+            const monthInput = month.format("YYYY-MM");
+            const res = await finalBatchSalary!(monthInput);
+
+            message.success({
+                content: `Đã chốt lương tháng ${month.format("MM/YYYY")} thành công!`,
+                duration: 3,
+            });
+
+            // Load lại bảng lương
+            await fetchSalaryAll(monthInput, currentPage, currentSize);
+
+        } catch (err: any) {
+            message.error(err?.message || "Chốt lương thất bại!");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
@@ -159,144 +204,169 @@ export const SalaryTablePage = () => {
                     >
                         Làm mới
                     </Button>
+
+                    {isMonthProcessed ? (
+                        <Tag color="green" style={{ fontSize: 16, padding: "8px 16px" }}>
+                            Tháng {month.format("MM/YYYY")} đã chốt lương
+                        </Tag>
+                    ) : (
+                        <Popconfirm
+                            title={`Chốt lương tháng ${month.format("MM/YYYY")}?`}
+                            onConfirm={confirmFinishBatchSalary}
+                            okText="Chốt"
+                            cancelText="Hủy"
+                        >
+                            <Button
+                                // className="btn-finish-batch-salary"
+                                size="large"
+                                icon={<IconWrapper Icon={BadgeCheck} color="#1677ff" />}
+                                loading={loading}
+                            >
+                                Chốt lương tháng
+                            </Button>
+                        </Popconfirm>
+                    )}
+
                 </Space>
             </div>
 
             {/* ===== VIEW MODE ===== */}
-            {viewMode === "list" ? (
-                <Table
-                    columns={columns}
-                    dataSource={salaryRecords}
-                    rowKey={(record) => record.thongTinNhanVien.employeeId}
-                    loading={loading}
-                    pagination={{
-                        current: meta?.current || 1,
-                        pageSize: meta?.pageSize || 10,
-                        total: meta?.total || 0,
-                        onChange: handlePageChange,
-                    }}
-                    onRow={(record) => ({
-                        onClick: () => {
-                            setSelectedRecord(record);
-                            setViewMode("detail");
-                        },
-                    })}
-                />
-            ) : (
-                <Card className="rounded-lg">
-                    {selectedRecord ? (
-                        <>
-                            <div className="flex items-center justify-between">
-                                <Title level={4} className="mb-4">
-                                    Thông tin chi tiết nhân viên:{" "}
-                                    <Tag color="blue">
-                                        {selectedRecord.thongTinNhanVien.employeeId}
-                                    </Tag>
-                                </Title>
-                                {/* <Dropdown menu={{ items }} placement="bottomRight" arrow>
+            {
+                viewMode === "list" ? (
+                    <Table
+                        columns={columns}
+                        dataSource={salaryRecords}
+                        rowKey={(record) => record.thongTinNhanVien.employeeId}
+                        loading={loading}
+                        pagination={{
+                            current: meta?.current || 1,
+                            pageSize: meta?.pageSize || 10,
+                            total: meta?.total || 0,
+                            onChange: handlePageChange,
+                        }}
+                        onRow={(record) => ({
+                            onClick: () => {
+                                setSelectedRecord(record);
+                                setViewMode("detail");
+                            },
+                        })}
+                    />
+                ) : (
+                    <Card className="rounded-lg">
+                        {selectedRecord ? (
+                            <>
+                                <div className="flex items-center justify-between">
+                                    <Title level={4} className="mb-4">
+                                        Thông tin chi tiết nhân viên:{" "}
+                                        <Tag color="blue">
+                                            {selectedRecord.thongTinNhanVien.employeeId}
+                                        </Tag>
+                                    </Title>
+                                    {/* <Dropdown menu={{ items }} placement="bottomRight" arrow>
                                     <Button
                                         size="large"
                                         icon={<IconWrapper Icon={Ellipsis} size={24} />}
                                         type="default"
                                     />
                                 </Dropdown> */}
-                                <Dropdown
-                                    menu={{
-                                        items,
-                                        onClick: ({ key }) => {
-                                            if (key === "daily") {
-                                                const monthStr = month.format("YYYY-MM");
-                                                const empId = selectedRecord.thongTinNhanVien.employeeId;
-                                                navigate(`http://localhost:3000//salary/daily?employeeId=${encodeURIComponent(empId)}&month=${encodeURIComponent(monthStr)}`);
-                                            }
-                                        },
-                                    }}
-                                    placement="bottomRight"
-                                    arrow
-                                >
-                                    <Button
-                                        size="large"
-                                        icon={<IconWrapper Icon={Ellipsis} size={24} />}
-                                        type="default"
-                                    />
-                                </Dropdown>
-                            </div>
+                                    <Dropdown
+                                        menu={{
+                                            items,
+                                            onClick: ({ key }) => {
+                                                if (key === "daily") {
+                                                    const monthStr = month.format("YYYY-MM");
+                                                    const empId = selectedRecord.thongTinNhanVien.employeeId;
+                                                    navigate(`http://localhost:3000//salary/daily?employeeId=${encodeURIComponent(empId)}&month=${encodeURIComponent(monthStr)}`);
+                                                }
+                                            },
+                                        }}
+                                        placement="bottomRight"
+                                        arrow
+                                    >
+                                        <Button
+                                            size="large"
+                                            icon={<IconWrapper Icon={Ellipsis} size={24} />}
+                                            type="default"
+                                        />
+                                    </Dropdown>
+                                </div>
 
-                            <Descriptions bordered column={1} title="Thông tin nhân viên" size="middle" layout="horizontal">
-                                <Descriptions.Item label="Loại hợp đồng">
-                                    {selectedRecord.thongTinNhanVien.contractType}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Lương cơ bản">
-                                    {selectedRecord.thongTinNhanVien.basicSalary.toLocaleString("vi-VN")} đ
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Lương bảo hiểm">
-                                    {selectedRecord.thongTinNhanVien.insuranceSalary.toLocaleString("vi-VN")} đ
-                                </Descriptions.Item>
-                            </Descriptions>
+                                <Descriptions bordered column={1} title="Thông tin nhân viên" size="middle" layout="horizontal">
+                                    <Descriptions.Item label="Loại hợp đồng">
+                                        {selectedRecord.thongTinNhanVien.contractType}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Lương cơ bản">
+                                        {selectedRecord.thongTinNhanVien.basicSalary.toLocaleString("vi-VN")} đ
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Lương bảo hiểm">
+                                        {selectedRecord.thongTinNhanVien.insuranceSalary.toLocaleString("vi-VN")} đ
+                                    </Descriptions.Item>
+                                </Descriptions>
 
-                            <Descriptions bordered column={2} title="Chấm công" size="middle" style={{ marginTop: 24 }}>
-                                <Descriptions.Item label="Công phân công">
-                                    {selectedRecord.chamCong.soCongPhanCong}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Công thực tế">
-                                    {selectedRecord.chamCong.soCongThucTe}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Đi muộn">
-                                    {selectedRecord.chamCong.soLanDiMuon}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Vắng">
-                                    {selectedRecord.chamCong.soLanVang}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Về sớm">
-                                    {selectedRecord.chamCong.soLanVeSom}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="">
-                                    <div></div>
-                                </Descriptions.Item>
-                            </Descriptions>
+                                <Descriptions bordered column={2} title="Chấm công" size="middle" style={{ marginTop: 24 }}>
+                                    <Descriptions.Item label="Công phân công">
+                                        {selectedRecord.chamCong.soCongPhanCong}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Công thực tế">
+                                        {selectedRecord.chamCong.soCongThucTe}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Đi muộn">
+                                        {selectedRecord.chamCong.soLanDiMuon}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Vắng">
+                                        {selectedRecord.chamCong.soLanVang}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Về sớm">
+                                        {selectedRecord.chamCong.soLanVeSom}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="">
+                                        <div></div>
+                                    </Descriptions.Item>
+                                </Descriptions>
 
-                            <Descriptions bordered column={2} title="Chi tiết lương" size="middle" style={{ marginTop: 24 }}>
-                                <Descriptions.Item label="Tổng phụ cấp">
-                                    {selectedRecord.luong.tongPhuCap.toLocaleString("vi-VN")} đ
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Thưởng">
-                                    <Tag color="orange" style={{ fontSize: 15 }}>
-                                        +{selectedRecord.luong.tongThuong.toLocaleString("vi-VN")} đ
-                                    </Tag>
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Phạt">
-                                    <Tag color="red" style={{ fontSize: 15 }}>
-                                        -{selectedRecord.luong.tongPhat.toLocaleString("vi-VN")} đ
-                                    </Tag>
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Bảo hiểm">
-                                    {selectedRecord.luong.baoHiem.toLocaleString("vi-VN")} đ
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Lương thực nhận">
-                                    <Tag color="green" style={{ fontSize: 15 }}>
-                                        {selectedRecord.luong.luongThucNhan.toLocaleString("vi-VN")} đ
-                                    </Tag>
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Hệ số OT">
-                                    {selectedRecord.luong.heSoOT}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Số giờ OT">
-                                    {selectedRecord.luong.soGioOT}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Lương OT">
-                                    {selectedRecord.luong.luongOT.toLocaleString("vi-VN")} đ
-                                </Descriptions.Item>
-                            </Descriptions>
+                                <Descriptions bordered column={2} title="Chi tiết lương" size="middle" style={{ marginTop: 24 }}>
+                                    <Descriptions.Item label="Tổng phụ cấp">
+                                        {selectedRecord.luong.tongPhuCap.toLocaleString("vi-VN")} đ
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Thưởng">
+                                        <Tag color="orange" style={{ fontSize: 15 }}>
+                                            +{selectedRecord.luong.tongThuong.toLocaleString("vi-VN")} đ
+                                        </Tag>
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Phạt">
+                                        <Tag color="red" style={{ fontSize: 15 }}>
+                                            -{selectedRecord.luong.tongPhat.toLocaleString("vi-VN")} đ
+                                        </Tag>
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Bảo hiểm">
+                                        {selectedRecord.luong.baoHiem.toLocaleString("vi-VN")} đ
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Lương thực nhận">
+                                        <Tag color="green" style={{ fontSize: 15 }}>
+                                            {selectedRecord.luong.luongThucNhan.toLocaleString("vi-VN")} đ
+                                        </Tag>
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Hệ số OT">
+                                        {selectedRecord.luong.heSoOT}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Số giờ OT">
+                                        {selectedRecord.luong.soGioOT}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Lương OT">
+                                        {selectedRecord.luong.luongOT.toLocaleString("vi-VN")} đ
+                                    </Descriptions.Item>
+                                </Descriptions>
 
-                            <div style={{ marginTop: 24, textAlign: "right" }}>
-                                <Button onClick={() => setViewMode("list")}>Quay lại danh sách</Button>
-                            </div>
-                        </>
-                    ) : (
-                        <p>Chọn nhân viên để xem chi tiết lương.</p>
-                    )}
-                </Card>
-            )}
-        </div>
+                                <div style={{ marginTop: 24, textAlign: "right" }}>
+                                    <Button onClick={() => setViewMode("list")}>Quay lại danh sách</Button>
+                                </div>
+                            </>
+                        ) : (
+                            <p>Chọn nhân viên để xem chi tiết lương.</p>
+                        )}
+                    </Card>
+                )
+            }
+        </div >
     );
 };

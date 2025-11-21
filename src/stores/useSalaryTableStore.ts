@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { fetchSalaryAllAPI, fetchSalaryDetailAPI } from "src/services/api.services";
+import { fetchSalaryAllAPI, fetchSalaryDetailAPI, finalBatchSalaryAPI } from "src/services/api.services";
 import { SalaryRecord } from "src/types/salary/SalaryRecord";
 import { PaginationMeta } from "src/types/api";
 import { message } from "antd";
@@ -10,6 +10,7 @@ interface SalaryTableStore {
     isModalOpen: boolean;
     fetchSalaryAll: (month: string, current: number, pageSize: number) => Promise<void>;
     fetchSalaryTable: (employeeId: string, month: string) => Promise<void>;
+    finalBatchSalary?: (month: string) => Promise<void>;
     setModalOpen: (value: boolean) => void;
 }
 
@@ -74,6 +75,20 @@ export const useSalaryTableStore = create<SalaryTableStore>((set, get) => ({
             throw err;
         }
     },
+
+    finalBatchSalary: async (month) => {
+        try {
+            const res = await finalBatchSalaryAPI(month);
+            if (!res?.success) {
+                throw new Error(res?.message || "API trả về lỗi.");
+            }
+
+            return res.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     setModalOpen: (value) => set({ isModalOpen: value }),
 
 }));

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space, Input, Modal, Form, Typography, notification, Popconfirm, Descriptions, Card, List, Pagination, Row, Col, } from "antd";
+import { Table, Button, Space, Input, Modal, Form, Typography, notification, Popconfirm, Descriptions, Card, List, Pagination, Row, Col, message, } from "antd";
 import { useSearchParams, useOutletContext, useNavigate } from "react-router-dom";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { AlignJustify, PanelLeft, CirclePlus, Edit3, Trash, Ban, Check, Search, Grid2X2, } from "lucide-react";
+import { AlignJustify, PanelLeft, CirclePlus, Edit3, Trash, Ban, Check, Search, Grid2X2, FileDown, FolderDown, Copy, } from "lucide-react";
 import { useCourseStore } from "src/stores/course/useCourseStore";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { Course } from "src/types/course/Course";
 import Meta from "antd/es/card/Meta";
 import ElectricBorder from "@components/electricBorder/ElectricBorder";
+import { useExcelStore } from "src/stores/report/excel";
 
 const { Title } = Typography;
 
@@ -133,6 +134,9 @@ export const CoursePage = () => {
     // Tạo đề thi cho khóa học
     const navigate = useNavigate();
 
+    // Tải báo cáo kết quả đào tạo cho từng khóa học
+    const { downloadTrainingResults, downloadCourseSummaryReport } = useExcelStore();
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== Toolbar ===== */}
@@ -172,6 +176,20 @@ export const CoursePage = () => {
                     >
                         Thêm khóa học
                     </Button>
+
+                    <Button
+                        // type="primary"
+                        size="large"
+                        color="cyan"
+                        variant="solid"
+                        icon={<IconWrapper Icon={CirclePlus} color="#fff" />}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            downloadCourseSummaryReport();
+                        }}
+                    >
+                        Xuất danh sách ra file Excel
+                    </Button>
                 </Space>
             </div>
 
@@ -196,53 +214,74 @@ export const CoursePage = () => {
                                         lg={6}   // 4 cột lớn
                                         className="flex"
                                     >
-                                        <ElectricBorder
+                                        {/* <ElectricBorder
                                             color="#f0cd0a"
                                             speed={1}
                                             chaos={0.5}
                                             thickness={2}
                                             style={{ borderRadius: 16 }}
-                                        >
-                                            <div className="p-4 flex flex-col flex-1 overflow-hidden transition bg-white rounded-lg shadow-sm hover:[box-shadow:rgba(99,99,99,0.2)_0px_2px_8px_0px] transition-shadow duration-200 cursor-pointer" onClick={(e) => {
+                                        > */}
+                                        <div
+                                            className="p-4 flex flex-col flex-1 overflow-hidden bg-white rounded-lg 
+                                                    [box-shadow:rgba(99,99,99,0.2)_0px_2px_8px_0px]
+                                                    hover:[box-shadow:rgba(0,0,0,0.05)_0px_6px_24px_0px,rgba(0,0,0,0.08)_0px_0px_0px_1px]
+                                                    transition-shadow duration-200 cursor-pointer"
+                                            onClick={(e) => {
                                                 e.stopPropagation(); // ngăn chặn sự kiện click lan truyền, click luôn phần tử cha
                                                 setSelectedCourse(course);
                                                 setViewMode("detail");
                                             }}>
-                                                {/* Ảnh khóa học */}
-                                                <div className="w-full h-[200px] overflow-hidden">
-                                                    <img
-                                                        src="https://plus.unsplash.com/premium_vector-1721494020721-45d7295df5e0?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=352&dpr=1&h=367"
-                                                        alt={course.name}
-                                                        className="object-cover w-full h-full"
-                                                    />
+                                            {/* Ảnh khóa học */}
+                                            <div className="w-full h-[200px] overflow-hidden">
+                                                <img
+                                                    src="https://plus.unsplash.com/premium_vector-1721494020721-45d7295df5e0?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=352&dpr=1&h=367"
+                                                    alt={course.name}
+                                                    className="object-cover w-full h-full"
+                                                />
+                                            </div>
+
+                                            {/* Nội dung */}
+                                            <div className="flex flex-col justify-between flex-1 p-4">
+                                                <div>
+                                                    <h3 className="mb-2 text-lg font-semibold line-clamp-2 min-h-[3.5rem]">{course.name}</h3>
+                                                    <p>Ngưỡng đạt: {course.passThreshold}%</p>
+                                                    <p>Số câu hỏi: {course.questionCount}</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p>Mã lớp: {course.classCode || "Chưa có"}</p>
+
+                                                        {course.classCode && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    navigator.clipboard.writeText(course.classCode!)
+                                                                    message.success("Copied mã lớp thành công!");
+                                                                }}
+                                                                className="text-sm text-blue-600 hover:text-blue-800"
+                                                                title="Copy mã lớp"
+                                                            >
+                                                                <IconWrapper Icon={Copy} className="cursor-pointer" />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-gray-500">{new Date(course.createdAt).toLocaleDateString()}</p>
                                                 </div>
 
-                                                {/* Nội dung */}
-                                                <div className="flex flex-col justify-between flex-1 p-4">
-                                                    <div>
-                                                        <h3 className="mb-2 text-lg font-semibold line-clamp-2 min-h-[3.5rem]">{course.name}</h3>
-                                                        <p>Ngưỡng đạt: {course.passThreshold}%</p>
-                                                        <p>Số câu hỏi: {course.questionCount}</p>
-                                                        <p>Mã lớp: {course.classCode || "Chưa có"}</p>
-                                                        <p className="text-gray-500">{new Date(course.createdAt).toLocaleDateString()}</p>
-                                                    </div>
-
-                                                    <div className="mt-3 text-right">
-                                                        <Button
-                                                            type="primary"
-                                                            size="middle"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation(); // ngăn chặn sự kiện click lan truyền, click luôn phần tử cha
-                                                                setSelectedCourse(course);
-                                                                setViewMode("detail");
-                                                            }}
-                                                        >
-                                                            Chi tiết
-                                                        </Button>
-                                                    </div>
+                                                <div className="mt-3 text-right">
+                                                    <Button
+                                                        type="primary"
+                                                        size="middle"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // ngăn chặn sự kiện click lan truyền, click luôn phần tử cha
+                                                            setSelectedCourse(course);
+                                                            setViewMode("detail");
+                                                        }}
+                                                    >
+                                                        Chi tiết
+                                                    </Button>
                                                 </div>
                                             </div>
-                                        </ElectricBorder>
+                                        </div>
+                                        {/* </ElectricBorder> */}
 
                                     </Col>
                                 ))}
@@ -402,9 +441,22 @@ export const CoursePage = () => {
                                             size="large"
                                             icon={<IconWrapper Icon={CirclePlus} color="#fff" />}
                                             onClick={() => navigate(`/courses/${selectedCourse.id}/questions`)}
-                                            className="mt-4"
+                                            className="w-full mt-4"
                                         >
                                             Tạo đề thi cho khóa học
+                                        </Button>
+                                        <Button
+                                            color="cyan"
+                                            variant="outlined"
+                                            size="large"
+                                            icon={<IconWrapper Icon={FileDown} color="#13c2c2" />}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                downloadTrainingResults(selectedCourse.id);
+                                            }}
+                                            className="w-full mt-4"
+                                        >
+                                            Xuất kết quả đào tạo ra Excel
                                         </Button>
                                     </>
                                 ) : (
