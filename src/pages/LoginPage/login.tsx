@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "@components/context/auth.context";
 import { IRegisterFormValues } from "src/interface/IRegisterFormValues";
 import { loginAPI } from "src/services/api.services";
+import { startConnection } from "src/services/signalr";
 
 const LoginPage = () => {
 
@@ -25,6 +26,7 @@ const LoginPage = () => {
             message.success("Login successfully");
             setIsLoading(false);
             localStorage.setItem("access_token", res.data.access_token);
+            // await startConnection();
             localStorage.setItem("role", res.data.user.role.name);
             localStorage.setItem("username", res.data.user.username);
             localStorage.setItem("userId", res.data.user.id);

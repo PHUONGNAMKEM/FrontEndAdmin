@@ -20,12 +20,13 @@ import { usePDFStore } from "src/stores/report/pdf";
 
 const OverviewPage = () => {
     const { dashboard, fetchDashboard } = useDashboardStore();
+    const { downloadGeneralReport } = usePDFStore();
 
     useEffect(() => {
         fetchDashboard(30);
     }, []);
 
-    if (!dashboard) return <Typography>Đang tải dữ liệu...</Typography>;
+    if (!dashboard) return <Typography>Đang tải dữ liệu...</Typography>; // không được return trước khi gọi tất cả các hook, bởi vì React dựa vào thứ tự gọi hook để quản lý trạng thái. Nếu ta đặt return ở giữa, thứ tự này sẽ bị phá vỡ. Nó sẽ chạy lần render đầu tiên và thấy 1 hook useDashboardStore, và return do dashboard chưa có -> số hook là 1, lần render thứ 2 nó sẽ chạy lại, lúc này có dashboard rồi, nó sẽ bỏ qua return và chạy tiếp hook bên dưới -> số hook là 2 => 2 lần render số hook khác nhau -> lỗi
 
     const {
         summary,
@@ -83,7 +84,6 @@ const OverviewPage = () => {
         "#ffc400",
     ];
 
-    const { downloadGeneralReport } = usePDFStore();
 
     return (
         <Box sx={{ minHeight: "100vh" }}>

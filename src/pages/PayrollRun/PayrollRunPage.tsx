@@ -160,7 +160,7 @@ export const PayrollRunPage = () => {
                         downloadSalarySummary(record.id);
                     }}
                 >
-                    PDF
+                    Tải xuống
                 </Button>
             }
         }
