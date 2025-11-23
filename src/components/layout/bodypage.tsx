@@ -88,7 +88,11 @@ const BodyPage = () => {
             ]
         ),
         getItem(<Link to="/overtime">Làm thêm</Link>, "overtime", <IconWrapper Icon={ClockArrowUp} />),
-        getItem(<Link to="/course">Khóa học</Link>, "course", <IconWrapper Icon={BookOpenCheck} />),
+        getItem(<Link to="/course">Khóa học</Link>, "course", <IconWrapper Icon={BookOpenCheck} />,
+            [
+                getItem(<Link to="/course/training-record">Kết quả</Link>, "course-training-record"),
+            ]
+        ),
         getItem(<Link to="/notification">Thông báo</Link>, "notification", <IconWrapper Icon={Bell} />,
             [
                 getItem(<Link to="/notification/history">Lịch sử</Link>, "history"),

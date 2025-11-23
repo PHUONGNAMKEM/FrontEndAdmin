@@ -485,30 +485,28 @@ export const DepartmentPage = () => {
                                     </div>
                                 )}
 
-                                <div className="flex flex-col">
-                                    <Button
-                                        className="mt-4 w-[50%]"
-                                        size="large"
-                                        icon={<IconWrapper Icon={Download} />}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            downloadAttendanceReport({ fromDate: dayjs().format("YYYY-MM-DD"), endDate: dayjs().format("YYYY-MM-DD"), departmentId: selectedDept.id! });
-                                        }}
-                                    >
-                                        Xuất danh sách chấm công hôm nay ra file Excel
-                                    </Button>
-                                    <Button
-                                        className="mt-4 w-[50%]"
-                                        size="large"
-                                        icon={<IconWrapper Icon={Download} />}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            downloadSalaryTableReport({ fromDate: dayjs().format("YYYY-MM-DD"), endDate: dayjs().format("YYYY-MM-DD"), departmentId: selectedDept.id! });
-                                        }}
-                                    >
-                                        Xuất danh sách khen thưởng / kỷ luật hôm nay ra file Excel
-                                    </Button>
-                                </div>
+                                <Button
+                                    className="w-full mt-4"
+                                    size="large"
+                                    icon={<IconWrapper Icon={Download} color="#1677ff" />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        downloadAttendanceReport({ fromDate: dayjs().format("YYYY-MM-DD"), endDate: dayjs().format("YYYY-MM-DD"), departmentId: selectedDept.id! });
+                                    }}
+                                >
+                                    Xuất danh sách chấm công hôm nay ra file Excel
+                                </Button>
+                                <Button
+                                    className="w-full mt-4"
+                                    size="large"
+                                    icon={<IconWrapper Icon={Download} color="#1677ff" />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        downloadSalaryTableReport({ fromDate: dayjs().format("YYYY-MM-DD"), endDate: dayjs().format("YYYY-MM-DD"), departmentId: selectedDept.id! });
+                                    }}
+                                >
+                                    Xuất danh sách khen thưởng / kỷ luật hôm nay ra file Excel
+                                </Button>
                             </>
                         ) : (
                             <p>Chọn một phòng ban để xem chi tiết.</p>

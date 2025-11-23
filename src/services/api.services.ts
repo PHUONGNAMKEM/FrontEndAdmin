@@ -21,6 +21,7 @@ import { Role } from "src/types/user/Role";
 import { CreateNotificationPayload } from "src/types/notification/CreateNotificationPayload";
 import { UpdateNotificationPayload } from "src/types/notification/UpdateNotificationPayload";
 import { Dashboard } from "src/types/dashboard/Dashboard";
+import { TrainingRecord } from "src/types/training_record/TrainingRecord";
 
 
 // Employee
@@ -473,6 +474,44 @@ export const fetchSalarySummaryAPI = (payrollRunId: string) => {
         responseType: "blob",
     });
 };
+
+// Training Record
+export const fetchTrainingRecordAPI = (current: number, pageSize: number,
+    filters?: {
+        courseId?: string;
+        employeeName?: string;
+        status?: number;
+    }
+): Promise<ApiResponse> => {
+    let URL_BACKEND = `/api/TrainingRecord?current=${current}&pageSize=${pageSize}&sort=-Score`;
+
+    if (filters?.courseId) {
+        URL_BACKEND += `&courseId=${filters.courseId}`;
+    }
+    if (filters?.employeeName) {
+        URL_BACKEND += `&employeeName=${encodeURIComponent(filters.employeeName)}`;
+    }
+    if (filters?.status !== null && filters?.status !== undefined) {
+        URL_BACKEND += `&status=${filters.status}`;
+    }
+
+    return axios.get(URL_BACKEND);
+};
+
+export const updateTrainingRecordAPI = (id: string, payload: Partial<TrainingRecord>): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/TrainingRecord/${id}`;
+    return axios.put(URL_BACKEND, payload);
+};
+
+export const deleteTrainingRecordAPI = (id: string): Promise<ApiResponse> => {
+    const URL_BACKEND = `/api/TrainingRecord/${id}`;
+    return axios.delete(URL_BACKEND);
+};
+
+export const createTrainingRecordAPI = (payload: { employeeId: string; courseId: string; evaluatedBy: string; evaluationNote?: string; }) => {
+    return axios.post(`/api/TrainingRecord`, payload);
+};
+
 
 // Role
 export const fetchRolesAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {

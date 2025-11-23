@@ -53,6 +53,8 @@ import { UserManagementPage } from './pages/UserPage/userManagement.tsx';
 import { RolePage } from './pages/Role/RolePage.tsx';
 import { NotificationHistoryPage } from './pages/Notification/NotificationHistoryPage.tsx';
 import { NotificationPage } from './pages/Notification/NotificationPage.tsx';
+import { TrainingRecordPage } from './pages/Training_Record/TrainingRecordPage.tsx';
+import { TrainingRecordAllPage } from './pages/Training_Record/TrainingRecordAllPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -83,6 +85,8 @@ const router = createBrowserRouter([
           { path: "/reward-penalty/list", element: <RewardPenaltiesPage /> },
           { path: "/overtime", element: <OvertimePage /> },
           { path: "/course", element: <CoursePage /> },
+          { path: "/course/training-record", element: <TrainingRecordAllPage /> },
+          { path: "/course/training-record/:courseId", element: <TrainingRecordPage /> },
           { path: "/courses/:courseId/questions", element: <CourseQuestionList /> },
           { path: "/courses/:courseId/questions/create", element: <CourseQuestionForm /> },
           { path: "/appointment", element: <AppointmentPage /> },

@@ -458,6 +458,18 @@ export const CoursePage = () => {
                                         >
                                             Xuất kết quả đào tạo ra Excel
                                         </Button>
+
+                                        <Button
+                                            type="primary"
+                                            size="large"
+                                            icon={<IconWrapper Icon={CirclePlus} color="#fff" />}
+                                            onClick={() =>
+                                                navigate(`/course/training-record/${selectedCourse.id}`)
+                                            }
+                                            className="w-full mt-4"
+                                        >
+                                            Xem danh sách học viên đã học khóa này
+                                        </Button>
                                     </>
                                 ) : (
                                     <p>Chọn một khóa học để xem chi tiết.</p>
