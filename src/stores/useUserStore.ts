@@ -3,6 +3,7 @@ import { fetchUsersAPI, createUserAPI, updateUserAPI, deleteUserAPI, filterUsers
 import { User } from "src/types/user/User";
 import { PaginationMeta } from "src/types/api";
 import { hubConnection, startConnection } from "src/services/signalr";
+import { UserAdd } from "src/types/user/UserAdd";
 
 interface UserStore {
     users: User[];
@@ -10,7 +11,7 @@ interface UserStore {
     isModalOpen: boolean;
     searchText: string;
     fetchUsers: (current?: number, pageSize?: number, q?: string, role?: string) => Promise<void>;
-    addUser: (payload: Partial<User>) => Promise<void>;
+    addUser: (payload: UserAdd) => Promise<User>;
     updateUser: (id: string, data: Partial<User>) => Promise<void>;
     deleteUser: (id: string) => Promise<void>;
     setModalOpen: (v: boolean) => void;
@@ -22,7 +23,6 @@ interface UserStore {
 export const useUserStore = create<UserStore>((set, get) => {
 
     // Tự động kết nối SignalR khi store được tạo
-    startConnection();
 
     // Lắng nghe realtime từ backend ASP.NET Core
     hubConnection.on("UserChanged", ({ action, data }) => {
@@ -67,14 +67,16 @@ export const useUserStore = create<UserStore>((set, get) => {
             }
         },
 
-        addUser: async (payload) => {
+        addUser: async (payload: UserAdd) => {
             try {
                 const res = await createUserAPI(payload);
 
                 const created = res.data.data || res.data;
                 if (created) {
-                    set({ users: [...get().users, created] });
+                    set({ users: [created, ...get().users] });
                 }
+
+                return created;
             } catch (err) {
                 console.error("Thêm tài khoản mới thất bại", err);
                 throw err;

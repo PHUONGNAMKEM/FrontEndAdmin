@@ -25,7 +25,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import './layoutStyle/bodyPageStyle.scss'
 import { getGoalByIdAPI } from '../../services/api.me.service';
-import { ArrowLeftRight, ArrowRight, Bell, BookOpenCheck, ChartColumn, ChartNoAxesGantt, CircleAlert, CircleCheckBig, ClockArrowUp, CreditCard, FileSpreadsheet, FileUser, Gift, GiftIcon, GraduationCap, HandCoins, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, UserStar, Warehouse } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, Bell, BookOpenCheck, Briefcase, CalendarRange, ChartColumn, ChartNoAxesGantt, CircleAlert, CircleCheckBig, ClockArrowUp, CreditCard, FileSpreadsheet, FileUser, Gift, GiftIcon, GraduationCap, HandCoins, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, UserStar, Warehouse } from 'lucide-react';
 import ThemeToggle from '../theme/ThemeToggle';
 import { useTheme } from '@components/context/ThemeContext';
 import { IconWrapper } from '@components/customsIconLucide/IconWrapper';
@@ -99,16 +99,18 @@ const BodyPage = () => {
                 getItem(<Link to="/notification/list">Danh sách</Link>, "notification-list"),
             ]
         ),
-        getItem(<Link to="/appointment">Bổ nhiệm</Link>, "appointment", <IconWrapper Icon={UserRoundPlus} />),
-        getItem(<Link to="/dismissal">Miễn nhiệm</Link>, "dismissal", <IconWrapper Icon={UserRoundX} />),
-        getItem(<Link to="/transfer">Thuyên chuyển</Link>, "transfer", <IconWrapper Icon={ArrowLeftRight} />),
-        getItem(<Link to="/resignation">Nghỉ việc</Link>, "resignation", <IconWrapper Icon={UserRoundMinus} />),
-        getItem(<Link to="/reward">Khen thưởng</Link>, "reward", <IconWrapper Icon={Gift} />),
-        getItem(<Link to="/discipline">Kỷ luật</Link>, "discipline", <IconWrapper Icon={Shield} />),
-        getItem(<Link to="/incident">Sự cố</Link>, "incident", <IconWrapper Icon={CircleAlert} />),
-        getItem(<Link to="/planning">Quy hoạch</Link>, "planning", <IconWrapper Icon={SquareKanban} />),
-        getItem(<Link to="/report">Báo cáo</Link>, "report", <IconWrapper Icon={ChartColumn} />),
-        getItem(<Link to="/settings">Thiết lập</Link>, "settings", <IconWrapper Icon={Settings} />),
+        getItem(<Link to="/shift-template">Mẫu ca</Link>, "shift-template", <IconWrapper Icon={Briefcase} />),
+        getItem(<Link to="/work-schedule">Lịch làm việc</Link>, "work-schedule", <IconWrapper Icon={CalendarRange} />),
+        // getItem(<Link to="/appointment">Bổ nhiệm</Link>, "appointment", <IconWrapper Icon={UserRoundPlus} />),
+        // getItem(<Link to="/dismissal">Miễn nhiệm</Link>, "dismissal", <IconWrapper Icon={UserRoundX} />),
+        // getItem(<Link to="/transfer">Thuyên chuyển</Link>, "transfer", <IconWrapper Icon={ArrowLeftRight} />),
+        // getItem(<Link to="/resignation">Nghỉ việc</Link>, "resignation", <IconWrapper Icon={UserRoundMinus} />),
+        // getItem(<Link to="/reward">Khen thưởng</Link>, "reward", <IconWrapper Icon={Gift} />),
+        // getItem(<Link to="/discipline">Kỷ luật</Link>, "discipline", <IconWrapper Icon={Shield} />),
+        // getItem(<Link to="/incident">Sự cố</Link>, "incident", <IconWrapper Icon={CircleAlert} />),
+        // getItem(<Link to="/planning">Quy hoạch</Link>, "planning", <IconWrapper Icon={SquareKanban} />),
+        // getItem(<Link to="/report">Báo cáo</Link>, "report", <IconWrapper Icon={ChartColumn} />),
+        // getItem(<Link to="/settings">Thiết lập</Link>, "settings", <IconWrapper Icon={Settings} />),
     ];
 
     // Chỉ Admin mới có thêm

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Table, Card, List, Typography, Modal, Button, Input, Pagination, Space, Popconfirm, Form, notification, Tag, Descriptions, Select, } from "antd";
 import { AlignJustify, PanelLeft, CirclePlus, Edit3, Trash, Ban, Check, Search, } from "lucide-react";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
@@ -6,6 +6,8 @@ import { User } from "src/types/user/User";
 import { useUserStore } from "src/stores/useUserStore";
 import { useSearchParams, useOutletContext } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
+import { UserAdd } from "src/types/user/UserAdd";
+import { useEmployeeStore } from "src/stores/useEmployeeStore";
 
 const { Title } = Typography;
 
@@ -24,6 +26,9 @@ export const UserManagementPage = () => {
     const currentPage = Number(searchParams.get("current") || "1");
     const currentSize = Number(searchParams.get("pageSize") || "10");
 
+    // Lấy danh sách employees từ store ra để so sánh với lại danh sách employee (employeeId) trong users để lọc ra những nhân viên chưa có tài khoản user
+    const { employees, fetchEmployees, meta: employeeMeta } = useEmployeeStore();
+
     // Header
     const { setHeaderContent } =
         useOutletContext<HeaderOutletContextType>();
@@ -40,6 +45,7 @@ export const UserManagementPage = () => {
     // Fetch
     useEffect(() => {
         fetchUsers(currentPage, currentSize, searchText, roleFilter);
+        fetchEmployees(1, employeeMeta?.total); // Lấy danh sách nhân viên để hiển thị trong dropdown thêm user
     }, [searchParams, searchText, roleFilter]);
 
     const handlePageChange = (current: number, pageSize: number) => {
@@ -124,7 +130,14 @@ export const UserManagementPage = () => {
     const handleAdd = async () => {
         try {
             const values = await form.validateFields();
-            await addUser(values);
+            const payload: UserAdd = {
+                employeeId: values.employeeId,
+                userName: values.userName,
+                roleId: values.roleId,
+                status: values.status,
+                tempPassword: values.tempPassword,
+            };
+            await addUser(payload);
 
             notification.success({ message: "Thêm tài khoản thành công!" });
             setModalOpen(false);
@@ -158,6 +171,26 @@ export const UserManagementPage = () => {
         setIsEditing(false);
     };
 
+    const availableEmployees = useMemo(() => {
+        // tập các employeeId đã có tài khoản
+        const employeeHasUser = new Set( // dùng Set để đảm bảo không trùng và tra nhanh trong đó
+            users
+                .filter(u => u.employeeId)         // phòng khi null
+                .map(u => u.employeeId as string)
+        );
+
+        // lọc employees: chỉ giữ những nhân viên chưa có trong set trên
+        return employees.filter(emp => !employeeHasUser.has(emp.id!)); // tra ở đây
+    }, [employees, users]);
+
+
+    const roleOptions = [
+        { value: "00000000-0000-0000-0000-000000000001", label: "Admin" },
+        { value: "00000000-0000-0000-0000-000000000002", label: "HR" },
+        { value: "00000000-0000-0000-0000-000000000003", label: "Employee" },
+        { value: "00000000-0000-0000-0000-000000000004", label: "User" },
+        { value: "00000000-0000-0000-0000-000000000005", label: "Manager" },
+    ];
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== Toolbar ===== */}
@@ -224,14 +257,14 @@ export const UserManagementPage = () => {
                         onClick={() => setViewMode("detail")}
                     />
 
-                    <Button
+                    {/* <Button
                         type="primary"
                         size="large"
                         icon={<IconWrapper Icon={CirclePlus} color="#fff" />}
                         onClick={() => setModalOpen(true)}
                     >
                         Thêm
-                    </Button>
+                    </Button> */}
                 </Space>
             </div>
 
@@ -333,18 +366,41 @@ export const UserManagementPage = () => {
 
                                 <Descriptions bordered column={1} size="middle">
 
-                                    <Descriptions.Item label="Role">
+                                    {/* <Descriptions.Item label="Role">
                                         {isEditing ? (
                                             <Input
-                                                value={editedUser?.roleName}
-                                                onChange={(e) => handleChange("roleName", e.target.value)}
+                                                value={editedUser?.roleId}
+                                                onChange={(e) => handleChange("roleId", e.target.value)}
                                             />
                                         ) : (
                                             <Tag color={roleColors[selectedUser.roleName]}>
                                                 {selectedUser.roleName}
                                             </Tag>
                                         )}
+                                    </Descriptions.Item> */}
+
+                                    <Descriptions.Item label="Role">
+                                        {isEditing ? (
+                                            <Select
+                                                style={{ width: "100%" }}
+                                                value={editedUser?.roleId}
+                                                onChange={(val, option) => {
+                                                    // cập nhật roleId để gửi lên API
+                                                    handleChange("roleId", val);
+
+                                                    // cập nhật luôn roleName cho UI 
+                                                    const label = (option as any).label as string;
+                                                    handleChange("roleName", label);
+                                                }}
+                                                options={roleOptions}
+                                            />
+                                        ) : (
+                                            <Tag color={roleColors[selectedUser.roleName] || "default"}>
+                                                {selectedUser.roleName}
+                                            </Tag>
+                                        )}
                                     </Descriptions.Item>
+
 
                                     <Descriptions.Item label="Tên nhân viên">
                                         {selectedUser.employeeName}
@@ -401,7 +457,7 @@ export const UserManagementPage = () => {
             )}
 
             {/* ===== Modal Add ===== */}
-            <Modal
+            {/* <Modal
                 title="Thêm tài khoản"
                 open={isModalOpen}
                 onCancel={() => setModalOpen(false)}
@@ -411,23 +467,69 @@ export const UserManagementPage = () => {
             >
                 <Form layout="vertical" form={form}>
                     <Form.Item
+                        label="Nhân viên"
+                        name="employeeId"
+                        rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}
+                    >
+                        <Select
+                            placeholder="Chọn nhân viên"
+                            options={availableEmployees.map(emp => ({
+                                value: emp.id,  // gửi id nhân viên cho backend
+                                label: `${emp.fullName} - ${emp.email}`, // show đẹp hơn
+                            }))}
+                            showSearch
+                            optionFilterProp="label"
+                        />
+                    </Form.Item>
+
+                    <Form.Item
                         label="Username"
                         name="userName"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng nhập username",
-                            },
-                        ]}
+                        rules={[{ required: true, message: "Vui lòng nhập username" }]}
                     >
                         <Input />
                     </Form.Item>
 
-                    <Form.Item label="Role" name="roleName">
-                        <Input placeholder="Admin / HR / Manager / User" />
+                    <Form.Item
+                        label="Role"
+                        name="roleId"
+                        rules={[{ required: true, message: "Vui lòng chọn role" }]}
+                    >
+                        <Select
+                            placeholder="Chọn role"
+                            options={[
+                                { value: "1", label: "Admin" },
+                                { value: "2", label: "Manager" },
+                                { value: "3", label: "HR" },
+                                { value: "4", label: "Employee" },
+                                { value: "5", label: "User" },
+                            ]}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Trạng thái"
+                        name="status"
+                        initialValue={0}
+                    >
+                        <Select
+                            options={[
+                                { value: 0, label: "Active" },
+                                { value: 1, label: "Locked" },
+                            ]}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Mật khẩu tạm"
+                        name="tempPassword"
+                        rules={[{ required: true, message: "Nhập mật khẩu tạm" }]}
+                    >
+                        <Input.Password />
                     </Form.Item>
                 </Form>
-            </Modal>
+
+            </Modal> */}
         </div>
     );
 };

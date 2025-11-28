@@ -55,6 +55,8 @@ import { NotificationHistoryPage } from './pages/Notification/NotificationHistor
 import { NotificationPage } from './pages/Notification/NotificationPage.tsx';
 import { TrainingRecordPage } from './pages/Training_Record/TrainingRecordPage.tsx';
 import { TrainingRecordAllPage } from './pages/Training_Record/TrainingRecordAllPage.tsx';
+import { ShiftTemplatePage } from './pages/ShiftTemplate/ShiftTemplatePage.tsx';
+import { WorkSchedulePage } from './pages/WorkSchedule/WorkSchedulePage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -89,6 +91,8 @@ const router = createBrowserRouter([
           { path: "/course/training-record/:courseId", element: <TrainingRecordPage /> },
           { path: "/courses/:courseId/questions", element: <CourseQuestionList /> },
           { path: "/courses/:courseId/questions/create", element: <CourseQuestionForm /> },
+          { path: "/shift-template", element: <ShiftTemplatePage /> },
+          { path: "/work-schedule", element: <WorkSchedulePage /> },
           { path: "/appointment", element: <AppointmentPage /> },
           { path: "/dismissal", element: <DismissalPage /> },
           { path: "/transfer", element: <TransferPage /> },

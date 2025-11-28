@@ -22,6 +22,10 @@ import { CreateNotificationPayload } from "src/types/notification/CreateNotifica
 import { UpdateNotificationPayload } from "src/types/notification/UpdateNotificationPayload";
 import { Dashboard } from "src/types/dashboard/Dashboard";
 import { TrainingRecord } from "src/types/training_record/TrainingRecord";
+import { UserAdd } from "src/types/user/UserAdd";
+import { ForgotPasswordRequest } from "src/types/auth/ForgotPassword";
+import { ShiftTemplate } from "src/types/shift/ShiftTemplate";
+import { WorkScheduleBulkCreatePayload, WorkScheduleBulkDeletePayload, WorkScheduleFilters, WorkSchedulePayload } from "src/types/work/WorkSchedule";
 
 
 // Employee
@@ -97,6 +101,11 @@ export const changePasswordAPI = (currentPassword: string | undefined, newPasswo
     }
     return axios.post(URL_BACKEND, data);
 }
+
+// Forgot Password
+export const forgotPasswordAPI = (payload: ForgotPasswordRequest): Promise<ApiResponse> => {
+    return axios.post("/api/Auth/forgot-password", payload);
+};
 
 // Department
 export const fetchDepartmentAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
@@ -512,6 +521,70 @@ export const createTrainingRecordAPI = (payload: { employeeId: string; courseId:
     return axios.post(`/api/TrainingRecord`, payload);
 };
 
+// Shift Template
+export const fetchShiftTemplatesAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/ShiftTemplate?${query}current=${current}&pageSize=${pageSize}&sort=Code`;
+    return axios.get(URL_BACKEND);
+};
+
+export const createShiftTemplateAPI = (payload: Partial<ShiftTemplate>): Promise<ApiResponse> => {
+    return axios.post("/api/ShiftTemplate", payload);
+};
+
+export const updateShiftTemplateAPI = (id: string, payload: Partial<ShiftTemplate>): Promise<ApiResponse> => {
+    return axios.put(`/api/ShiftTemplate/${id}`, payload);
+};
+
+export const deleteShiftTemplateAPI = (id: string): Promise<ApiResponse> => {
+    return axios.delete(`/api/ShiftTemplate/${id}`);
+};
+
+// Work Schedule
+export const fetchWorkSchedulesAPI = (current: number, pageSize: number, filters?: WorkScheduleFilters): Promise<ApiResponse> => {
+    let URL_BACKEND = `/api/WorkSchedule?current=${current}&pageSize=${pageSize}&sort=Date`;
+
+    if (filters?.employeeId) {
+        URL_BACKEND += `&employeeId=${filters.employeeId}`;
+    }
+    if (filters?.departmentId) {
+        URL_BACKEND += `&departmentId=${filters.departmentId}`;
+    }
+    if (filters?.shiftTemplateId) {
+        URL_BACKEND += `&shiftTemplateId=${filters.shiftTemplateId}`;
+    }
+    if (filters?.from) {
+        URL_BACKEND += `&from=${filters.from}`;
+    }
+    if (filters?.to) {
+        URL_BACKEND += `&to=${filters.to}`;
+    }
+
+    return axios.get(URL_BACKEND);
+};
+
+export const createWorkScheduleAPI = (payload: WorkSchedulePayload): Promise<ApiResponse> => {
+    return axios.post("/api/WorkSchedule", payload);
+};
+
+export const updateWorkScheduleAPI = (id: string, payload: Partial<WorkSchedulePayload>): Promise<ApiResponse> => {
+    return axios.put(`/api/WorkSchedule/${id}`, payload);
+};
+
+export const deleteWorkScheduleAPI = (id: string): Promise<ApiResponse> => {
+    return axios.delete(`/api/WorkSchedule/${id}`);
+};
+
+// Work Schedule Bulk (Insert and Update)
+export const bulkCreateWorkScheduleAPI = (payload: WorkScheduleBulkCreatePayload): Promise<ApiResponse> => {
+    return axios.post("/api/WorkSchedule/bulk", payload);
+};
+
+export const bulkDeleteWorkScheduleAPI = (payload: WorkScheduleBulkDeletePayload): Promise<ApiResponse> => {
+    // axios.delete muốn gửi body thì phải để trong field data
+    return axios.delete("/api/WorkSchedule/bulk", { data: payload });
+};
+
 
 // Role
 export const fetchRolesAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
@@ -548,7 +621,7 @@ export const filterUsersAPI = (current: number, pageSize: number, q?: string, ro
     return axios.get(URL_BACKEND);
 };
 
-export const createUserAPI = (payload: Partial<User>): Promise<ApiResponse> => {
+export const createUserAPI = (payload: UserAdd): Promise<ApiResponse> => {
     return axios.post("/api/Users", payload);
 };
 
