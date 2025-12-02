@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import { useDashboardStore } from "src/stores/useDashboardStore";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { usePDFStore } from "src/stores/report/pdf";
-import { useTheme } from "node_modules/@emotion/react/dist/declarations/src/theming";
+import { useTheme } from "@components/context/ThemeContext";
 
 const OverviewPage = () => {
     const { dashboard, fetchDashboard } = useDashboardStore();
@@ -85,6 +85,7 @@ const OverviewPage = () => {
         "#ffc400",
     ];
 
+    const theme = useTheme();
 
     return (
         <Box sx={{ minHeight: "100vh" }}>
@@ -95,6 +96,8 @@ const OverviewPage = () => {
                 </Typography>
 
                 <Button
+                    color={theme.theme === "dark" ? "primary" : "default"}
+                    variant={theme.theme === "dark" ? "solid" : "outlined"}
                     size="large"
                     icon={<IconWrapper Icon={Download} />}
                     onClick={(e) => {
