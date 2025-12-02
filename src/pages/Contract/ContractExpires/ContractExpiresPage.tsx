@@ -38,7 +38,7 @@ export const ContractExpiresPage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Tổng số hợp đồng sắp hết hạn: <span>{meta?.total || 0}</span>
                 </h2>
             </div>

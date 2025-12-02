@@ -66,7 +66,7 @@ export const PositionPage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Tổng số chức vụ: <span>{meta?.total || 0}</span>
                 </h2>
             </div>
@@ -183,6 +183,16 @@ export const PositionPage = () => {
         }
     };
 
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchPosition(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== HEADER TOOLBAR ===== */}
@@ -199,6 +209,9 @@ export const PositionPage = () => {
                         placeholder="Tìm kiếm phòng ban..."
                         prefix={<IconWrapper Icon={Search} />}
                         style={{ width: 320 }}
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onPressEnter={handleSearch}
                     />
                 </div>
 

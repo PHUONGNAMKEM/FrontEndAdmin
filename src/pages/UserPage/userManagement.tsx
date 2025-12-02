@@ -35,7 +35,7 @@ export const UserManagementPage = () => {
 
     useEffect(() => {
         setHeaderContent(
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-bold text-[var(--text-color)]">
                 Tổng số tài khoản: <span>{meta?.total || 0}</span>
             </h2>
         );

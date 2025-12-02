@@ -28,7 +28,7 @@ import {
     EllipsisOutlined,
 } from "@ant-design/icons";
 import { AlignJustify, PanelLeft, Check, Ban, ListEnd } from "lucide-react";
-import { useOutletContext, useSearchParams } from "react-router-dom";
+import { Link, useOutletContext, useSearchParams } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useContractStore } from "src/stores/useContractStore";
 import { Contract } from "src/types/contract/Contract";
@@ -82,7 +82,7 @@ export const ContractPage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Tổng số hợp đồng: <span>{meta?.total || 0}</span>
                 </h2>
             </div>
@@ -227,6 +227,16 @@ export const ContractPage = () => {
 
     }
 
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchContract(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== TOOLBAR ===== */}
@@ -243,6 +253,9 @@ export const ContractPage = () => {
                         placeholder="Tìm kiếm hợp đồng..."
                         prefix={<SearchOutlined />}
                         style={{ width: 280, marginRight: "20px" }}
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onPressEnter={handleSearch}
                     />
                     {/* <Radio onChange={}>Những hợp đồng sắp hết hạn trong 30 ngày</Radio> */}
                 </div>
@@ -271,9 +284,9 @@ export const ContractPage = () => {
                     <Dropdown
                         menu={{
                             items: [
-                                { key: "1", label: "Những hợp đồng sẽ hết hạn sau 30 ngày" },
-                                { key: "2", label: "Xuất Excel" },
-                                { key: "3", label: "Báo cáo" },
+                                { key: "1", label: <Link to="/contract/expiring">Những hợp đồng sẽ hết hạn sau 30 ngày</Link> },
+                                // { key: "2", label: "Xuất Excel" },
+                                // { key: "3", label: "Báo cáo" },
                             ],
                         }}
                     >

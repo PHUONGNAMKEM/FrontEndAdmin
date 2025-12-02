@@ -142,7 +142,7 @@ const EmployeePage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">Tổng số nhân viên: <span>{meta?.total || 0}</span></h2>
+                <h2 className="text-xl font-bold text-[var(--text-color)]">Tổng số nhân viên: <span>{meta?.total || 0}</span></h2>
             </div>
         );
 
@@ -346,6 +346,15 @@ const EmployeePage = () => {
             disabled: true,
         },
     ];
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchEmployees(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
 
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
@@ -363,6 +372,9 @@ const EmployeePage = () => {
                         placeholder="Tìm kiếm theo tên, mã, phòng ban..."
                         prefix={<IconWrapper Icon={Search} />}
                         style={{ width: 300 }}
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onPressEnter={handleSearch}
                     />
                     <Button
                         className="ml-2.5"

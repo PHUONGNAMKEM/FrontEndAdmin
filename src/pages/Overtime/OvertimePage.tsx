@@ -1,23 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-    Table,
-    Space,
-    Button,
-    Input,
-    Card,
-    Descriptions,
-    List,
-    Typography,
-    message,
-    notification,
-    Pagination,
-    Popconfirm,
-    Modal,
-    Form,
-    DatePicker,
-    InputNumber,
-    Select,
-} from "antd";
+import { Table, Space, Button, Input, Card, Descriptions, List, Typography, message, notification, Pagination, Popconfirm, Modal, Form, DatePicker, InputNumber, Select, } from "antd";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { AlignJustify, PanelLeft, CirclePlus, Edit3, Trash, Ban, Check, Search } from "lucide-react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
@@ -59,7 +41,7 @@ export const OvertimePage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Tổng số OT: <span>{meta?.total || 0}</span>
                 </h2>
             </div>
@@ -133,11 +115,28 @@ export const OvertimePage = () => {
         }
     };
 
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchOvertime(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* Toolbar */}
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-                <Input placeholder="Tìm kiếm OT..." prefix={<IconWrapper Icon={Search} />} style={{ width: 320 }} />
+                <Input
+                    placeholder="Tìm kiếm OT..."
+                    prefix={<IconWrapper Icon={Search} />}
+                    style={{ width: 320 }}
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    onPressEnter={handleSearch}
+                />
                 <Space>
                     <Button
                         size="large"

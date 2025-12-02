@@ -25,7 +25,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import './layoutStyle/bodyPageStyle.scss'
 import { getGoalByIdAPI } from '../../services/api.me.service';
-import { ArrowLeftRight, ArrowRight, Bell, BookOpenCheck, Briefcase, CalendarRange, ChartColumn, ChartNoAxesGantt, CircleAlert, CircleCheckBig, ClockArrowUp, CreditCard, FileSpreadsheet, FileUser, Gift, GiftIcon, GraduationCap, HandCoins, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, UserStar, Warehouse } from 'lucide-react';
+import { ArrowLeftRight, ArrowRight, Bell, BellRing, BookOpenCheck, Briefcase, CalendarRange, ChartColumn, ChartNoAxesGantt, CircleAlert, CircleCheckBig, ClockArrowUp, CreditCard, FileSpreadsheet, FileUser, Gift, GiftIcon, GraduationCap, HandCoins, House, PartyPopper, Settings, Shield, SquareKanban, TriangleAlert, UserCog, UserRound, UserRoundMinus, UserRoundPlus, UserRoundX, UserStar, Warehouse } from 'lucide-react';
 import ThemeToggle from '../theme/ThemeToggle';
 import { useTheme } from '@components/context/ThemeContext';
 import { IconWrapper } from '@components/customsIconLucide/IconWrapper';
@@ -67,7 +67,7 @@ const BodyPage = () => {
         getItem(<Link to="/employee">Nhân viên</Link>, "employee", <IconWrapper Icon={UserRound} />),
         getItem(<Link to="/department">Phòng ban</Link>, "department", <IconWrapper Icon={Warehouse} />),
         getItem(<Link to="/position">Chức vụ</Link>, "position", <IconWrapper Icon={ChartNoAxesGantt} />),
-        getItem(<Link to="/profile">Hồ sơ</Link>, "profile", <IconWrapper Icon={FileUser} />),
+        // getItem(<Link to="/profile">Hồ sơ</Link>, "profile", <IconWrapper Icon={FileUser} />),
         getItem(<Link to="/contract">Hợp đồng</Link>, "contract", <IconWrapper Icon={FileSpreadsheet} />,
             [
                 getItem(<Link to="/contract">Danh sách</Link>, "contract-list"),
@@ -90,10 +90,11 @@ const BodyPage = () => {
         getItem(<Link to="/overtime">Làm thêm</Link>, "overtime", <IconWrapper Icon={ClockArrowUp} />),
         getItem(<Link to="/course">Khóa học</Link>, "course", <IconWrapper Icon={BookOpenCheck} />,
             [
+                getItem(<Link to="/course">Các khóa</Link>, "course"),
                 getItem(<Link to="/course/training-record">Kết quả</Link>, "course-training-record"),
             ]
         ),
-        getItem(<Link to="/notification">Thông báo</Link>, "notification", <IconWrapper Icon={Bell} />,
+        getItem(<Link to="/notification">Thông báo</Link>, "notification", <IconWrapper Icon={BellRing} />,
             [
                 getItem(<Link to="/notification/history">Lịch sử</Link>, "history"),
                 getItem(<Link to="/notification/list">Danh sách</Link>, "notification-list"),
@@ -115,8 +116,8 @@ const BodyPage = () => {
 
     // Chỉ Admin mới có thêm
     const adminExtraItems: MenuItem[] = [
-        getItem(<Link to="/user-management">Quản lý người dùng</Link>, "user-management", <IconWrapper Icon={UserCog} />),
-        getItem(<Link to="/role">Phân quyền</Link>, "role", <IconWrapper Icon={UserStar} />),
+        getItem(<Link to="/user-management">Người dùng</Link>, "user-management", <IconWrapper Icon={UserCog} />),
+        getItem(<Link to="/role">Các quyền</Link>, "role", <IconWrapper Icon={UserStar} />),
     ];
 
     // Build danh sách cuối cùng

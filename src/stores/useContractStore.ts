@@ -8,8 +8,9 @@ interface ContractStore {
     contracts: Contract[];
     contractExpires?: ContractExpires[];
     meta?: PaginationMeta | null;
+    searchText: string;
     isModalOpen: boolean;
-    fetchContract: (current?: number, pageSize?: number) => Promise<void>;
+    fetchContract: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     fetchContractExpires: (current?: number, pageSize?: number, withinDays?: number) => Promise<void>;
     addContract?: (payload: Contract) => Promise<void>;
     updateContract?: (id: string, data: Partial<Contract>) => Promise<void>;
@@ -21,18 +22,19 @@ export const useContractStore = create<ContractStore>((set, get) => ({
     contracts: [],
     contractExpires: [],
     meta: null,
+    searchText: "",
     isModalOpen: false,
 
-    fetchContract: async (current = 1, pageSize = 10) => {
+    fetchContract: async (current = 1, pageSize = 10, q = "") => {
         try {
-            const res = await fetchContractAPI(current, pageSize);
+            const res = await fetchContractAPI(current, pageSize, q);
             const data = res.data[0];
             const contracts = data.result;
             const meta = data.meta;
             console.log(">>> check res: ", res)
             console.log(">>> check contracts: ", contracts)
 
-            set({ contracts, meta });
+            set({ contracts, meta, searchText: q });
         } catch (err: any) {
             console.error("Fetch contracts failed:", err);
             throw err;

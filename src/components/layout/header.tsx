@@ -25,6 +25,7 @@ const Header = () => {
     const navigate = useNavigate();
     const { user, setUser } = useContext(AuthContext);
     const { theme } = useTheme();
+    const isGuest = !user || user.username === "Guest";
 
     // Lấy path hiện tại từ URL, ví dụ: "/users"
     const path = location.pathname;
@@ -89,22 +90,33 @@ const Header = () => {
         load();
     }, [meta?.total]);
     const items = [
-        {
-            label: <Link to={"/overview"}>Home</Link>,
-            key: 'overview',
-            icon: <IconWrapper Icon={House} />,
-        },
-        ...(!user ? [
-            {
-                label: <Link to={"/login"}>Login</Link>,
-                key: 'login',
-                icon: <IconWrapper Icon={LogIn} />,
-            },
-            {
-                label: <Link to={"/register"}>Register</Link>,
-                key: 'register',
-                icon: <IconWrapper Icon={UserSquare2} />,
-            },] : []),
+
+        ...(isGuest
+            ? [
+                {
+                    label: <Link to={"/login"}>Login</Link>,
+                    key: "login",
+                    icon: <IconWrapper Icon={LogIn} />,
+                },
+                {
+                    label: <Link to={"/register"}>Register</Link>,
+                    key: "register",
+                    icon: <IconWrapper Icon={UserSquare2} />,
+                },
+            ]
+            : []),
+
+        // ...(!user ? [
+        //     {
+        //         label: <Link to={"/login"}>Login</Link>,
+        //         key: 'login',
+        //         icon: <IconWrapper Icon={LogIn} />,
+        //     },
+        //     {
+        //         label: <Link to={"/register"}>Register</Link>,
+        //         key: 'register',
+        //         icon: <IconWrapper Icon={UserSquare2} />,
+        //     },] : []),
 
         ...(user ? [
             {
@@ -112,50 +124,61 @@ const Header = () => {
                 key: 'settings',
                 icon: role === "Admin" ? <IconWrapper Icon={Crown} color="#ffc401" /> : <IconWrapper Icon={Cannabis} color="#1f96f8" />,
             },
-
-            {
-                label: (
-                    <Badge count={unreadCount} offset={[10, -2]} color="red">
-                        Thông báo
-                    </Badge>
-                ),
-                key: 'notification',
-                icon: <IconWrapper Icon={BellRing} />,
-                children: [
-                    {
-                        label: <Link to={"/notification/history"}>Lịch sử thông báo</Link>,
-                        key: 'noti-all',
-                        icon: <IconWrapper Icon={ListTodo} />,
-                    },
-                    {
-                        label: (
-                            <Link to="/notification/history?unread=true">
-                                <div className="flex">
-                                    <span>Thông báo chưa đọc của nhân viên</span>
-                                    <Badge count={unreadCount} color="red" />
-                                </div>
+            ...(!isGuest) ? [
+                {
+                    label: <Link to={"/overview"}>Home</Link>,
+                    key: 'overview',
+                    icon: <IconWrapper Icon={House} />,
+                },
+                {
+                    label: (
+                        <Badge count={unreadCount} offset={[10, -2]} color="red">
+                            <Link
+                                to="/notification/history"
+                                className={theme === "dark" ? "text-[#ffffffa6]" : "text-black"}
+                            >
+                                Thông báo
                             </Link>
-                        ),
-                        key: 'noti-unread',
-                        icon: <IconWrapper Icon={BellDot} />,
-                    },
-                    {
-                        label: 'Cài đặt thông báo',
-                        key: 'noti-settings',
-                        icon: <IconWrapper Icon={Settings} />,
-                    }
-                ]
-            },
-            {
-                label: isLoggingOut ? (
-                    <span><Spin size="small" /> Logging out...</span>
-                ) : (
-                    'Logout'
-                ),
-                key: 'logout',
-                disabled: isLoggingOut, // ngăn spam click
-                icon: <IconWrapper Icon={LogOut} />,
-            },
+                        </Badge>
+                    ),
+                    key: 'notification',
+                    icon: <IconWrapper Icon={BellRing} />,
+                    children: [
+                        {
+                            label: <Link to={"/notification/history"}>Lịch sử thông báo</Link>,
+                            key: 'noti-all',
+                            icon: <IconWrapper Icon={ListTodo} />,
+                        },
+                        {
+                            label: (
+                                <Link to="/notification/history?unread=true">
+                                    <div className="flex">
+                                        <span>Thông báo chưa đọc của nhân viên</span>
+                                        <Badge count={unreadCount} color="red" />
+                                    </div>
+                                </Link>
+                            ),
+                            key: 'noti-unread',
+                            icon: <IconWrapper Icon={BellDot} />,
+                        },
+                        // {
+                        //     label: 'Cài đặt thông báo',
+                        //     key: 'noti-settings',
+                        //     icon: <IconWrapper Icon={Settings} />,
+                        // }
+                    ]
+                },
+                {
+                    label: isLoggingOut ? (
+                        <span><Spin size="small" /> Logging out...</span>
+                    ) : (
+                        'Logout'
+                    ),
+                    key: 'logout',
+                    disabled: isLoggingOut, // ngăn spam click
+                    icon: <IconWrapper Icon={LogOut} />,
+                },
+            ] : []
         ] : []),
 
     ];

@@ -1,21 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-    Button,
-    Checkbox,
-    DatePicker,
-    Dropdown,
-    Form,
-    Input,
-    Modal,
-    Pagination,
-    Select,
-    Space,
-    Tag,
-    Tooltip,
-    Typography,
-    notification,
-    Popconfirm,
-    MenuProps,
+    Button, Checkbox, DatePicker, Dropdown, Form, Input, Modal, Pagination, Select, Space, Tag, Tooltip, Typography, notification, Popconfirm, MenuProps,
 } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { useSearchParams, useOutletContext } from "react-router-dom";
@@ -634,7 +619,7 @@ export const WorkSchedulePage = () => {
                                     style={{
                                         borderRight: "1px solid #f0f0f0",
                                         padding: 4,
-                                        height: 44,
+                                        // height: 44,
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
@@ -655,7 +640,7 @@ export const WorkSchedulePage = () => {
                                                 </>
                                             }
                                         >
-                                            <Tag color="blue" style={{ padding: "0 10px" }}>
+                                            <Tag color="blue" style={{ padding: "0 10px" }} className="!m-0">
                                                 {shiftLabel}
                                             </Tag>
                                         </Tooltip>

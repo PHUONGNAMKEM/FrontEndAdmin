@@ -5,7 +5,11 @@ console.log(">>> Check token SignalR: ", token);
 
 export const hubConnection = new signalR.HubConnectionBuilder()
     .withUrl("https://hrmadmin.huynhthanhson.io.vn/notificationHub", {
-        accessTokenFactory: () => token, // Hàm này sẽ được gọi mỗi khi kết nối hoặc reconnect, trả về token mới nhất, Nó trả token để SignalR tự gắn vào query string khi chuyển sang WebSocket.
+        accessTokenFactory: () => {
+            const newToken = localStorage.getItem("access_token") || "";
+            console.log(">>> SignalR sending token (hub): ", newToken);
+            return newToken;
+        }, // Hàm này sẽ được gọi mỗi khi kết nối hoặc reconnect, trả về token mới nhất, Nó trả token để SignalR tự gắn vào query string khi chuyển sang WebSocket.
         // transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling
     }) // URL từ backend ASP.NET Core
     .withAutomaticReconnect() // tự động reconnect khi mất kết nối
@@ -13,13 +17,37 @@ export const hubConnection = new signalR.HubConnectionBuilder()
 
 // Bắt đầu kết nối 
 export const startConnection = async () => {
+    const token = localStorage.getItem("access_token") || "";
+    if (!token) {
+        console.log("[SignalR hub] No token, skip startConnection");
+        return;
+    }
+
     try {
-        if (hubConnection.state === "Disconnected") {
-            await hubConnection.start(); // chỉ start khi connection đang ở trạng thái Disconnected
-            console.log("SignalR connected");
+        if (hubConnection.state === signalR.HubConnectionState.Disconnected) {
+            await hubConnection.start();
+            console.log("SignalR hub connected");
         }
-    } catch (err) {
-        console.error("SignalR Connection Error: ", err);
+    } catch (err: any) {
+        console.error("SignalR hub Connection Error: ", err);
+
+        const msg = err?.message || "";
+        const status = err?.statusCode;
+
+        if (status === 401 || msg.includes("401")) {
+            console.log("[SignalR hub] Unauthorized (401), stop retrying.");
+            return;
+        }
+
         setTimeout(startConnection, 3000);
+    }
+};
+
+export const stopConnection = async () => {
+    try {
+        await hubConnection.stop();
+        console.log("SignalR hub stopped");
+    } catch (e) {
+        console.error("Stop SignalR hub error", e);
     }
 };

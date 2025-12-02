@@ -50,7 +50,7 @@ export const ShiftTemplatePage = () => {
     const { setHeaderContent } = useOutletContext<HeaderOutletContextType>();
     useEffect(() => {
         setHeaderContent(
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-bold text-[var(--text-color)]">
                 Tổng số mẫu ca: <span>{meta?.total || 0}</span>
             </h2>
         );
@@ -201,14 +201,19 @@ export const ShiftTemplatePage = () => {
                         {templates.map(t => (
                             <Col xs={24} sm={12} md={8} lg={6} key={t.id}>
                                 <Card
-                                    hoverable
+                                    hoverable={false}
+                                    className="
+                                    transition-shadow
+                                    duration-300 
+                                    cursor-pointer 
+                                    hover:shadow-[0_2px_8px_rgba(99,99,99,0.2)]"
                                     onClick={() => {
                                         setSelectedItem(t);
                                         setViewMode("detail");
                                     }}
                                 >
-                                    <Title level={5}>{t.code} – {t.name}</Title>
-                                    <div>{t.startTime} → {t.endTime}</div>
+                                    <Title className="min-h-[48px] max-h-[48px]" level={5}>{t.code} – {t.name}</Title>
+                                    <div>{t.startTime} - {t.endTime}</div>
                                     <Tag color="blue">{t.totalWorkingHours} giờ</Tag>
                                 </Card>
                             </Col>

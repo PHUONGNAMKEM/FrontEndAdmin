@@ -8,8 +8,9 @@ import { create } from "zustand";
 interface DepartmentStore {
     departments: Department[];
     meta?: PaginationMeta | null;
+    searchText: string;
     isModalOpen: boolean;
-    fetchDepartment: (current?: number, pageSize?: number) => Promise<void>;
+    fetchDepartment: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     addDepartment?: (payload: Department) => Promise<void>;
     updateDepartment?: (id: string, data: Partial<Department>) => Promise<void>;
     deleteDepartment?: (id: string) => Promise<void>;
@@ -49,10 +50,11 @@ export const useDepartmentStore = create<DepartmentStore>((set, get) => {
         departments: [],
         meta: null,
         isModalOpen: false,
+        searchText: "",
 
-        fetchDepartment: async (current = 1, pageSize = 10) => {
+        fetchDepartment: async (current = 1, pageSize = 10, q = "") => {
             try {
-                const res = await fetchDepartmentAPI(current, pageSize);
+                const res = await fetchDepartmentAPI(current, pageSize, q);
                 const data = res.data[0];
                 const departments = data.result;
                 const meta = data.meta;

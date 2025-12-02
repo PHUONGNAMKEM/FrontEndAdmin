@@ -6,8 +6,9 @@ import { create } from "zustand";
 interface RewardPenaltyStore {
     rewardPenalties: RewardPenalty[];
     meta?: PaginationMeta | null;
+    searchText: string;
     isModalOpen: boolean;
-    fetchRewardPenalty: (current?: number, pageSize?: number) => Promise<void>;
+    fetchRewardPenalty: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     filterRewardPenalty: (current?: number, pageSize?: number, type?: number) => Promise<void>;
     addRewardPenalty?: (payload: RewardPenalty) => Promise<void>;
     updateRewardPenalty?: (id: string, data: Partial<RewardPenalty>) => Promise<void>;
@@ -18,11 +19,12 @@ interface RewardPenaltyStore {
 export const useRewardPenaltyStore = create<RewardPenaltyStore>((set, get) => ({
     rewardPenalties: [],
     meta: null,
+    searchText: "",
     isModalOpen: false,
 
-    fetchRewardPenalty: async (current = 1, pageSize = 10) => {
+    fetchRewardPenalty: async (current = 1, pageSize = 10, q = "") => {
         try {
-            const res = await fetchRewardPenaltyAPI(current, pageSize);
+            const res = await fetchRewardPenaltyAPI(current, pageSize, q);
             const data = res.data[0];
             const rewardPenalties = data.result;
             const meta = data.meta;

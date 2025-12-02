@@ -30,7 +30,7 @@ export const PayrollRunSalaryDetailPage = () => {
                 >
                     Trở về
                 </Button>
-                <h2 className="text-xl font-bold">Chi tiết bảng lương nhân viên</h2>
+                <h2 className="text-xl font-bold text-[var(--text-color)]">Chi tiết bảng lương nhân viên</h2>
             </div>
         );
         return () => setHeaderContent(null);

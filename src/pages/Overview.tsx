@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import { useDashboardStore } from "src/stores/useDashboardStore";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { usePDFStore } from "src/stores/report/pdf";
+import { useTheme } from "node_modules/@emotion/react/dist/declarations/src/theming";
 
 const OverviewPage = () => {
     const { dashboard, fetchDashboard } = useDashboardStore();
@@ -89,7 +90,7 @@ const OverviewPage = () => {
         <Box sx={{ minHeight: "100vh" }}>
             {/* ======================= HEADER ======================= */}
             <div className="flex justify-between">
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: 700 }}>
+                <Typography variant="h5" sx={{ mb: 2, fontWeight: 700 }} className="text-[var(--text-color)]">
                     Tổng quan công ty
                 </Typography>
 

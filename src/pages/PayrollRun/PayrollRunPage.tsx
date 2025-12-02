@@ -60,7 +60,7 @@ export const PayrollRunPage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Tổng số kỳ lương: <span>{meta?.total || 0}</span>
                 </h2>
             </div>
@@ -171,11 +171,28 @@ export const PayrollRunPage = () => {
         setIsEditing(false);
     };
 
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchPayrollRuns(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== TOOLBAR ===== */}
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-                <Input placeholder="Tìm kỳ lương..." prefix={<SearchOutlined />} style={{ width: 320 }} />
+                <Input
+                    placeholder="Tìm kỳ lương..."
+                    prefix={<SearchOutlined />}
+                    style={{ width: 320 }}
+                    value={searchText}
+                    onChange={e => setSearchText(e.target.value)}
+                    onPressEnter={handleSearch}
+                />
                 <Space>
                     <Button
                         size="large"

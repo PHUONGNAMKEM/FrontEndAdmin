@@ -11,8 +11,9 @@ import { PaginationMeta } from "src/types/api";
 interface OvertimeStore {
     overtimes: Overtime[];
     meta?: PaginationMeta | null;
+    searchText: string;
     isModalOpen: boolean;
-    fetchOvertime: (current?: number, pageSize?: number) => Promise<void>;
+    fetchOvertime: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     addOvertime: (payload: Overtime) => Promise<void>;
     updateOvertime: (id: string, data: Partial<Overtime>) => Promise<void>;
     deleteOvertime: (id: string) => Promise<void>;
@@ -22,11 +23,12 @@ interface OvertimeStore {
 export const useOvertimeStore = create<OvertimeStore>((set, get) => ({
     overtimes: [],
     meta: null,
+    searchText: "",
     isModalOpen: false,
 
-    fetchOvertime: async (current = 1, pageSize = 10) => {
+    fetchOvertime: async (current = 1, pageSize = 10, q = "") => {
         try {
-            const res = await fetchOvertimeAPI(current, pageSize);
+            const res = await fetchOvertimeAPI(current, pageSize, q);
             const data = res.data[0];
             const overtimes = data.result;
             const meta = data.meta;

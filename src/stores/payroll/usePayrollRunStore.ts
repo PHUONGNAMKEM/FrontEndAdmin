@@ -7,8 +7,9 @@ import axios from "axios";
 interface PayrollRunStore {
     payrollRuns: PayrollRun[];
     meta?: PaginationMeta | null;
+    searchText: string;
     isModalOpen: boolean;
-    fetchPayrollRuns: (current?: number, pageSize?: number) => Promise<void>;
+    fetchPayrollRuns: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     createPayrollRun?: (payload: Partial<PayrollRun>) => Promise<void>;
     updatePayrollRun?: (id: string, data: Partial<PayrollRun>) => Promise<void>;
     deletePayrollRun?: (id: string) => Promise<void>;
@@ -18,11 +19,12 @@ interface PayrollRunStore {
 export const usePayrollRunStore = create<PayrollRunStore>((set, get) => ({
     payrollRuns: [],
     meta: null,
+    searchText: "",
     isModalOpen: false,
 
-    fetchPayrollRuns: async (current = 1, pageSize = 10) => {
+    fetchPayrollRuns: async (current = 1, pageSize = 10, q = "") => {
         try {
-            const res = await fetchPayrollRunAllAPI(current, pageSize);
+            const res = await fetchPayrollRunAllAPI(current, pageSize, q);
             const data = res.data[0];
             const payrollRuns = data.result;
             const meta = data.meta;

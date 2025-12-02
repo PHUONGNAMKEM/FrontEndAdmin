@@ -56,7 +56,7 @@ export const SalaryDailyPage: React.FC = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Chi tiết lương theo ngày • {month} • {employeeId}
                 </h2>
             </div>

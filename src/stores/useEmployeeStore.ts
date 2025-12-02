@@ -7,9 +7,10 @@ import { create } from "zustand";
 interface EmployeeStore {
     employees: Employee[];
     meta?: PaginationMeta | null;
+    searchText: string;
     isModalOpen: boolean;
     filters: Record<string, any>;
-    fetchEmployees: (current?: number, pageSize?: number) => Promise<void>;
+    fetchEmployees: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     fetchFilteredEmployees?: (filters: Record<string, any>, current?: number, pageSize?: number) => Promise<void>;
     addEmployee?: (payload: FormData) => Promise<void>;
     updateEmployee?: (id: string, data: FormData) => Promise<void>;
@@ -49,12 +50,13 @@ export const useEmployeeStore = create<EmployeeStore>((set, get) => {
 
         employees: [],
         meta: null,
+        searchText: "",
         isModalOpen: false,
         filters: {},
 
-        fetchEmployees: async (current = 1, pageSize = 10) => {
+        fetchEmployees: async (current = 1, pageSize = 10, q = "") => {
             try {
-                const res = await fetchEmployeeAPI(current!, pageSize!);
+                const res = await fetchEmployeeAPI(current!, pageSize!, q);
                 const data = res.data[0];
                 const employees = data.result;
                 const meta = {

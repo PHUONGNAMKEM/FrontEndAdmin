@@ -76,7 +76,7 @@ export const DepartmentPage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Tổng số phòng ban: <span>{meta?.total || 0}</span>
                 </h2>
             </div>
@@ -219,6 +219,16 @@ export const DepartmentPage = () => {
     // Tải báo cáo chấm công theo phòng ban
     const { downloadAttendanceReport, downloadSalaryTableReport } = useExcelStore();
 
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchDepartment(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== HEADER TOOLBAR ===== */}
@@ -235,6 +245,9 @@ export const DepartmentPage = () => {
                         placeholder="Tìm kiếm phòng ban..."
                         prefix={<IconWrapper Icon={Search} />}
                         style={{ width: 320 }}
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onPressEnter={handleSearch}
                     />
                 </div>
 

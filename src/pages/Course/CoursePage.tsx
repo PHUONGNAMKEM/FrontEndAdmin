@@ -39,7 +39,7 @@ export const CoursePage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Tổng số khóa học: <span>{meta?.total || 0}</span>
                 </h2>
             </div>

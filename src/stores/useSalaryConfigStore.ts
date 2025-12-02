@@ -11,8 +11,9 @@ import { create } from "zustand";
 interface SalaryConfigStore {
     salaryConfigs: SalaryConfig[];
     meta?: PaginationMeta | null;
+    searchText: string;
     isModalOpen: boolean;
-    fetchSalaryConfig: (current?: number, pageSize?: number) => Promise<void>;
+    fetchSalaryConfig: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     addSalaryConfig: (payload: SalaryConfig) => Promise<void>;
     updateSalaryConfig: (id: string, data: Partial<SalaryConfig>) => Promise<void>;
     deleteSalaryConfig: (id: string) => Promise<void>;
@@ -22,11 +23,12 @@ interface SalaryConfigStore {
 export const useSalaryConfigStore = create<SalaryConfigStore>((set, get) => ({
     salaryConfigs: [],
     meta: null,
+    searchText: "",
     isModalOpen: false,
 
-    fetchSalaryConfig: async (current = 1, pageSize = 10) => {
+    fetchSalaryConfig: async (current = 1, pageSize = 10, q = "") => {
         try {
-            const res = await fetchSalaryConfigAPI(current, pageSize);
+            const res = await fetchSalaryConfigAPI(current, pageSize, q);
             const data = res.data[0];
             const salaryConfigs = data.result;
             const meta = data.meta;

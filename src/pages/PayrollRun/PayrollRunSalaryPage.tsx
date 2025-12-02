@@ -37,7 +37,7 @@ export const PayrollRunSalaryPage = () => {
                 >
                     Trở về
                 </Button>
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Chi tiết kỳ lương ({meta?.total || 0} nhân viên)
                 </h2>
             </div>

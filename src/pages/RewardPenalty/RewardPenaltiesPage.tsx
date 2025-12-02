@@ -53,7 +53,7 @@ export const RewardPenaltiesPage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Tổng số thưởng/phạt: <span>{meta?.total || 0}</span>
                 </h2>
             </div>
@@ -151,12 +151,29 @@ export const RewardPenaltiesPage = () => {
 
     const { downloadAttendanceReport, downloadSalaryTableReport } = useExcelStore();
 
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchRewardPenalties(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== TOOLBAR ===== */}
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                 <div className="flex items-center">
-                    <Input placeholder="Tìm kiếm..." prefix={<IconWrapper Icon={Search} />} style={{ width: 320, marginRight: "16px" }} />
+                    <Input
+                        placeholder="Tìm kiếm..."
+                        prefix={<IconWrapper Icon={Search} />}
+                        style={{ width: 320, marginRight: "16px" }}
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onPressEnter={handleSearch}
+                    />
                     <Select
                         defaultValue={2}
                         style={{ width: 100 }}

@@ -64,7 +64,7 @@ export const SalaryTablePage = () => {
     useEffect(() => {
         setHeaderContent(
             <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-[var(--text-color)]">
                     Bảng lương tháng {month.format("MM/YYYY")} ({salaryRecords?.length ?? 0} nhân viên)
                 </h2>
             </div>

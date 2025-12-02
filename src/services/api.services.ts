@@ -29,9 +29,10 @@ import { WorkScheduleBulkCreatePayload, WorkScheduleBulkDeletePayload, WorkSched
 
 
 // Employee
-export const fetchEmployeeAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
+export const fetchEmployeeAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
     const URL_BACKEND = current && pageSize
-        ? `/api/Employee?current=${current}&pageSize=${pageSize}`
+        ? `/api/Employee?${query}current=${current}&pageSize=${pageSize}`
         : `/api/Employee`;
     return axios.get(URL_BACKEND);
 }
@@ -108,8 +109,9 @@ export const forgotPasswordAPI = (payload: ForgotPasswordRequest): Promise<ApiRe
 };
 
 // Department
-export const fetchDepartmentAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/Department?current=${current}&pageSize=${pageSize}`;
+export const fetchDepartmentAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/Department?${query}current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }
 
@@ -130,8 +132,9 @@ export const deleteDepartmentAPI = (id: string): Promise<ApiResponse> => {
 }
 
 // Position
-export const fetchPositionAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/Position?current=${current}&pageSize=${pageSize}`;
+export const fetchPositionAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/Position?${query}current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }
 
@@ -152,8 +155,9 @@ export const deletePositionAPI = (id: string): Promise<ApiResponse> => {
 }
 
 // Contract
-export const fetchContractAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/Contract?current=${current}&pageSize=${pageSize}`;
+export const fetchContractAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/Contract?${query}current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }
 
@@ -190,8 +194,9 @@ export const updateRequestStatusAPI = (id: string, newStatus: string | number, a
 };
 
 // Salary Config
-export const fetchSalaryConfigAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/GlobalSettings?current=${current}&pageSize=${pageSize}`;
+export const fetchSalaryConfigAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/GlobalSettings?${query}current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 };
 
@@ -212,8 +217,9 @@ export const deleteSalaryConfigAPI = (id: string): Promise<ApiResponse> => {
 };
 
 // RewardPenaltyType
-export const fetchRewardPenaltyAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/RewardPenaltyTypes?current=${current}&pageSize=${pageSize}`;
+export const fetchRewardPenaltyAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/RewardPenaltyTypes?${query}current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 };
 
@@ -239,8 +245,9 @@ export const deleteRewardPenaltyAPI = (id: string): Promise<ApiResponse> => {
 };
 
 // RewardPenalties
-export const fetchRewardPenaltiesAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/RewardPenalties?current=${current}&pageSize=${pageSize}`;
+export const fetchRewardPenaltiesAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/RewardPenalties?${query}current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 };
 
@@ -290,8 +297,9 @@ export const finalBatchSalaryAPI = (month: string): Promise<ApiResponse> => {
 };
 
 // Overtime
-export const fetchOvertimeAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/Overtimes?current=${current}&pageSize=${pageSize}`;
+export const fetchOvertimeAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/Overtimes?${query}current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 };
 
@@ -312,8 +320,9 @@ export const deleteOvertimeAPI = (id: string): Promise<ApiResponse> => {
 };
 
 // Payroll Run
-export const fetchPayrollRunAllAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/payrollruns?current=${current}&pageSize=${pageSize}&sort=Period%20desc`;
+export const fetchPayrollRunAllAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `https://hrmadmin.huynhthanhson.io.vn/api/Payroll/payrollruns?${query}current=${current}&pageSize=${pageSize}&sort=Period%20desc`;
     return axios.get(URL_BACKEND);
 };
 

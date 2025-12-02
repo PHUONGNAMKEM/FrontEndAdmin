@@ -43,7 +43,7 @@ export const RolePage = () => {
 
     useEffect(() => {
         setHeaderContent(
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-bold text-[var(--text-color)]">
                 Tổng số role: <span>{meta?.total || 0}</span>
             </h2>
         );

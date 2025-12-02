@@ -71,7 +71,7 @@ export const NotificationPage = () => {
 
     useEffect(() => {
         setHeaderContent(
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-bold text-[var(--text-color)]">
                 Tổng số thông báo: <span>{meta?.total || 0}</span>
             </h2>
         );

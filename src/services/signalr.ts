@@ -17,13 +17,40 @@ export const hubConnection = new signalR.HubConnectionBuilder()
 
 // Bắt đầu kết nối 
 export const startConnection = async () => {
+    // 1. CHƯA CÓ TOKEN → KHÔNG START
+    const token = localStorage.getItem("access_token") || "";
+    if (!token) {
+        console.log("[SignalR] No token, skip startConnection");
+        return;
+    }
+
     try {
-        if (hubConnection.state === "Disconnected") {
-            await hubConnection.start(); // chỉ start khi connection đang ở trạng thái Disconnected
+        if (hubConnection.state === signalR.HubConnectionState.Disconnected) {
+            await hubConnection.start();
             console.log("SignalR connected");
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error("SignalR Connection Error: ", err);
+
+        const msg = err?.message || "";
+        const status = err?.statusCode;
+
+        // 2. NẾU 401 THÌ DỪNG, KHÔNG RETRY NỮA
+        if (status === 401 || msg.includes("401")) {
+            console.log("[SignalR] Unauthorized (401), stop retrying.");
+            return;
+        }
+
+        // Các lỗi khác mới retry
         setTimeout(startConnection, 3000);
+    }
+};
+
+export const stopConnection = async () => {
+    try {
+        await hubConnection.stop();
+        console.log("SignalR stopped");
+    } catch (e) {
+        console.error("Stop SignalR error", e);
     }
 };

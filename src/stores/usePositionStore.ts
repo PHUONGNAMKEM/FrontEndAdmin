@@ -8,8 +8,9 @@ import { create } from "zustand";
 interface PositionStore {
     positions: Position[];
     meta?: PaginationMeta | null;
+    searchText: string;
     isModalOpen: boolean;
-    fetchPosition: (current?: number, pageSize?: number) => Promise<void>;
+    fetchPosition: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     addPosition?: (payload: Position) => Promise<void>;
     updatePosition?: (id: string, data: Partial<Position>) => Promise<void>;
     deletePosition?: (id: string) => Promise<void>;
@@ -48,11 +49,12 @@ export const usePositionStore = create<PositionStore>((set, get) => {
 
         positions: [],
         meta: null,
+        searchText: "",
         isModalOpen: false,
 
-        fetchPosition: async (current = 1, pageSize = 10) => {
+        fetchPosition: async (current = 1, pageSize = 10, q = "") => {
             try {
-                const res = await fetchPositionAPI(current, pageSize);
+                const res = await fetchPositionAPI(current, pageSize, q);
                 const data = res.data[0];
                 const positions = data.result;
                 const meta = data.meta;
