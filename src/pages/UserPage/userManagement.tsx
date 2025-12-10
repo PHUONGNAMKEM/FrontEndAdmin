@@ -8,6 +8,7 @@ import { useSearchParams, useOutletContext } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { UserAdd } from "src/types/user/UserAdd";
 import { useEmployeeStore } from "src/stores/useEmployeeStore";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -191,6 +192,11 @@ export const UserManagementPage = () => {
         { value: "00000000-0000-0000-0000-000000000004", label: "User" },
         { value: "00000000-0000-0000-0000-000000000005", label: "Manager" },
     ];
+
+    const currentUserId = localStorage.getItem("userId");
+
+    const isSelf = selectedUser?.id === currentUserId;
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             {/* ===== Toolbar ===== */}
@@ -347,11 +353,17 @@ export const UserManagementPage = () => {
                                     </Title>
 
                                     <Space>
+                                        {/* Không cho edit chính mình */}
+                                        {/* {!isSelf && ( */}
                                         <Button
                                             type="text"
                                             icon={<IconWrapper Icon={Edit3} />}
                                             onClick={handleEditToggle}
                                         />
+                                        {/* )} */}
+
+                                        {/* Tránh trường hợp user xóa chính mình */}
+                                        {/* {!isSelf && ( */}
                                         <Popconfirm
                                             title="Xóa tài khoản?"
                                             description="Bạn chắc chắn muốn xóa tài khoản này?"
@@ -361,6 +373,7 @@ export const UserManagementPage = () => {
                                                 Xóa
                                             </Button>
                                         </Popconfirm>
+                                        {/* )} */}
                                     </Space>
                                 </div>
 
@@ -380,7 +393,7 @@ export const UserManagementPage = () => {
                                     </Descriptions.Item> */}
 
                                     <Descriptions.Item label="Role">
-                                        {isEditing ? (
+                                        {isEditing && !isSelf ? (
                                             <Select
                                                 style={{ width: "100%" }}
                                                 value={editedUser?.roleId}
@@ -427,7 +440,9 @@ export const UserManagementPage = () => {
                                     </Descriptions.Item>
 
                                     <Descriptions.Item label="Lần đăng nhập cuối">
-                                        {selectedUser.lastLoginAt || "Chưa bao giờ"}
+                                        {selectedUser.lastLoginAt
+                                            ? dayjs(selectedUser.lastLoginAt).format("DD/MM/YYYY HH:mm:ss")
+                                            : "Chưa bao giờ"}
                                     </Descriptions.Item>
                                 </Descriptions>
 

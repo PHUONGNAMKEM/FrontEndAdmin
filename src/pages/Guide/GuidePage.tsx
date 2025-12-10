@@ -65,8 +65,8 @@ export const GuidePage = () => {
 
     return <div style={{ padding: 24, maxWidth: 600, margin: "0 auto" }}>
         <div className="mb-3 title-guide">
-            <h1 className="mb-3 text-3xl font-bold">Hướng dẫn đổi mật khẩu lần đầu</h1>
-            <p className="">
+            <h1 className="mb-3 text-3xl font-bold text-[var(--text-color)]">Hướng dẫn đổi mật khẩu lần đầu</h1>
+            <p className="text-[var(--text-color)]">
                 Sau khi được cấp tài khoản, vui lòng đổi mật khẩu ngay để đảm bảo an toàn.
                 <br />
                 Mật khẩu mới cần có ít nhất 6 ký tự và dễ nhớ.
@@ -80,7 +80,7 @@ export const GuidePage = () => {
             autoComplete="off"
         >
             <Form.Item<FieldType>
-                label="Mật khẩu cũ"
+                label={<span className="text-[var(--text-color)]">Mật khẩu cũ</span>}
                 name="currentPassword"
                 rules={[{ required: true, message: "Vui lòng nhập mật khẩu cũ!" }]}
             >
@@ -88,7 +88,7 @@ export const GuidePage = () => {
             </Form.Item>
 
             <Form.Item<FieldType>
-                label="Mật khẩu mới"
+                label={<span className="text-[var(--text-color)]">Mật khẩu mới</span>}
                 name="newPassword"
                 rules={[
                     { required: true, message: "Vui lòng nhập mật khẩu mới!" },
@@ -99,7 +99,7 @@ export const GuidePage = () => {
             </Form.Item>
 
             <Form.Item<FieldType>
-                label="Xác nhận mật khẩu mới"
+                label={<span className="text-[var(--text-color)]">Xác nhận mật khẩu mới</span>}
                 name="confirmPassword"
                 dependencies={["newPassword"]}
                 rules={[

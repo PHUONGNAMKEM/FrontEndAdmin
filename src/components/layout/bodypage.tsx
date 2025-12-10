@@ -73,7 +73,7 @@ const BodyPage = () => {
                 getItem(<Link to="/contract">Danh sách</Link>, "contract-list"),
                 getItem(<Link to="/contract/expiring">Sắp hết hạn</Link>, "contract-expiring"),
             ]),
-        getItem(<Link to="/salary">Tính lương</Link>, "salary", <IconWrapper Icon={CreditCard} />,
+        getItem(<Link to="/salary/config">Tính lương</Link>, "salary", <IconWrapper Icon={CreditCard} />,
             [
                 getItem(<Link to="/salary/config">Cấu hình</Link>, "config"),
                 getItem(<Link to="/salary/table">Bảng tính lương</Link>, "table"),
@@ -125,7 +125,7 @@ const BodyPage = () => {
 
     if (role === "Admin") {
         items = [...hrAndAdminItems, ...adminExtraItems, ...baseItems];
-    } else if (role === "HR") {
+    } else if (role === "HR" || role === "Manager") {
         items = [...hrAndAdminItems, ...baseItems]; // HR có tất cả trừ user-management
     } else if (role === "Employee" || role === "User") {
         items = [...baseItems]; // Employee chỉ có Hướng dẫn

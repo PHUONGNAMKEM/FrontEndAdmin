@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Space, Tag, Button, Input, Avatar, Card, Descriptions, List, Typography, MenuProps, message, Dropdown, Pagination, DatePicker, Select, Popconfirm, PopconfirmProps, Upload, UploadFile, Modal, Image, } from "antd";
+import { Table, Space, Tag, Button, Input, Avatar, Card, Descriptions, List, Typography, MenuProps, message, Dropdown, Pagination, DatePicker, Select, Popconfirm, PopconfirmProps, Upload, UploadFile, Modal, Image, notification, } from "antd";
 import {
     SearchOutlined,
     SettingOutlined,
@@ -287,9 +287,23 @@ const EmployeePage = () => {
     }
 
     const confirmDelete: PopconfirmProps['onConfirm'] = async (e) => {
-        await deleteEmployee!(selectedEmployee?.id!);
-        setSelectedEmployee(null);
-        // làm gì đó ở đây
+        // await deleteEmployee!(selectedEmployee?.id!);
+        // setSelectedEmployee(null);
+        if (!selectedEmployee?.id) return;
+
+        try {
+            await deleteEmployee!(selectedEmployee.id);
+            notification.success({ message: "Xóa nhân viên thành công" });
+            setSelectedEmployee(null);
+        } catch (err: any) {
+            // Lấy message từ Error hoặc từ backend
+            const backendMsg =
+                err?.message ||
+                err?.response?.data?.message ||
+                "Không thể xoá nhân viên (có thể đang được tham chiếu ở bảng khác).";
+
+            notification.error({ message: backendMsg });
+        }
     };
 
     const cancelDelete: PopconfirmProps['onCancel'] = (e) => {
@@ -419,7 +433,7 @@ const EmployeePage = () => {
                 viewMode === "list" ? (
                     <div className="flex">
                         <Table
-                            className="flex-1 border border-[#eee] rounded-t-lg rounded-b-lg"
+                            className={"flex-1 border border-[#eee] rounded-t-lg rounded-b-lg"}
                             columns={columns}
                             dataSource={employees}
                             pagination={{
@@ -558,7 +572,7 @@ const EmployeePage = () => {
 
                                             <Popconfirm
                                                 title="Delete A Employee"
-                                                description="Are you sure to delete this Employee?"
+                                                description="Bạn có chắc chắn muốn xóa nhân viên này?"
                                                 onConfirm={confirmDelete}
                                                 onCancel={cancelDelete}
                                                 okText="Yes"

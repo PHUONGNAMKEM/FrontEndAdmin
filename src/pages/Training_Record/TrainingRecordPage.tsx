@@ -563,9 +563,8 @@ export const TrainingRecordPage = () => {
             >
                 <Splitter style={{ height: 500 }}>
                     {/* LEFT PANEL */}
-                    <Splitter.Panel className="!mr-4">
+                    <Splitter.Panel className="!mr-4" defaultSize="50%" min="30%" max="60%">
                         <List
-
                             header={<b>Nhân viên chưa học khóa này</b>}
                             dataSource={unassignedEmployees}
                             renderItem={(emp) => (

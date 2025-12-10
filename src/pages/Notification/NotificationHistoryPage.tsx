@@ -84,7 +84,7 @@ export const NotificationHistoryPage = () => {
             {/* ===== Toolbar ===== */}
             <div className="flex justify-between mb-4">
                 <Input
-                    placeholder="Tìm theo tiêu đề hoặc người gửi"
+                    placeholder="Tìm theo tiêu đề hoặc người gửi..."
                     prefix={<IconWrapper Icon={Search} />}
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -115,7 +115,7 @@ export const NotificationHistoryPage = () => {
             </div>
 
             {/* ===== LIST ===== */}
-            <Title level={4} className="!my-6">Lịch sử thông báo</Title>
+            <Title level={4} className="!my-6 text-xl font-bold !text-[var(--text-color)]">Lịch sử thông báo</Title>
 
             <Card>
                 <List

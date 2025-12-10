@@ -6,18 +6,20 @@ import { Request } from "src/types/request/Request";
 
 interface RequestStore {
     requests: Request[];
+    searchText?: string;
     meta?: PaginationMeta | null;
-    fetchRequests: (current?: number, pageSize?: number) => Promise<void>;
+    fetchRequests: (current?: number, pageSize?: number, q?: string) => Promise<void>;
     updateStatus: (id: string, status: Request["status"], approverUserId: string, reason?: string) => Promise<ApiResponse>;
 }
 
 export const useRequestStore = create<RequestStore>((set, get) => ({
     requests: [],
     meta: null,
+    searchText: "",
 
-    fetchRequests: async (current = 1, pageSize = 10) => {
+    fetchRequests: async (current = 1, pageSize = 10, q = "") => {
         try {
-            const res = await fetchRequestAPI(current, pageSize);
+            const res = await fetchRequestAPI(current, pageSize, q);
             const data = res.data[0];
             const requests = data.result;
             const meta = data.meta;

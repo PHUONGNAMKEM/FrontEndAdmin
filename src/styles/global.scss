@@ -21,3 +21,25 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+/* Table dark trong dashboard */
+.dashboard-table-dark .ant-table,
+.dashboard-table-dark .ant-table-container,
+.dashboard-table-dark .ant-table-thead>tr>th,
+.dashboard-table-dark .ant-table-tbody>tr>td {
+    background-color: #0f172a;
+    /* đen xanh kiểu sidebar của em */
+    color: #e5e7eb;
+}
+
+.dashboard-table-dark .ant-table-thead>tr>th {
+    border-bottom-color: #1f2937;
+}
+
+.dashboard-table-dark .ant-table-tbody>tr>td {
+    border-bottom-color: #1f2937;
+}
+
+.dashboard-table-dark .ant-table-tbody>tr.ant-table-row:hover>td {
+    background-color: #111827;
+}

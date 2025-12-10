@@ -8,7 +8,7 @@ interface SalaryTableStore {
     salaryRecords: SalaryRecord[];
     meta?: PaginationMeta | null;
     isModalOpen: boolean;
-    fetchSalaryAll: (month: string, current: number, pageSize: number) => Promise<void>;
+    fetchSalaryAll: (month: string, current: number, pageSize: number, departmentId?: string) => Promise<void>;
     fetchSalaryTable: (employeeId: string, month: string) => Promise<void>;
     finalBatchSalary?: (month: string) => Promise<void>;
     setModalOpen: (value: boolean) => void;
@@ -33,12 +33,13 @@ export const useSalaryTableStore = create<SalaryTableStore>((set, get) => ({
     //     }
     // },
 
-    fetchSalaryAll: async (month, current, pageSize) => {
+    fetchSalaryAll: async (month, current, pageSize, departmentId) => {
         try {
-            const res = await fetchSalaryAllAPI(month, current, pageSize);
+            const res = await fetchSalaryAllAPI(month, current, pageSize, departmentId);
             const data = res.data;
             const salaryRecords = data?.result || [];
-            set({ salaryRecords });
+            console.log(">>> check meta salary all: ", data?.meta);
+            set({ salaryRecords, meta: data?.meta });
 
             console.log("Fetched salary records:", salaryRecords);
 

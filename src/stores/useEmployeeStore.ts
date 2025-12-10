@@ -130,7 +130,10 @@ export const useEmployeeStore = create<EmployeeStore>((set, get) => {
                         employees: get().employees.filter((e) => e.id !== id),
                     });
                 }
-                set({ employees: get().employees.filter((e) => e.id !== id), });
+                // set({ employees: get().employees.filter((e) => e.id !== id), });
+                else {
+                    throw new Error(res.message || "Xóa nhân viên không thành công");
+                }
             } catch (err: any) {
                 console.error("Xóa nhân viên không thành công:", err);
                 throw err;

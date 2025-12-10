@@ -1,27 +1,20 @@
 import React, { useEffect } from "react";
 import { Box, Card, CardContent, Typography, Stack } from "@mui/material";
 import { Row, Col, Table, Tag, Button } from "antd";
-import {
-    Users,
-    Building2,
-    Briefcase,
-    ClipboardList,
-    GraduationCap,
-    Award,
-    ShieldAlert,
-    Timer,
-    Download,
-} from "lucide-react";
+import { Users, Building2, Briefcase, ClipboardList, GraduationCap, Award, ShieldAlert, Timer, Download, } from "lucide-react";
 import { LineChart, BarChart, PieChart, RadarChart } from "@mui/x-charts";
 import dayjs from "dayjs";
 import { useDashboardStore } from "src/stores/useDashboardStore";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { usePDFStore } from "src/stores/report/pdf";
 import { useTheme } from "@components/context/ThemeContext";
+import { useNavigate } from "react-router-dom";
+import { link } from "fs";
 
 const OverviewPage = () => {
     const { dashboard, fetchDashboard } = useDashboardStore();
     const { downloadGeneralReport } = usePDFStore();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchDashboard(30);
@@ -40,6 +33,8 @@ const OverviewPage = () => {
         courseStats,
         salaryStats,
         performanceStats,
+        newContractsList,
+        noContractList,
     } = dashboard;
 
     // ===================== SUMMARY CARDS =====================
@@ -50,6 +45,7 @@ const OverviewPage = () => {
             diff: "+3.2% so với tháng trước",
             icon: <Users size={32} color="#1677ff" />,
             bg: "#e6f4ff",
+            link: "/employee",
         },
         {
             title: "Phòng ban",
@@ -57,6 +53,7 @@ const OverviewPage = () => {
             diff: "+1 phòng ban mới",
             icon: <Building2 size={32} color="#13c2c2" />,
             bg: "#e6fffb",
+            link: "/department",
         },
         {
             title: "Đang làm việc",
@@ -64,6 +61,7 @@ const OverviewPage = () => {
             diff: "+5 người",
             icon: <Briefcase size={32} color="#52c41a" />,
             bg: "#f6ffed",
+            link: "/employee",
         },
         {
             title: "HĐ sắp hết hạn",
@@ -71,6 +69,7 @@ const OverviewPage = () => {
             diff: "+30 ngày tới",
             icon: <ClipboardList size={32} color="#faad14" />,
             bg: "#fff7e6",
+            link: "/contract/expiring",
         },
     ];
 
@@ -119,8 +118,13 @@ const OverviewPage = () => {
                                 padding: 1.5,
                                 transition: "0.2s",
                                 boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
-                                "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                                "&:hover": {
+                                    boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+                                    transform: "translateY(-2px)",
+                                },
+                                cursor: "pointer",
                             }}
+                            onClick={() => item.link && navigate(item.link)}
                         >
                             <Stack direction="row" spacing={2} alignItems="center">
                                 <Box
@@ -181,9 +185,9 @@ const OverviewPage = () => {
                                     {
                                         label: "Hiệu suất",
                                         data: [
-                                            performanceStats.attendanceThisMonth.totalOnTime,
-                                            performanceStats.attendanceThisMonth.totalLate,
-                                            performanceStats.attendanceThisMonth.totalAbsent,
+                                            performanceStats.attendanceThisMonth.onTimeRate,
+                                            performanceStats.attendanceThisMonth.lateTimeRate,
+                                            performanceStats.attendanceThisMonth.absentRate,
                                             performanceStats.trainingAllTime.averageScore,
                                         ],
                                     },
@@ -292,7 +296,7 @@ const OverviewPage = () => {
                     }}>
                         <CardContent>
                             <Typography sx={{ fontWeight: 600, mb: 1 }}>
-                                Hợp đồng sắp hết hạn
+                                Hợp đồng sắp hết hạn (trong 30 Ngày)
                             </Typography>
 
                             <Table
@@ -317,20 +321,109 @@ const OverviewPage = () => {
                 </Col>
             </Row>
 
+            <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
+                {/* Hợp đồng mới tạo gần đây */}
+                <Col xs={24} md={14}>
+                    <Card
+                        sx={{
+                            borderRadius: 3,
+                            boxShadow:
+                                "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                            "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                        }}
+                    >
+                        <CardContent>
+                            <Typography sx={{ fontWeight: 600, mb: 1 }}>
+                                Hợp đồng mới tạo
+                            </Typography>
+
+                            <Table
+                                size="small"
+                                dataSource={newContractsList.map((item) => ({
+                                    key: item.id,
+                                    name: item.employeeName,
+                                    number: item.contractNumber,
+                                    startDate: dayjs(item.startDate).format("DD/MM/YYYY"),
+                                    status: (
+                                        <Tag color="green">
+                                            {item.status === "active" ? "Đang hiệu lực" : item.status}
+                                        </Tag>
+                                    ),
+                                }))}
+                                columns={[
+                                    { title: "Nhân viên", dataIndex: "name" },
+                                    { title: "Số HĐ", dataIndex: "number" },
+                                    { title: "Bắt đầu", dataIndex: "startDate" },
+                                    { title: "Trạng thái", dataIndex: "status" },
+                                ]}
+                                pagination={false}
+                            // scroll={{ y: 200 }}
+                            />
+                        </CardContent>
+                    </Card>
+                </Col>
+
+                {/* Nhân viên chưa có hợp đồng */}
+                <Col xs={24} md={10}>
+                    <Card
+                        sx={{
+                            borderRadius: 3,
+                            boxShadow:
+                                "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                            "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
+                        }}
+                    >
+                        <CardContent>
+                            <Typography sx={{ fontWeight: 600, mb: 1 }}>
+                                Nhân viên chưa có hợp đồng
+                            </Typography>
+
+                            <Table
+                                size="small"
+                                dataSource={noContractList.map((item) => ({
+                                    key: item.id,
+                                    code: item.employeeCode,
+                                    name: item.fullName,
+                                    joinDate: dayjs(item.joinDate).format("DD/MM/YYYY"),
+                                    department: item.departmentName,
+                                }))}
+                                columns={[
+                                    { title: "Mã NV", dataIndex: "code" },
+                                    { title: "Nhân viên", dataIndex: "name" },
+                                    { title: "Ngày vào làm", dataIndex: "joinDate" },
+                                    { title: "Phòng ban", dataIndex: "department" },
+                                ]}
+                                pagination={false}
+                            // scroll={{ y: 300 }}
+                            />
+                        </CardContent>
+                    </Card>
+                </Col>
+            </Row>
+
             {/* ======================= EXTRA STATS ======================= */}
+            <Typography variant="h5" sx={{ mt: 2, mb: 2, fontWeight: 700 }} className="text-[var(--text-color)]">
+                Thống kê trong tháng
+            </Typography>
             <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
                 {[
-                    { label: "Nghỉ phép", value: leaveStats.approvedThisMonth, color: "#1677ff" },
-                    { label: "Kỷ luật", value: disciplineStats.penaltiesThisMonth, color: "#ff4d4f" },
-                    { label: "Khoá học", value: courseStats.total, color: "#52c41a" },
-                    { label: "Lương tháng", value: salaryStats.totalNet.toLocaleString(), color: "#722ed1" },
+                    { label: "Nghỉ phép", value: leaveStats.approvedThisMonth, color: "#1677ff", link: "/request" },
+                    { label: "Kỷ luật", value: disciplineStats.penaltiesThisMonth, color: "#ff4d4f", link: "/reward-penalty/list" },
+                    { label: "Khoá học", value: courseStats.total, color: "#52c41a", link: "/course" },
+                    { label: "Lương phải trả", value: salaryStats.totalNet.toLocaleString(), color: "#722ed1", link: "/salary/table" },
                 ].map((item, i) => (
                     <Col xs={24} sm={12} md={6} key={i}>
                         <Card sx={{
                             borderRadius: 3,
                             boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
-                            "&:hover": { boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" },
-                        }}>
+                            "&:hover": {
+                                boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+                                transform: "translateY(-2px)",
+                            },
+                            cursor: "pointer",
+                        }}
+                            onClick={() => item.link && navigate(item.link)}
+                        >
                             <CardContent>
                                 <Typography sx={{ fontSize: 14, fontWeight: 600, color: item.color }}>
                                     {item.label}

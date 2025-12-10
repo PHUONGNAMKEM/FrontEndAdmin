@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Space, Button, Typography, notification, Popconfirm, Modal, } from "antd";
+import { Table, Tag, Space, Button, Typography, notification, Popconfirm, Modal, Input, } from "antd";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { RefreshCcw, Check, Ban, CircleCheck, BanIcon } from "lucide-react";
+import { RefreshCcw, Check, Ban, CircleCheck, BanIcon, Search } from "lucide-react";
 import { useRequestStore } from "src/stores/useRequestStore";
 import { useSearchParams } from "react-router-dom";
 import TextArea from "antd/es/input/TextArea";
@@ -201,6 +201,16 @@ export const RequestPage = () => {
         },
     ];
 
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchRequests(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
+
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
             <div
@@ -214,14 +224,34 @@ export const RequestPage = () => {
                 <Title level={4} style={{ margin: 0 }}>
                     Danh sách yêu cầu ({meta?.total || 0})
                 </Title>
-                <Button
-                    icon={<IconWrapper Icon={RefreshCcw} />}
-                    onClick={() => fetchRequests(currentPage, currentSize)}
-                    loading={loading}
-                    size="large"
-                >
-                    Làm mới
-                </Button>
+                <Input
+                    className="flex-1 mx-4"
+                    placeholder="Tìm kiếm yêu cầu (approved, pending, rejected)..."
+                    prefix={<IconWrapper Icon={Search} />}
+                    style={{ width: 320 }}
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    onPressEnter={handleSearch}
+                />
+                <div>
+                    <Button
+                        icon={<IconWrapper Icon={RefreshCcw} />}
+                        onClick={() => fetchRequests(currentPage, currentSize, "pending")}
+                        loading={loading}
+                        size="large"
+                        className="mr-4"
+                    >
+                        Yêu cần chưa được duyệt
+                    </Button>
+                    <Button
+                        icon={<IconWrapper Icon={RefreshCcw} />}
+                        onClick={() => fetchRequests(currentPage, currentSize)}
+                        loading={loading}
+                        size="large"
+                    >
+                        Làm mới
+                    </Button>
+                </div>
             </div>
 
             <Table

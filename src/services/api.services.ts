@@ -183,8 +183,9 @@ export const deleteContractAPI = (id: string): Promise<ApiResponse> => {
 }
 
 // Request
-export const fetchRequestAPI = (current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/Request?current=${current}&pageSize=${pageSize}`;
+export const fetchRequestAPI = (current: number, pageSize: number, q?: string): Promise<ApiResponse> => {
+    const query = q ? `q=${encodeURIComponent(q)}&` : "";
+    const URL_BACKEND = `/api/Request?${query}current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 };
 
@@ -273,8 +274,17 @@ export const deleteRewardPenaltiesAPI = (id: string): Promise<ApiResponse> => {
 };
 
 // Salary
-export const fetchSalaryAllAPI = (month: string, current: number, pageSize: number): Promise<ApiResponse> => {
-    const URL_BACKEND = `/api/Payroll/performance-batch?month=${month}&current=${current}&pageSize=${pageSize}`;
+export const fetchSalaryAllAPI = (month: string, current: number, pageSize: number, departmentId?: string): Promise<ApiResponse> => {
+    const params = new URLSearchParams({
+        month,
+        current: String(current),
+        pageSize: String(pageSize),
+    });
+    if (departmentId) {
+        params.append("departmentId", departmentId);
+    }
+    // const URL_BACKEND = `/api/Payroll/performance-batch?month=${month}&current=${current}&pageSize=${pageSize}`;
+    const URL_BACKEND = `/api/Payroll/performance-batch?${params.toString()}`;
     return axios.get(URL_BACKEND);
 };
 

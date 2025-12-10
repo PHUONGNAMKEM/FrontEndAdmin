@@ -206,7 +206,7 @@ export const PositionPage = () => {
             >
                 <div className="flex items-center">
                     <Input
-                        placeholder="Tìm kiếm phòng ban..."
+                        placeholder="Tìm kiếm chức vụ trong công ty..."
                         prefix={<IconWrapper Icon={Search} />}
                         style={{ width: 320 }}
                         value={searchText}

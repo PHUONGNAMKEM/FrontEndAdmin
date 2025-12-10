@@ -9,6 +9,9 @@ export interface Dashboard {
     courseStats: CourseStats;
     salaryStats: SalaryStats;
     performanceStats: PerformanceStats;
+
+    newContractsList: NewContractItem[];
+    noContractList: NoContractEmployee[];
 }
 
 export interface Summary {
@@ -84,6 +87,9 @@ export interface PerformanceStats {
         totalLate: number;
         totalAbsent: number;
         totalOnTime: number;
+        onTimeRate: number;
+        lateTimeRate: number;
+        absentRate: number;
     };
     trainingAllTime: {
         completed: number;
@@ -91,4 +97,23 @@ export interface PerformanceStats {
         inProgress: number;
         averageScore: number;
     };
+}
+
+// item cho danh sách hợp đồng mới trong ngày
+export interface NewContractItem {
+    id: string;
+    employeeId: string;
+    employeeName: string;
+    contractNumber: string;
+    startDate: string;
+    status: string;
+}
+
+// item cho danh sách nhân viên chưa có hợp đồng
+export interface NoContractEmployee {
+    id: string;
+    employeeCode: string;
+    fullName: string;
+    joinDate: string;
+    departmentName: string;
 }

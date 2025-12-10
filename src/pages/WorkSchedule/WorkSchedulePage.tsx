@@ -183,7 +183,7 @@ export const WorkSchedulePage = () => {
         setHeaderContent(
             <div className="flex items-center gap-4">
                 <IconWrapper Icon={Calendar} />
-                <span className="text-lg font-semibold">
+                <span className="text-lg font-semibold text-[var(--text-color)]">
                     Lịch làm việc tuần {weekStart.format("DD/MM")} -{" "}
                     {weekEnd.format("DD/MM/YYYY")} – Tổng lịch:{" "}
                     <b>{meta?.total || 0}</b>

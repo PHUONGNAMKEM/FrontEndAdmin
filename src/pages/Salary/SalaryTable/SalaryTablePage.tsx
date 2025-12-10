@@ -12,6 +12,7 @@ import {
     DatePicker,
     message,
     Popconfirm,
+    Select,
 } from "antd";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { RefreshCcw, PanelLeft, AlignJustify, Icon, Ellipsis, NotebookTabs, BadgeCheck } from "lucide-react";
@@ -24,6 +25,7 @@ import dayjs from "dayjs";
 import './SalaryTablePage.scss';
 import { usePayrollRunStore } from "src/stores/payroll/usePayrollRunStore";
 import { PayrollRun } from "src/types/payroll/PayrollRun";
+import { useDepartmentStore } from "src/stores/useDepartmentStore";
 
 const { Title } = Typography;
 const { MonthPicker } = DatePicker;
@@ -34,6 +36,10 @@ export const SalaryTablePage = () => {
     const [selectedRecord, setSelectedRecord] = useState<SalaryRecord | null>(null);
     const [loading, setLoading] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
+    const { departments = [], fetchDepartment, meta: metaDepartment } = useDepartmentStore();
+    const [departmentId, setDepartmentId] = useState<string | undefined>(
+        searchParams.get("departmentId") || undefined
+    );
 
     // const employeeId = "776EC5CF-8349-4EB9-A6EC-73C75A7C58DB";
     // const month = "2025-10";
@@ -46,17 +52,26 @@ export const SalaryTablePage = () => {
     // Fetch Employees
     useEffect(() => {
         fetchEmployees(currentPage, metaEmployee?.total);
+        fetchDepartment?.(1, metaDepartment?.total);
     }, [currentPage, metaEmployee?.total]);
 
     useEffect(() => {
-        fetchSalaryAll(month.format("YYYY-MM"), currentPage, currentSize);
-    }, [month, currentPage, currentSize]);
+        console.log("Fetching salary table total:", meta);
+        fetchSalaryAll(month.format("YYYY-MM"), currentPage, currentSize, departmentId);
+    }, [month, currentPage, currentSize, departmentId]);
 
     const handlePageChange = (current: number, pageSize: number) => {
-        setSearchParams({
+        // setSearchParams({
+        //     current: current.toString(),
+        //     pageSize: pageSize.toString(),
+        // });
+        // để giữ departmentId trên Url 
+        const params: Record<string, string> = {
             current: current.toString(),
             pageSize: pageSize.toString(),
-        });
+        };
+        if (departmentId) params.departmentId = departmentId;
+        setSearchParams(params);
     };
 
     // Header
@@ -146,7 +161,7 @@ export const SalaryTablePage = () => {
             });
 
             // Load lại bảng lương
-            await fetchSalaryAll(monthInput, currentPage, currentSize);
+            await fetchSalaryAll(monthInput, currentPage, currentSize, departmentId);
 
         } catch (err: any) {
             message.error(err?.message || "Chốt lương thất bại!");
@@ -187,6 +202,7 @@ export const SalaryTablePage = () => {
 
                 <Space>
                     <MonthPicker
+                        size="large"
                         allowClear={false}
                         value={month}
                         format="MM/YYYY"
@@ -194,11 +210,31 @@ export const SalaryTablePage = () => {
                             if (month) setMonth(month);
                         }}
                     />
+                    <Select
+                        size="large"
+                        allowClear
+                        placeholder="Phòng ban"
+                        style={{ minWidth: 220 }}
+                        value={departmentId}
+                        options={departments.map((d: any) => ({
+                            label: d.name,
+                            value: d.id,
+                        }))}
+                        onChange={(v) => {
+                            setDepartmentId(v);
+                            const params: Record<string, string> = {
+                                current: "1",
+                                pageSize: currentSize.toString(),
+                            };
+                            if (v) params.departmentId = v;
+                            setSearchParams(params);
+                        }}
+                    />
                     <Button
                         size="large"
                         icon={<IconWrapper Icon={RefreshCcw} />}
                         onClick={() => {
-                            fetchSalaryAll(month.format("YYYY-MM"), currentPage, currentSize);
+                            fetchSalaryAll(month.format("YYYY-MM"), currentPage, currentSize, departmentId);
                         }}
                         loading={loading}
                     >
@@ -239,8 +275,8 @@ export const SalaryTablePage = () => {
                         rowKey={(record) => record.thongTinNhanVien.employeeId}
                         loading={loading}
                         pagination={{
-                            current: meta?.current || 1,
-                            pageSize: meta?.pageSize || 10,
+                            current: currentPage,
+                            pageSize: currentSize,
                             total: meta?.total || 0,
                             onChange: handlePageChange,
                         }}
