@@ -27,7 +27,7 @@ import {
     PlusOutlined,
     EllipsisOutlined,
 } from "@ant-design/icons";
-import { AlignJustify, PanelLeft, Check, Ban, ListEnd } from "lucide-react";
+import { AlignJustify, PanelLeft, Check, Ban, ListEnd, Edit3 } from "lucide-react";
 import { Link, useOutletContext, useSearchParams } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useContractStore } from "src/stores/useContractStore";
@@ -216,7 +216,7 @@ export const ContractPage = () => {
             // emp.positionName! === "Phó giám đốc"
         )
         .map((emp) => ({
-            value: emp.id,
+            value: emp.userId,
             label: emp.fullName,
             email: emp.email,
             avatarUrl: emp.avatarUrl,
@@ -391,7 +391,7 @@ export const ContractPage = () => {
                                     <Space>
                                         <Button
                                             type="text"
-                                            icon={<EditOutlined />}
+                                            icon={<IconWrapper Icon={Edit3} />}
                                             onClick={handleEditToggle}
                                         />
                                         <Popconfirm
@@ -426,27 +426,40 @@ export const ContractPage = () => {
                                             //         )
                                             //     }
                                             // />
+                                            // <Select
+                                            //     value={editedContract?.type}
+                                            //     className="w-full"
+                                            //     placeholder="Chọn người đại diện"
+                                            //     options={employeeOptions}
+                                            //     showSearch // cho phép gõ để lọc
+                                            //     optionFilterProp="label"
+                                            //     filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
+                                            //         (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                            //     }
+                                            //     optionRender={(option) =>
+                                            //     (
+                                            //         <div className="flex items-center gap-2">
+                                            //             <Avatar src={option.data.avatarUrl} />
+                                            //             <div>
+                                            //                 <div style={{ fontWeight: 500 }}>{option.data.label}</div>
+                                            //                 <div style={{ fontSize: 12, color: "#888" }}>{option.data.email}</div>
+                                            //             </div>
+                                            //         </div>
+                                            //     )}
+                                            //     onChange={(value) => handleChange("representativeUserName", value)}
+                                            // />
                                             <Select
                                                 value={editedContract?.type}
+                                                onChange={(value) => handleChange("type", value)}
                                                 className="w-full"
-                                                placeholder="Chọn người đại diện"
-                                                options={employeeOptions}
-                                                showSearch // cho phép gõ để lọc
-                                                optionFilterProp="label"
-                                                filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
-                                                    (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                                                }
-                                                optionRender={(option) =>
-                                                (
-                                                    <div className="flex items-center gap-2">
-                                                        <Avatar src={option.data.avatarUrl} />
-                                                        <div>
-                                                            <div style={{ fontWeight: 500 }}>{option.data.label}</div>
-                                                            <div style={{ fontSize: 12, color: "#888" }}>{option.data.email}</div>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                onChange={(value) => handleChange("representativeUserName", value)}
+                                                options={[
+                                                    { value: 0, label: "Full-Time" },
+                                                    { value: 1, label: "Part-Time" },
+                                                    { value: 2, label: "Thực tập" },
+                                                    { value: 3, label: "Thử việc" },
+                                                    { value: 4, label: "Có thời hạn" },
+                                                    { value: 5, label: "Thời vụ" },
+                                                ]}
                                             />
                                         ) : (
                                             selectedContract.type === 0 ? "Full-Time" : selectedContract.type === 1 ? "Part-Time" : selectedContract.type === 2 ? "Thực tập" : selectedContract.type === 3 ? "Thử việc" : selectedContract.type === 4 ? "Có thời hạn" : "Thời vụ"
@@ -547,11 +560,11 @@ export const ContractPage = () => {
                                             //     }
                                             // />
                                             <Select
-                                                value={editedContract?.representativeUserName}
+                                                value={editedContract?.representativeId}
                                                 className="w-full"
                                                 placeholder="Chọn người đại diện"
                                                 options={employeeOptions}
-                                                showSearch // cho phép gõ để lọc
+                                                showSearch // cho phép gõ để lọc    
                                                 optionFilterProp="label"
                                                 filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
                                                     (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -566,10 +579,12 @@ export const ContractPage = () => {
                                                         </div>
                                                     </div>
                                                 )}
-                                                onChange={(value) => handleChange("representativeUserName", value)}
+                                                onChange={(value) => handleChange("representativeId", value)}
                                             />
                                         ) : (
-                                            selectedContract.representativeUserName || "—"
+                                            // selectedContract.representativeUserName || "—"
+                                            employeeOptions.find(e => e.value === selectedContract.representativeId)?.label
+                                            || "—"
                                         )}
                                     </Descriptions.Item>
 

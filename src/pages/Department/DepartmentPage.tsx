@@ -196,7 +196,8 @@ export const DepartmentPage = () => {
         .filter(
             (emp) =>
                 emp.positionId === "B8E14F90-BD6A-415E-A105-6AA098BA92B5" ||
-                emp.positionName! === "Trưởng phòng"
+                emp.positionName! === "Trưởng phòng" ||
+                emp.positionId === "f33bf738-822b-4225-bc79-123006245744"
         )
         .map((emp) => ({
             value: emp.id,

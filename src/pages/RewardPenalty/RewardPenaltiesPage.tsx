@@ -15,6 +15,8 @@ import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextTyp
 import dayjs from "dayjs";
 import { render } from "react-dom";
 import { useExcelStore } from "src/stores/report/excel";
+import { useEmployeeStore } from "src/stores/useEmployeeStore";
+import { useRewardPenaltyStore } from "src/stores/useRewardPenaltyStore";
 
 const { Title } = Typography;
 
@@ -37,12 +39,18 @@ export const RewardPenaltiesPage = () => {
         setModalOpen,
     } = useRewardPenaltiesStore();
 
+    // loại thưởng phạt
+    const { rewardPenalties: rewardPenaltyTypes, fetchRewardPenalty, meta: metaRewardPenalty } = useRewardPenaltyStore();
+
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get("current") || "1");
     const currentSize = parseInt(searchParams.get("pageSize") || "10");
+    const { employees, fetchEmployees, meta: metaEmployee } = useEmployeeStore();
 
     useEffect(() => {
         fetchRewardPenalties(currentPage, currentSize);
+        fetchEmployees(undefined, metaEmployee?.total);
+        fetchRewardPenalty(1, metaRewardPenalty?.total);
     }, [currentPage, currentSize]);
 
     const handlePageChange = (current: number, pageSize: number) => {
@@ -69,6 +77,50 @@ export const RewardPenaltiesPage = () => {
     const handleChange = (field: keyof RewardPenaltyDetail, value: any) => {
         setEditedItem((prev) => (prev ? { ...prev, [field]: value } : prev));
     };
+    // Nhân viên: dùng employeeId (emp.id)
+    const employeeOptions = employees.map((emp) => ({
+        value: emp.id,
+        label: emp.fullName,
+        email: emp.email,
+        avatarUrl: emp.avatarUrl,
+    }));
+
+    // Người quyết định: dùng userId (emp.userId)
+    const decidedByOptions = employees
+        .filter((emp) => !!emp.userId)
+        .map((emp) => ({
+            value: emp.userId,
+            label: emp.fullName,
+            email: emp.email,
+            avatarUrl: emp.avatarUrl,
+            roleName: emp.positionName
+        }));
+
+    // Loại thưởng/phạt: gom unique typeId từ rewardPenalties
+    // const typeOptions = Array.from(
+    //     new Map(
+    //         rewardPenalties.map((item) => [
+    //             item.typeId,
+    //             {
+    //                 value: item.typeId,
+    //                 label: item.typeName,
+    //                 kind: item.kind,
+    //             },
+    //         ])
+    //     ).values()
+    // );
+    const typeOptions = rewardPenaltyTypes.map((t) => ({
+        value: t.id,
+        label: t.name,
+        kind: t.type === 0 || t.type === "reward" ? "reward" : "penalty",
+    }));
+
+    const commonAmounts = [200000, 300000, 500000, 1000000, 2000000, 5000000];
+
+    const commonAmountOptions = commonAmounts.map((v) => ({
+        value: v, // giữ là number để gửi đúng kiểu
+        label: `${v.toLocaleString("vi-VN")} đ`,
+    }));
 
     const handleCancel = () => setIsEditing(false);
 
@@ -319,7 +371,28 @@ export const RewardPenaltiesPage = () => {
                                         </Space>
                                     </Descriptions.Item>
                                     <Descriptions.Item label="Số tiền">{selectedItem.finalAmount}</Descriptions.Item>
-                                    <Descriptions.Item label="Ngày quyết định">{selectedItem.decidedAt}</Descriptions.Item>
+                                    {/* <Descriptions.Item label="Ngày quyết định">{selectedItem.decidedAt}</Descriptions.Item> */}
+                                    <Descriptions.Item label="Ngày quyết định">
+                                        {isEditing ? (
+                                            <DatePicker
+                                                className="w-full"
+                                                format="YYYY-MM-DD"
+                                                value={
+                                                    editedItem?.decidedAt
+                                                        ? dayjs(editedItem.decidedAt)
+                                                        : undefined
+                                                }
+                                                onChange={(date) =>
+                                                    handleChange(
+                                                        "decidedAt",
+                                                        date ? date.format("YYYY-MM-DD") : undefined
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            dayjs(selectedItem.decidedAt).format("YYYY-MM-DD")
+                                        )}
+                                    </Descriptions.Item>
                                     <Descriptions.Item label="Lý do">
                                         {isEditing ? (
                                             <Input.TextArea
@@ -356,14 +429,86 @@ export const RewardPenaltiesPage = () => {
                 okText="Thêm"
                 cancelText="Hủy"
             >
-                <Form form={form} layout="vertical">
-                    <Form.Item label="Nhân viên ID" name="employeeId" rules={[{ required: true }]}>
-                        <Input />
+                <Form
+                    form={form}
+                    layout="vertical"
+                    initialValues={{
+                        decidedAt: dayjs(),   // default hôm nay
+                    }}
+                >
+                    {/* Nhân viên */}
+                    <Form.Item
+                        label="Nhân viên"
+                        name="employeeId"
+                        rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}
+                    >
+                        <Select
+                            placeholder="Chọn nhân viên"
+                            options={employeeOptions}
+                            showSearch
+                            optionFilterProp="label"
+                            filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                    .toLowerCase()
+                                    .includes(input.toLowerCase())
+                            }
+                            optionRender={(option) => (
+                                <Space>
+                                    <Avatar src={option.data.avatarUrl} />
+                                    <div>
+                                        <div style={{ fontWeight: 500 }}>
+                                            {option.data.label}
+                                        </div>
+                                        <div style={{ fontSize: 12, color: "#888" }}>
+                                            {option.data.email}
+                                        </div>
+                                    </div>
+                                </Space>
+                            )}
+                        />
                     </Form.Item>
-                    <Form.Item label="Loại thưởng/phạt ID" name="typeId" rules={[{ required: true }]}>
-                        <Input />
+
+                    {/* Loại thưởng/phạt */}
+                    <Form.Item
+                        label="Loại thưởng/phạt"
+                        name="typeId"
+                        rules={[{ required: true, message: "Vui lòng chọn loại" }]}
+                    >
+                        <Select
+                            placeholder="Chọn loại thưởng/phạt"
+                            options={typeOptions}
+                            showSearch
+                            optionFilterProp="label"
+                            filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                    .toLowerCase()
+                                    .includes(input.toLowerCase())
+                            }
+                            optionRender={(option) => (
+                                <div className="flex items-center justify-between">
+                                    <span>{option.data.label}</span>
+                                    <Tag
+                                        color={
+                                            option.data.kind === "reward"
+                                                ? "green"
+                                                : "red"
+                                        }
+                                    >
+                                        {option.data.kind === "reward"
+                                            ? "Thưởng"
+                                            : "Phạt"}
+                                    </Tag>
+                                </div>
+                            )}
+                        />
                     </Form.Item>
-                    <Form.Item label="Kiểu" name="kind" rules={[{ required: true }]}>
+
+                    {/* Kiểu reward/penalty (kind) */}
+                    <Form.Item
+                        label="Kiểu"
+                        name="kind"
+                        rules={[{ required: true, message: "Vui lòng chọn kiểu" }]}
+                    >
                         <Select
                             options={[
                                 { value: "reward", label: "Thưởng" },
@@ -371,20 +516,71 @@ export const RewardPenaltiesPage = () => {
                             ]}
                         />
                     </Form.Item>
+
                     <Form.Item label="Số tiền tùy chỉnh" name="amountOverride">
-                        <Input type="number" />
+                        <Select
+                            placeholder="Chọn số tiền"
+                            allowClear
+                            options={commonAmountOptions}
+                            showSearch
+                            optionFilterProp="label"
+                            filterOption={(input, option) =>
+                                (option?.label as string)
+                                    .toLowerCase()
+                                    .includes(input.toLowerCase())
+                            }
+                        />
                     </Form.Item>
+
                     <Form.Item label="Lý do" name="customReason">
                         <Input.TextArea rows={3} />
                     </Form.Item>
-                    <Form.Item label="Ngày quyết định" name="decidedAt">
+
+                    <Form.Item
+                        label="Ngày quyết định"
+                        name="decidedAt"
+                        rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
+                    >
                         <DatePicker className="w-full" format="YYYY-MM-DD" />
                     </Form.Item>
-                    <Form.Item label="Người quyết định ID" name="decidedBy">
-                        <Input />
+
+                    {/* Người quyết định = userId */}
+                    <Form.Item
+                        label="Người quyết định"
+                        name="decidedBy"
+                        rules={[{ required: true, message: "Vui lòng chọn người quyết định" }]}
+                    >
+                        <Select
+                            placeholder="Chọn người quyết định"
+                            options={decidedByOptions}
+                            showSearch
+                            optionFilterProp="label"
+                            filterOption={(input, option) =>
+                                (option?.label ?? "")
+                                    .toLowerCase()
+                                    .includes(input.toLowerCase())
+                            }
+                            optionRender={(option) => (
+                                <Space>
+                                    <Avatar src={option.data.avatarUrl} />
+                                    <div>
+                                        <div style={{ fontWeight: 500 }}>
+                                            {option.data.label}
+                                        </div>
+                                        <div style={{ fontSize: 12, color: "#888" }}>
+                                            {option.data.email}
+                                        </div>
+                                        <div style={{ fontSize: 12, color: "#888" }}>
+                                            Chức vụ: {option.data.roleName}
+                                        </div>
+                                    </div>
+                                </Space>
+                            )}
+                        />
                     </Form.Item>
                 </Form>
             </Modal>
+
 
             {/* Modal Export Excel Chấm công */}
             <Modal
