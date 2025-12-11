@@ -25,7 +25,7 @@ const OverviewPage = () => {
     const {
         summary,
         charts,
-        employeesByDepartment,
+        employeesByDepartment = [],
         expiringContracts,
         attendanceToday,
         leaveStats,
@@ -33,8 +33,8 @@ const OverviewPage = () => {
         courseStats,
         salaryStats,
         performanceStats,
-        newContractsList,
-        noContractList,
+        newContractsList = [],
+        noContractList = [],
     } = dashboard;
 
     // ===================== SUMMARY CARDS =====================
@@ -414,6 +414,7 @@ const OverviewPage = () => {
                 ].map((item, i) => (
                     <Col xs={24} sm={12} md={6} key={i}>
                         <Card sx={{
+                            transition: "0.2s",
                             borderRadius: 3,
                             boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
                             "&:hover": {

@@ -210,10 +210,10 @@ export const ContractPage = () => {
     const employeeOptions = employees
         .filter(
             (emp) =>
-                emp.positionId === "BC7665FF-1AC1-4B12-8886-418330DD06C7" ||
-                emp.positionId === "B93A0EEF-7E77-411D-A903-6CCFE63E9B92" ||
-                emp.positionName! === "Giám đốc điều hành" ||
-                emp.positionName! === "Phó giám đốc"
+                emp.positionId === "dea0cca9-1c78-4db6-af13-367d604e10a6"
+            // emp.positionId === "B93A0EEF-7E77-411D-A903-6CCFE63E9B92" ||
+            // emp.positionName! === "Giám đốc điều hành" ||
+            // emp.positionName! === "Phó giám đốc"
         )
         .map((emp) => ({
             value: emp.id,
@@ -221,6 +221,8 @@ export const ContractPage = () => {
             email: emp.email,
             avatarUrl: emp.avatarUrl,
         }));
+
+    console.log(">>> check employeeOptions", employeeOptions);
 
     // Hàm lọc ra những nhân viên sắp hết hạn hợp đồng trong vòng 30 ngày
     const handleFilterExpire30 = () => {

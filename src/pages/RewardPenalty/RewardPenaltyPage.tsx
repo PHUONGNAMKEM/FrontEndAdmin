@@ -159,6 +159,7 @@ export const RewardPenaltyPage = () => {
                         onPressEnter={handleSearch}
                     />
                     <Select
+                        size="large"
                         defaultValue={0}
                         style={{ width: 100 }}
                         onChange={(value) => filterRewardPenalty(1, 10, value)}

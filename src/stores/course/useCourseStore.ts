@@ -64,6 +64,10 @@ export const useCourseStore = create<CourseStore>((set, get) => ({
             if (res.statusCode === 200 || res.data?.success) {
                 set({ courses: get().courses.filter((e) => e.id !== id) });
             }
+            else {
+                const message = res.data?.message || res.message || "Xóa khóa học thất bại";
+                throw new Error(message);
+            }
         } catch (err: any) {
             console.error("Xóa khóa học thất bại:", err);
             throw err;

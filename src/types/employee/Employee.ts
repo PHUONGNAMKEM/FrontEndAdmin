@@ -1,5 +1,6 @@
 export interface Employee {
     id?: string;
+    userId: string;
     code?: string;
     fullName: string;
     gender: 0 | 1 | 2;

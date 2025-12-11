@@ -16,7 +16,7 @@ export const CongratsPage = () => {
                 ]}
             />
             <div className="flex items-center justify-around text-xl text-center tutorial-mobile-app text-[var(--text-color)]">
-                <img src="/images/phone.svg" alt="" />
+                <img src="/images/phone.svg" alt="" className="w-[50%]" />
                 <div>
                     <p>Bước 1: Truy cập vào đường link: {<Link to="https://huongdantruycap.mobile">https://huongdantruycap.mobile</Link>}</p>
                     <p>Bước 2: Đăng nhập tài khoản nhân viên của bạn</p>

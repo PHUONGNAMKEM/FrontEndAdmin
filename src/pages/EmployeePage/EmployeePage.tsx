@@ -341,24 +341,24 @@ const EmployeePage = () => {
                 downloadEmployeesReport();
             },
         },
-        {
-            label: '2nd menu item',
-            key: '2',
-            icon: <Button size="large" icon={<IconWrapper Icon={Settings} />} />,
-        },
-        {
-            label: '3rd menu item',
-            key: '3',
-            icon: <UserOutlined />,
-            danger: true,
-        },
-        {
-            label: '4rd menu item',
-            key: '4',
-            icon: <UserOutlined />,
-            danger: true,
-            disabled: true,
-        },
+        // {
+        //     label: '2nd menu item',
+        //     key: '2',
+        //     icon: <Button size="large" icon={<IconWrapper Icon={Settings} />} />,
+        // },
+        // {
+        //     label: '3rd menu item',
+        //     key: '3',
+        //     icon: <UserOutlined />,
+        //     danger: true,
+        // },
+        // {
+        //     label: '4rd menu item',
+        //     key: '4',
+        //     icon: <UserOutlined />,
+        //     danger: true,
+        //     disabled: true,
+        // },
     ];
     const [searchText, setSearchText] = useState("");
     const handleSearch = () => {

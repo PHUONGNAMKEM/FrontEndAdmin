@@ -94,8 +94,11 @@ export const CoursePage = () => {
             notification.success({ message: "Xóa khóa học thành công!" });
             setSelectedCourse(null);
             fetchCourses(currentPage, currentSize);
-        } catch {
-            notification.error({ message: "Xóa thất bại!" });
+        } catch (err: any) {
+            notification.error({
+                message: "Xóa khóa học thất bại!",
+                description: err?.message || "Có lỗi xảy ra khi xóa khóa học!",
+            });
         }
     };
 

@@ -68,21 +68,35 @@ export default function ContractAdd() {
             avatarUrl: emp.avatarUrl,
         }));
 
-    const employeeAllowedOptions = users
+    // const employeeAllowedOptions = users
+    //     .filter(
+    //         (user) =>
+    //             user.roleName === "Admin" || user.roleName === "HR"
+    //         // emp.positionId === "BC7665FF-1AC1-4B12-8886-418330DD06C7" ||
+    //         // emp.positionId === "B93A0EEF-7E77-411D-A903-6CCFE63E9B92" ||
+    //         // emp.positionName! === "Giám đốc điều hành" ||
+    //         // emp.positionName! === "Phó giám đốc"
+    //     )
+    //     .map((user) => ({
+    //         value: user.id,
+    //         label: user.employeeName,
+    //         email: user.employeeEmail,
+    //         rolName: user.roleName
+    //     }));
+
+    const employeeAllowedOptions = employees
         .filter(
-            (user) =>
-                user.roleName === "Admin" || user.roleName === "HR"
-            // emp.positionId === "BC7665FF-1AC1-4B12-8886-418330DD06C7" ||
-            // emp.positionId === "B93A0EEF-7E77-411D-A903-6CCFE63E9B92" ||
-            // emp.positionName! === "Giám đốc điều hành" ||
-            // emp.positionName! === "Phó giám đốc"
+            (emp) =>
+                emp.positionId === "dea0cca9-1c78-4db6-af13-367d604e10a6"
         )
-        .map((user) => ({
-            value: user.id,
-            label: user.employeeName,
-            email: user.employeeEmail,
-            rolName: user.roleName
+        .map((emp) => ({
+            value: emp.userId,
+            label: emp.fullName,
+            email: emp.email,
+            avatarUrl: emp.avatarUrl,
+            roleName: emp.positionName,
         }));
+
 
     // Định nghĩa các ENUM (type, worktype, status)
     const CONTRACT_TYPE_MAP: Record<number, string> = {
@@ -390,8 +404,8 @@ export default function ContractAdd() {
                                     {contractValues?.representativeId
                                         ? employeeAllowedOptions.find(e => e.value === contractValues?.representativeId)?.label
                                         : "................................................"}
-                                </strong>{" "}
-                                {employeeAllowedOptions.find(e => e.value === contractValues?.representativeId)?.rolName || "Chức vụ"}
+                                </strong>{" Chức vụ: "}
+                                {employeeAllowedOptions.find(e => e.value === contractValues?.representativeId)?.roleName || "Nhân viên"}
                             </p>
                             <p>Đại diện cho: Công ty TNHH 3 THÀNH VIÊN</p>
                             <p>Địa chỉ: ...........................................................</p>
