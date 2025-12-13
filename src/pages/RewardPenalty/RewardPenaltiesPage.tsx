@@ -153,8 +153,8 @@ export const RewardPenaltiesPage = () => {
             notification.success({ message: "Xóa thành công!" });
             setSelectedItem(null);
             fetchRewardPenalties(currentPage, currentSize);
-        } catch {
-            notification.error({ message: "Xóa thất bại!" });
+        } catch (error: any) {
+            notification.error({ message: "Xóa thất bại!", description: error.message });
         }
     };
 

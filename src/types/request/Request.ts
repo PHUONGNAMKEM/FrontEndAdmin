@@ -6,7 +6,8 @@ export interface Request {
     title: string;
     description: string;
     // category: "ot" | "leave" | " resignation" | " business_trip" | " incident" | " proposal" | "other";
-    category: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+    // category: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+    category: string | number;
     // status: "pending" | "approved" | "rejected" | "cancelled";
     status: 0 | 1 | 2 | string;
     date: string;

@@ -5,6 +5,8 @@ import { RefreshCcw, Check, Ban, CircleCheck, BanIcon, Search } from "lucide-rea
 import { useRequestStore } from "src/stores/useRequestStore";
 import { useSearchParams } from "react-router-dom";
 import TextArea from "antd/es/input/TextArea";
+import { Request } from "src/types/request/Request";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -33,21 +35,54 @@ export const RequestPage = () => {
     const [rejectReason, setRejectReason] = useState("");
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
+    // Hàm tính giờ
+    const calcApprovedHours = (fromDate: string, startTime: string, endTime: string) => {
+        if (!fromDate || !startTime || !endTime) return 0;
+
+        // parse theo format
+        const start = dayjs(`${fromDate} ${startTime}`, "YYYY-MM-DD HH:mm:ss");
+        const end = dayjs(`${fromDate} ${endTime}`, "YYYY-MM-DD HH:mm:ss");
+
+        if (!start.isValid() || !end.isValid()) return 0;
+
+        // nếu end < start (OT qua đêm) thì cộng 1 ngày
+        const safeEnd = end.isBefore(start) ? end.add(1, "day") : end;
+
+        // giờ dạng số (có thể lẻ)
+        const hours = safeEnd.diff(start, "minute") / 60;
+
+        // làm tròn 2 chữ số (tuỳ bạn)
+        return Math.round(hours * 100) / 100;
+    };
+
     // Khi chấp nhận yêu cầu
-    const handleApprove = async (id: string) => {
+    const handleApprove = async (id: string, category: string | number, fromDate: string, startTime: string, endTime: string) => {
         try {
+            let approvedHour = 0;
+
+            if (category === "ot") {
+                approvedHour = calcApprovedHours(fromDate, startTime, endTime);
+
+                // updateStatus có param approvedHour
+                const res = await updateStatus(id, 1, approverUserId!, undefined, approvedHour);
+
+                if (res?.success) {
+                    notification.success({ message: "Thành công", description: res.message || "Yêu cầu đã được duyệt!" });
+                    fetchRequests(currentPage, currentSize);
+                } else {
+                    notification.error({ message: "Duyệt thất bại", description: res?.message || "Vui lòng thử lại" });
+                }
+                return;
+            }
+
+            // các loại khác (leave, etc.)
             const res = await updateStatus(id, 1, approverUserId!);
+
             if (res?.success) {
-                notification.success({
-                    message: "Thành công",
-                    description: res.message || "Yêu cầu đã được duyệt!",
-                });
+                notification.success({ message: "Thành công", description: res.message || "Yêu cầu đã được duyệt!" });
                 fetchRequests(currentPage, currentSize);
             } else {
-                notification.error({
-                    message: "Duyệt thất bại",
-                    description: res?.message || "Vui lòng thử lại",
-                });
+                notification.error({ message: "Duyệt thất bại", description: res?.message || "Vui lòng thử lại" });
             }
         } catch (err) {
             notification.error({
@@ -153,7 +188,7 @@ export const RequestPage = () => {
         {
             title: "Duyệt yêu cầu",
             key: "action",
-            render: (record: any) => {
+            render: (record: Request) => {
                 const status = record.status;
 
                 if (status === "approved") {
@@ -169,7 +204,7 @@ export const RequestPage = () => {
                         <Space>
                             <Popconfirm
                                 title="Xác nhận duyệt yêu cầu"
-                                onConfirm={() => handleApprove(record.id)}
+                                onConfirm={() => handleApprove(record.id, record.category, record.fromDate, record.startTime, record.endTime)}
                                 okText="Duyệt"
                                 cancelText="Hủy"
                             >

@@ -97,8 +97,8 @@ export const OvertimePage = () => {
             notification.success({ message: "Xóa OT thành công!" });
             setSelectedOT(null);
             fetchOvertime(currentPage, currentSize);
-        } catch {
-            notification.error({ message: "Xóa OT thất bại!" });
+        } catch (error: any) {
+            notification.error({ message: "Xóa OT thất bại!", description: error.message });
         }
     };
 

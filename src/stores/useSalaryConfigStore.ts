@@ -75,6 +75,10 @@ export const useSalaryConfigStore = create<SalaryConfigStore>((set, get) => ({
                     salaryConfigs: get().salaryConfigs.filter((e) => e.id !== id),
                 });
             }
+            else {
+                const message = res.data?.message || res.message || "Xóa cấu hình lương thất bại";
+                throw new Error(message);
+            }
         } catch (err) {
             console.error("Xóa cấu hình lương thất bại:", err);
             throw err;

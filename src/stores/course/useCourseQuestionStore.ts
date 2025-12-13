@@ -69,6 +69,10 @@ export const useCourseQuestionStore = create<CourseQuestionStore>((set) => ({
                     questions: state.questions.filter((q) => q.id !== id),
                 }));
             }
+            else {
+                const message = res.data?.message || res.message || "Xóa câu hỏi thất bại";
+                throw new Error(message);
+            }
         } catch (err) {
             console.error("Xóa câu hỏi trong khóa học thất bại:", err);
             throw err;

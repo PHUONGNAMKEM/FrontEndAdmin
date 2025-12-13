@@ -87,6 +87,10 @@ export const useRewardPenaltyStore = create<RewardPenaltyStore>((set, get) => ({
                     rewardPenalties: get().rewardPenalties.filter((e) => e.id !== id),
                 });
             }
+            else {
+                const message = res.data?.message || res.message || "Xóa thưởng/phạt thất bại";
+                throw new Error(message);
+            }
         } catch (err: any) {
             console.error("Xóa thưởng/phạt thất bại:", err);
             throw err;

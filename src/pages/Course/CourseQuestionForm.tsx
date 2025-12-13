@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button, Card, Form, Input, Radio, Space, Typography, notification } from "antd";
-import { PlusCircle, Save, ArrowLeft } from "lucide-react";
+import { Button, Card, Form, Input, Popconfirm, Radio, Space, Typography, notification } from "antd";
+import { PlusCircle, Save, ArrowLeft, Trash2 } from "lucide-react";
 import { CourseQuestion } from "src/types/course/CourseQuestion";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCourseQuestionStore } from "src/stores/course/useCourseQuestionStore";
@@ -47,6 +47,10 @@ export const CourseQuestionForm = () => {
 
     const handleSubmit = async () => {
         try {
+            if (questions.length < 1) {
+                notification.info({ message: "Phải có ít nhất 1 câu hỏi!" });
+                return;
+            }
             for (const q of questions) {
                 if (!q.content.trim()) continue;
                 await addQuestion(q); // vì chưa có API tạo nhiều câu hỏi cùng lúc nên phải lặp từng câu hỏi
@@ -56,6 +60,14 @@ export const CourseQuestionForm = () => {
         } catch (err) {
             notification.error({ message: "Tạo câu hỏi thất bại!" });
         }
+    };
+
+    const handleRemoveQuestion = (index: number) => {
+        if (questions.length < 1) {
+            notification.info({ message: "Phải có ít nhất 1 câu hỏi!" });
+            return;
+        }
+        setQuestions(prev => prev.filter((_, i) => i !== index));
     };
 
     return (
@@ -76,6 +88,18 @@ export const CourseQuestionForm = () => {
                     title={`Câu hỏi ${index + 1}`}
                     bordered
                     className="!mb-4"
+                    extra={
+                        <Popconfirm
+                            title="Xóa câu hỏi này?"
+                            okText="Xóa"
+                            cancelText="Hủy"
+                            onConfirm={() => handleRemoveQuestion(index)}
+                        >
+                            <Button danger type="text" icon={<Trash2 size={16} />}>
+                                Xóa
+                            </Button>
+                        </Popconfirm>
+                    }
                 >
                     <Form layout="vertical">
                         <Form.Item label="Nội dung câu hỏi">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, Radio, Checkbox, List, Typography, notification } from "antd";
+import { Modal, Form, Input, Radio, Checkbox, List, Typography, notification, Tag } from "antd";
 import { useEmployeeStore } from "src/stores/useEmployeeStore";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { OctagonAlert } from "lucide-react";
@@ -84,8 +84,9 @@ export const NotificationAdd = ({ open, onClose, onSuccess }: Props) => {
                     <Input.TextArea rows={3} />
                 </Form.Item>
 
-                <Form.Item label="Loại" name="type" initialValue="general">
-                    <Input />
+                <Form.Item label="Loại" name="type" initialValue="new" >
+                    {/* <Input /> */}
+                    <Tag color="blue">new</Tag>
                 </Form.Item>
 
                 <Form.Item label="Action URL" name="actionUrl">

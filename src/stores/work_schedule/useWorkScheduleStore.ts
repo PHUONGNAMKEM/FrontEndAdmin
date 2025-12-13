@@ -105,6 +105,10 @@ export const useWorkScheduleStore = create<WorkScheduleStore>((set, get) => {
                         schedules: get().schedules.filter((s) => s.id !== id),
                     });
                 }
+                else {
+                    const message = res.data?.message || res.message || "Xóa lịch làm việc thất bại";
+                    throw new Error(message);
+                }
             } catch (error) {
                 throw error;
             }

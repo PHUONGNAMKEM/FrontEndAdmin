@@ -99,8 +99,8 @@ export const RolePage = () => {
             notification.success({ message: "Xóa role thành công!" });
             setSelectedRole(null);
             fetchRoles(currentPage, currentSize, searchText);
-        } catch {
-            notification.error({ message: "Xóa thất bại!" });
+        } catch (error: any) {
+            notification.error({ message: "Xóa thất bại!", description: error.message });
         }
     };
 

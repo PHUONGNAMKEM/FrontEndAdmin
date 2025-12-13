@@ -123,8 +123,8 @@ export const UserManagementPage = () => {
             notification.success({ message: "Xóa thành công!" });
             setSelectedUser(null);
             fetchUsers(currentPage, currentSize, searchText);
-        } catch {
-            notification.error({ message: "Xóa thất bại!" });
+        } catch (error: any) {
+            notification.error({ message: "Xóa thất bại!", description: error.message });
         }
     };
 

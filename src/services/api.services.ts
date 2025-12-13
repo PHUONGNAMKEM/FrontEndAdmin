@@ -189,9 +189,11 @@ export const fetchRequestAPI = (current: number, pageSize: number, q?: string): 
     return axios.get(URL_BACKEND);
 };
 
-export const updateRequestStatusAPI = (id: string, newStatus: string | number, approverUserId: string, reason: string): Promise<ApiResponse> => {
+export const updateRequestStatusAPI = (id: string, newStatus: string | number, approverUserId: string, reason: string, approvedHours?: number): Promise<ApiResponse> => {
     const URL_BACKEND = `/api/Request/process/${id}`;
-    return axios.put(URL_BACKEND, { newStatus, approverUserId, reason });
+    const payload: any = { newStatus, approverUserId, reason };
+    if (approvedHours !== undefined) payload.approvedHours = approvedHours; // nếu không có approvedHours thì không gửi -> do không cần gửi khi type là leave
+    return axios.put(URL_BACKEND, payload);
 };
 
 // Salary Config

@@ -99,8 +99,8 @@ export const ShiftTemplatePage = () => {
             notification.success({ message: "Xóa thành công!" });
             setSelectedItem(null);
             fetchTemplates(currentPage, currentSize, searchText);
-        } catch {
-            notification.error({ message: "Xóa thất bại!" });
+        } catch (error: any) {
+            notification.error({ message: "Xóa thất bại!", description: error.message });
         }
     };
 

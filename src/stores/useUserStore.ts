@@ -110,6 +110,10 @@ export const useUserStore = create<UserStore>((set, get) => {
                         users: get().users.filter((u) => u.id !== id),
                     });
                 }
+                else {
+                    const message = res.data?.message || res.message || "Xóa tài khoản thất bại";
+                    throw new Error(message);
+                }
             } catch (err) {
                 console.error("Xóa tài khoản thất bại", err);
                 throw err;

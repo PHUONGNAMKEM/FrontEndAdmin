@@ -110,6 +110,10 @@ export const useRoleStore = create<RoleStore>((set, get) => {
                         roles: get().roles.filter((r) => r.id !== id),
                     });
                 }
+                else {
+                    const message = res.data?.message || res.message || "Xóa vai trò thất bại";
+                    throw new Error(message);
+                }
             } catch (err) {
                 console.error("Delete role failed:", err);
                 throw err;

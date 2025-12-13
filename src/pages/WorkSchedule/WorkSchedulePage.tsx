@@ -3,7 +3,7 @@ import {
     Button, Checkbox, DatePicker, Dropdown, Form, Input, Modal, Pagination, Select, Space, Tag, Tooltip, Typography, notification, Popconfirm, MenuProps,
 } from "antd";
 import dayjs, { Dayjs } from "dayjs";
-import { useSearchParams, useOutletContext } from "react-router-dom";
+import { useSearchParams, useOutletContext, useNavigate } from "react-router-dom";
 
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { useWorkScheduleStore } from "src/stores/work_schedule/useWorkScheduleStore";
@@ -20,6 +20,9 @@ import {
 import { ShiftTemplate } from "src/types/shift/ShiftTemplate";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
 import { ChevronLeft, ChevronRight, Calendar, Trash } from "lucide-react";
+import { useOvertimeStore } from "src/stores/useOvertimeStore";
+import { Overtime } from "src/types/overtime/Overtime";
+import { useRequestStore } from "src/stores/useRequestStore";
 
 
 const { RangePicker } = DatePicker;
@@ -68,9 +71,12 @@ export const WorkSchedulePage = () => {
         setModalOpen,
     } = useWorkScheduleStore();
 
-    const { employees = [], fetchEmployees } = useEmployeeStore();
-    const { departments = [], fetchDepartment } = useDepartmentStore();
-    const { templates = [], fetchTemplates } = useShiftTemplateStore();
+    const { employees = [], fetchEmployees, meta: employeeMeta } = useEmployeeStore();
+    const { departments = [], fetchDepartment, meta: departmentMeta } = useDepartmentStore();
+    const { templates = [], fetchTemplates, meta: templateMeta } = useShiftTemplateStore();
+    const { overtimes = [], fetchOvertime, meta: overtimeMeta } = useOvertimeStore();
+    const { requests, fetchRequests } = useRequestStore();
+    const navigate = useNavigate();
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -112,9 +118,10 @@ export const WorkSchedulePage = () => {
 
     // ======= load dữ liệu phụ =======
     useEffect(() => {
-        fetchEmployees?.(1, 200);
+        fetchEmployees?.(1, employeeMeta?.total || 10000);
         fetchDepartment?.();
-        fetchTemplates?.(1, 100);
+        fetchTemplates?.(1, templateMeta?.total || 10000);
+        fetchOvertime?.(1, overtimeMeta?.total || 10000);
     }, []);
 
     // reset trang nhân viên khi đổi filter
@@ -170,6 +177,60 @@ export const WorkSchedulePage = () => {
         });
     }, [weekStart, weekEnd, departmentId, employeeId, shiftTemplateId]);
 
+    // nếu như thêm OT mới được duyệt thì nó sẽ fetch lại lịch
+    useEffect(() => {
+        const from = weekStart.format("YYYY-MM-DD");
+        const to = weekEnd.format("YYYY-MM-DD");
+
+        // Nếu chưa có API filter thì vẫn gọi fetchOvertime(1, 10000)
+        fetchOvertime(1, 10000);
+    }, [weekStart, weekEnd, departmentId, employeeId]);
+
+    useEffect(() => {
+        fetchRequests(1, 10000, "approved");
+    }, [weekStart, weekEnd]);
+
+    const leavesInWeek = useMemo(() => {
+        const from = weekStart.startOf("day");
+        const to = weekEnd.endOf("day");
+
+        return (requests || []).filter((r: any) => {
+            if (r.category !== "leave") return false;
+            if (r.status !== "approved") return false;
+
+            // giao nhau với tuần hiện tại
+            const leaveStart = dayjs(r.fromDate);
+            const leaveEnd = dayjs(r.toDate);
+
+            if (leaveEnd.isBefore(from) || leaveStart.isAfter(to)) return false;
+
+            // filter theo employee/department nếu cần
+            if (employeeId && r.employeeId !== employeeId) return false;
+            if (departmentId && r.departmentId !== departmentId) return false;
+
+            return true;
+        });
+    }, [requests, weekStart, weekEnd, employeeId, departmentId]);
+
+    const leaveMap = useMemo(() => {
+        const map: Record<string, any[]> = {};
+
+        leavesInWeek.forEach((r: any) => {
+            const start = dayjs(r.fromDate);
+            const end = dayjs(r.toDate);
+
+            // trải từng ngày trong khoảng nghỉ
+            for (let d = start; d.isSame(end) || d.isBefore(end); d = d.add(1, "day")) {
+                const dateStr = d.format("YYYY-MM-DD");
+                const key = `${r.employeeId}_${dateStr}`;
+                if (!map[key]) map[key] = [];
+                map[key].push(r);
+            }
+        });
+
+        return map;
+    }, [leavesInWeek]);
+
     const handleDateChange = (value: Dayjs | null) => {
         if (value) setCurrentDate(value);
     };
@@ -219,6 +280,37 @@ export const WorkSchedulePage = () => {
         });
         return map;
     }, [schedules]);
+
+    const overtimesInWeek = useMemo(() => {
+        const from = weekStart.startOf("day");
+        const to = weekEnd.endOf("day");
+
+        return (overtimes || []).filter((ot) => {
+            const d = dayjs(ot.date);
+
+            // lọc theo tuần
+            if (d.isBefore(from) || d.isAfter(to)) return false;
+
+            // lọc theo employeeId nếu đang chọn 1 người
+            if (employeeId && ot.employeeId !== employeeId) return false;
+
+            // lọc theo department nếu đang chọn phòng ban
+            if (departmentId && ot.departmentId !== departmentId) return false;
+
+            return true;
+        });
+    }, [overtimes, weekStart, weekEnd, employeeId, departmentId]);
+
+    const overtimeMap = useMemo(() => {
+        const map: Record<string, Overtime[]> = {};
+        overtimesInWeek.forEach((ot) => {
+            const dateStr = dayjs(ot.date).format("YYYY-MM-DD");
+            const key = `${ot.employeeId}_${dateStr}`;
+            if (!map[key]) map[key] = [];
+            map[key].push(ot);
+        });
+        return map;
+    }, [overtimesInWeek]);
 
     const handleCellClick = (empId: string, date: string) => {
         const existing = scheduleMap[`${empId}_${date}`];
@@ -606,10 +698,21 @@ export const WorkSchedulePage = () => {
 
                         {/* các ngày */}
                         {dateList.map((dateStr) => {
-                            const schedule = scheduleMap[`${emp.id}_${dateStr}`];
+                            const key = `${emp.id}_${dateStr}`;
+
+                            const leaveRequests = leaveMap[key] || [];
+                            const hasLeave = leaveRequests.length > 0;
+
+                            // chỉ lấy schedule/ot khi KHÔNG leave
+                            const schedule = hasLeave ? undefined : scheduleMap[key];
+                            const ots = hasLeave ? [] : (overtimeMap[key] || []);
+
                             const shiftLabel = schedule
                                 ? shiftCodeMap[schedule.shiftTemplateId] || schedule.shiftName
                                 : "";
+
+                            const hasOT = ots.length > 0;
+                            const totalOtHours = ots.reduce((sum, x) => sum + (Number(x.hours) || 0), 0);
 
                             const isToday = dateStr === dayjs().format("YYYY-MM-DD");
 
@@ -626,23 +729,57 @@ export const WorkSchedulePage = () => {
                                         background: isToday ? "#fffbe6" : "white",
                                         cursor: "pointer",
                                     }}
-                                    onClick={() => handleCellClick(emp.id, dateStr)}
+                                    // onClick={() => handleCellClick(emp.id, dateStr)}
+                                    onClick={() => {
+                                        if (hasLeave) return;
+                                        handleCellClick(emp.id, dateStr);
+                                    }}
                                 >
-                                    {schedule ? (
+                                    {hasLeave ? (
+                                        <Tooltip title="Xem trang yêu cầu">
+                                            <Tag color="red" className="!m-0" onClick={() => navigate('/request')}>LEAVE</Tag>
+                                        </Tooltip>
+                                    ) : (schedule || hasOT) ? (
                                         <Tooltip
                                             title={
                                                 <>
-                                                    <div>{schedule.shiftName}</div>
-                                                    <div>
-                                                        {schedule.shiftStartTime} - {schedule.shiftEndTime}
-                                                    </div>
-                                                    {schedule.note && <div>Ghi chú: {schedule.note}</div>}
+                                                    {schedule && (
+                                                        <>
+                                                            <div>{schedule.shiftName}</div>
+                                                            <div>
+                                                                {schedule.shiftStartTime} - {schedule.shiftEndTime}
+                                                            </div>
+                                                            {schedule.note && <div>Ghi chú: {schedule.note}</div>}
+                                                            <div style={{ marginTop: 6 }} />
+                                                        </>
+                                                    )}
+
+                                                    {hasOT && (
+                                                        <>
+                                                            <div style={{ fontWeight: 600 }}>OT</div>
+                                                            {ots.map((ot) => (
+                                                                <div key={ot.id}>
+                                                                    +{ot.hours}h — {ot.reason}
+                                                                </div>
+                                                            ))}
+                                                        </>
+                                                    )}
                                                 </>
                                             }
                                         >
-                                            <Tag color="blue" style={{ padding: "0 10px" }} className="!m-0">
-                                                {shiftLabel}
-                                            </Tag>
+                                            <div className="flex flex-col items-center gap-1">
+                                                {schedule && (
+                                                    <Tag color="blue" style={{ padding: "0 10px" }} className="!m-0">
+                                                        {shiftLabel}
+                                                    </Tag>
+                                                )}
+
+                                                {hasOT && (
+                                                    <Tag color="orange" style={{ padding: "0 10px" }} className="!m-0">
+                                                        OT +{totalOtHours}h
+                                                    </Tag>
+                                                )}
+                                            </div>
                                         </Tooltip>
                                     ) : (
                                         <div
@@ -746,6 +883,7 @@ export const WorkSchedulePage = () => {
                     >
                         <Select
                             showSearch
+                            allowClear
                             optionFilterProp="label"
                             options={templates.map((t: ShiftTemplate) => ({
                                 label: `${t.code} – ${t.name}`,

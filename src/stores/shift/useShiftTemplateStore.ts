@@ -102,6 +102,10 @@ export const useShiftTemplateStore = create<ShiftTemplateStore>((set, get) => {
                         templates: get().templates.filter(t => t.id !== id)
                     });
                 }
+                else {
+                    const message = res.data?.message || res.message || "Xóa khóa học thất bại";
+                    throw new Error(message);
+                }
             } catch (error) {
                 throw error;
             }

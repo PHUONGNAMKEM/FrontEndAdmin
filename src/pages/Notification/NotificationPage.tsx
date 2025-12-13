@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
     Table, Button, Space, Input, Form, Typography, notification,
     Popconfirm, Descriptions, Card, List, Pagination, Row, Col, Tag, Checkbox, Radio,
-    message
+    message,
+    Select
 } from "antd";
 import {
     AlignJustify, PanelLeft, CirclePlus, Edit3, Trash, Ban, Check, Search, Grid2X2
@@ -153,6 +154,33 @@ export const NotificationPage = () => {
         }
     };
 
+    const handleSoftDelete = async () => {
+        if (!selected) return;
+
+        // payload update: đổi type thành deleted + gửi cho tất cả nhân viên
+        const payload: any = {
+            type: "deleted",
+            title: selected.title,
+            content: selected.content,
+            actionUrl: selected.actionUrl ?? null,
+            userId: null,
+            targetUserIds: null,
+        };
+
+        try {
+            await updateNotification(selected.id, payload);
+
+            notification.success({ message: "Đã chuyển thông báo sang trạng thái deleted!" });
+
+            // refresh list + cập nhật detail đang xem
+            await fetchNotifications(currentPage, currentSize, searchText);
+            setSelected({ ...selected, ...payload });
+            setIsEditing(false);
+        } catch (err) {
+            notification.error({ message: "Xóa (soft delete) thất bại!" });
+        }
+    };
+
 
     // const confirmDelete = async () => {
     //     if (!selected) return;
@@ -230,6 +258,12 @@ export const NotificationPage = () => {
         setSelected(item);
         setIsEditing(false);
     };
+
+    const typeOptions = [
+        { value: "new", label: "New" },
+        { value: "updated", label: "Updated" },
+        { value: "deleted", label: "Deleted" },
+    ];
 
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
@@ -405,9 +439,9 @@ export const NotificationPage = () => {
 
                                         <Popconfirm
                                             title="Xóa thông báo?"
-                                            onConfirm={handleUpdate}
+                                            onConfirm={handleSoftDelete}
                                         >
-                                            <Button danger icon={<IconWrapper Icon={Trash} color="#ff4d4f" />}>
+                                            <Button disabled={selected.type === "deleted"} danger icon={<IconWrapper Icon={Trash} color="#ff4d4f" />}>
                                                 Xóa
                                             </Button>
                                         </Popconfirm>
@@ -432,12 +466,37 @@ export const NotificationPage = () => {
 
                                     <Descriptions.Item label="Loại">
                                         {isEditing ? (
-                                            <Input
+                                            // <Input
+                                            //     value={edited?.type}
+                                            //     onChange={(e) => handleChange("type", e.target.value)}
+                                            // />
+                                            <Select
                                                 value={edited?.type}
-                                                onChange={(e) => handleChange("type", e.target.value)}
+                                                className="w-full"
+                                                placeholder="Chọn loại thông báo"
+                                                options={typeOptions}
+                                                allowClear
+                                                showSearch // cho phép gõ để lọc
+                                                optionFilterProp="label"
+                                                filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
+                                                    (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                                }
+                                                onChange={(value) => handleChange("type", value)}
                                             />
                                         ) : (
-                                            selected.type
+                                            <Tag
+                                                color={
+                                                    selected.type === "new"
+                                                        ? "green"
+                                                        : selected.type === "updated"
+                                                            ? "volcano"
+                                                            : selected.type === "deleted"
+                                                                ? "red"
+                                                                : "default"
+                                                }
+                                            >
+                                                {selected.type.toUpperCase()}
+                                            </Tag>
                                         )}
                                     </Descriptions.Item>
 

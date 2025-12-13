@@ -9,7 +9,7 @@ interface RequestStore {
     searchText?: string;
     meta?: PaginationMeta | null;
     fetchRequests: (current?: number, pageSize?: number, q?: string) => Promise<void>;
-    updateStatus: (id: string, status: Request["status"], approverUserId: string, reason?: string) => Promise<ApiResponse>;
+    updateStatus: (id: string, status: Request["status"], approverUserId: string, reason?: string, approvedHours?: number) => Promise<ApiResponse>;
 }
 
 export const useRequestStore = create<RequestStore>((set, get) => ({
@@ -30,9 +30,9 @@ export const useRequestStore = create<RequestStore>((set, get) => ({
         }
     },
 
-    updateStatus: async (id, status, approverUserId, reason = "") => {
+    updateStatus: async (id, status, approverUserId, reason = "", approvedHours) => {
         try {
-            const res = await updateRequestStatusAPI(id, status, approverUserId, reason);
+            const res = await updateRequestStatusAPI(id, status, approverUserId, reason, approvedHours);
             const data = res.data;
             if (!data.success) {
                 throw new Error(data.message || "Duyệt thất bại");

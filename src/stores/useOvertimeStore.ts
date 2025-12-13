@@ -71,6 +71,10 @@ export const useOvertimeStore = create<OvertimeStore>((set, get) => ({
             if (res.statusCode === 200 || res.data?.success) {
                 set({ overtimes: get().overtimes.filter((e) => e.id !== id) });
             }
+            else {
+                const message = res.data?.message || res.message || "Xóa OT thất bại";
+                throw new Error(message);
+            }
         } catch (err) {
             console.error("Xóa OT thất bại:", err);
             throw err;
