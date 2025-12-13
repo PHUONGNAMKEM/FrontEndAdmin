@@ -55,9 +55,11 @@ import { AuthContext } from "./components/context/auth.context";
 import { useIsMobile } from "./hooks/useIsMobile";
 import DesktopApp from "./types/layout/DesktopApp";
 import MobileApp from "./types/layout/MobileApp";
+import { useSignalR } from "./hooks/useSignalR";
 
 const App = () => {
   const { isAppLoading } = useContext(AuthContext);
+  useSignalR();
 
   // detect mobile before any return (đây là hook → không được đặt sau return)
   const isMobile = useIsMobile(992);

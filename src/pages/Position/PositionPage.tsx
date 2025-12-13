@@ -10,7 +10,7 @@ import {
     EllipsisOutlined,
 } from "@ant-design/icons";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-import { AlignJustify, PanelLeft, Check, Ban, CirclePlus, Search } from "lucide-react";
+import { AlignJustify, PanelLeft, Check, Ban, CirclePlus, Search, Edit3 } from "lucide-react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { HeaderOutletContextType } from "src/types/layout/HeaderOutletContextType";
 import { usePositionStore } from "src/stores/usePositionStore";
@@ -319,7 +319,7 @@ export const PositionPage = () => {
                                     <Space>
                                         <Button
                                             type="text"
-                                            icon={<EditOutlined />}
+                                            icon={<IconWrapper Icon={Edit3} />}
                                             onClick={handleEditToggle}
                                         />
                                         <Popconfirm

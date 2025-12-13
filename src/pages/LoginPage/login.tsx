@@ -28,6 +28,7 @@ const LoginPage = () => {
             message.success("Login successfully");
             setIsLoading(false);
             localStorage.setItem("access_token", res.data.access_token);
+            localStorage.setItem("refresh_token", res.data.refresh_token);
             // await startConnection();
             localStorage.setItem("role", res.data.user.role.name);
             localStorage.setItem("username", res.data.user.username);

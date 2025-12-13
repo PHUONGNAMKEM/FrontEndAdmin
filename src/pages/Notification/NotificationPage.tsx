@@ -102,7 +102,7 @@ export const NotificationPage = () => {
         const hasContentChanged =
             edited.title !== selected.title ||
             edited.content !== selected.content ||
-            edited.type !== selected.type ||
+            // edited.type !== selected.type ||
             (edited.actionUrl || "") !== (selected.actionUrl || "");
 
         // Nếu không có bất cứ thay đổi nào
@@ -119,7 +119,8 @@ export const NotificationPage = () => {
 
         // LUÔN gửi đủ dữ liệu chính
         const changed: any = {
-            type: edited.type,
+            // type: edited.type,
+            type: "updated",
             title: edited.title,
             content: edited.content,
             actionUrl: edited.actionUrl ?? null,
@@ -433,6 +434,7 @@ export const NotificationPage = () => {
                                     <Space>
                                         <Button
                                             type="text"
+                                            disabled={selected?.type === "deleted"}
                                             icon={<IconWrapper Icon={Edit3} />}
                                             onClick={handleEditToggle}
                                         />
@@ -470,19 +472,20 @@ export const NotificationPage = () => {
                                             //     value={edited?.type}
                                             //     onChange={(e) => handleChange("type", e.target.value)}
                                             // />
-                                            <Select
-                                                value={edited?.type}
-                                                className="w-full"
-                                                placeholder="Chọn loại thông báo"
-                                                options={typeOptions}
-                                                allowClear
-                                                showSearch // cho phép gõ để lọc
-                                                optionFilterProp="label"
-                                                filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
-                                                    (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                                                }
-                                                onChange={(value) => handleChange("type", value)}
-                                            />
+                                            // <Select
+                                            //     value={edited?.type}
+                                            //     className="w-full"
+                                            //     placeholder="Chọn loại thông báo"
+                                            //     options={typeOptions}
+                                            //     allowClear
+                                            //     showSearch // cho phép gõ để lọc
+                                            //     optionFilterProp="label"
+                                            //     filterOption={(input, option) => // input là mình gõ vô, option nào include input thì hiện ra
+                                            //         (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                                            //     }
+                                            //     onChange={(value) => handleChange("type", value)}
+                                            // />
+                                            <Tag color="volcano">UPDATED</Tag>
                                         ) : (
                                             <Tag
                                                 color={

@@ -49,6 +49,7 @@ const Header = () => {
 
             // clear data
             localStorage.removeItem("access_token")
+            localStorage.removeItem("refresh_token")
             localStorage.removeItem("role")
             localStorage.removeItem("username")
             localStorage.removeItem("userId")

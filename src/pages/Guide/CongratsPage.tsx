@@ -1,4 +1,4 @@
-import { Button, Result } from "antd"
+import { Button, message, Result } from "antd"
 import { Link } from "react-router-dom";
 
 export const CongratsPage = () => {
@@ -8,9 +8,11 @@ export const CongratsPage = () => {
                 className="text-[var(--text-color)]"
                 status="success"
                 title={<span className="text-[var(--text-color)]">Chúc mừng ! Đã đổi mật khẩu thành công</span>}
-                subTitle={<span className="text-[var(--text-color)]">Hiện tại giao diện WEB không hỗ trợ cho nhân viên. Vui lòng follow tài liệu sau để truy cập app di động: <a href="https://huongdantruycap.mobile">https://huongdantruycap.mobile</a></span>}
+                subTitle={<span className="text-[var(--text-color)]">Hiện tại giao diện WEB không hỗ trợ cho nhân viên. Vui lòng follow tài liệu sau để truy cập app di động:
+                    {/* <a href="https://huongdantruycap.mobile">https://huongdantruycap.mobile</a> */}
+                </span>}
                 extra={[
-                    <Button type="primary" key="console">
+                    <Button type="primary" key="console" onClick={() => message.info('Thực hiện theo hướng dẫn bên dưới để truy cập app di động')}>
                         Follow up
                     </Button>,
                 ]}
@@ -20,7 +22,7 @@ export const CongratsPage = () => {
                 <div>
                     {/* <p>Bước 1: Truy cập vào đường link: {<Link to="https://huongdantruycap.mobile">https://huongdantruycap.mobile</Link>}</p> */}
                     <div className="max-w-md mx-auto">
-                        <div className="p-5 bg-white border shadow-sm rounded-2xl border-slate-200">
+                        <div className="p-5 mb-2 bg-white border shadow-sm rounded-2xl border-slate-200">
                             <div className="flex items-start gap-3">
 
                                 <div className="flex-1">
@@ -49,9 +51,19 @@ export const CongratsPage = () => {
                             </div>
                         </div>
                     </div>
-                    <p>Bước 2: Đăng nhập tài khoản nhân viên của bạn</p>
-                    <p>Bước 3: Tận hưởng công việc theo phong cách riêng của bạn</p>
+                    <p className="text-base font-semibold text-[var(--text-color)]">
+                        Bước 2: Đăng nhập tài khoản nhân viên của bạn
+                    </p>
+                    <p className="text-base font-semibold text-[var(--text-color)]">
+                        Bước 3: Tận hưởng công việc theo phong cách riêng của bạn
+                    </p>
                 </div>
+            </div>
+            <div>
+                <img src="/images/Overcome-bro.svg" alt="" className="w-[40%] m-auto mt-10" />
+                <p className="text-base font-semibold text-[var(--text-color)] text-center">
+                    Chúc bạn thành công !
+                </p>
             </div>
         </div>
     );
