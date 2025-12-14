@@ -17,7 +17,7 @@ export const EmployeeFilterPage = () => {
     });
 
     const handleApply = async () => {
-        await fetchFilteredEmployees!(filters, meta?.current || 1, meta?.pageSize || 10);
+        await fetchFilteredEmployees!(filters, 1, meta?.pageSize || 1000);
         setFilters(filters);
     };
 

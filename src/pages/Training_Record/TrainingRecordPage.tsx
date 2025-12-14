@@ -571,7 +571,8 @@ export const TrainingRecordPage = () => {
             >
                 <div className="mb-3">
                     <Input
-                        placeholder="Tìm kiếm theo tên, mã, phòng ban..."
+                        // allowClear
+                        placeholder="Tìm kiếm theo tên..."
                         prefix={<IconWrapper Icon={Search} />}
                         style={{ width: "50%" }}
                         value={searchText}

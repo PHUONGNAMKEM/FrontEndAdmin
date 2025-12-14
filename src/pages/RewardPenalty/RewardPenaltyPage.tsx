@@ -404,7 +404,7 @@ export const RewardPenaltyPage = () => {
                     <Form.Item label="Tên" name="name" rules={[{ required: true, message: "Vui lòng nhập tên!" }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item label="Loại" name="type" rules={[{ required: true }]}>
+                    <Form.Item label="Loại" name="type" rules={[{ required: true, message: "Vui lòng chọn loại thưởng/phạt!" }]}>
                         <Select
                             allowClear
                             options={[
