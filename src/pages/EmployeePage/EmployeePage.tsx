@@ -126,8 +126,8 @@ const EmployeePage = () => {
             // không có filter → gọi API toàn bộ
             fetchEmployees(currentPage, currentSize);
         }
-        fetchDepartment(undefined, metaDepartment?.total);
-        fetchPosition(undefined, metaPosition?.total);
+        fetchDepartment(undefined, metaDepartment?.total || 1000);
+        fetchPosition(undefined, metaPosition?.total || 1000);
     }, [currentPage, currentSize]);
 
     const handlePageChange = (current: number, pageSize: number) => {
@@ -444,13 +444,13 @@ const EmployeePage = () => {
                                 onChange: handlePageChange,
                             }}
                             scroll={{ x: 1100 }}
-                        // onRow={(record) => ({
-                        //     onClick: () => {
-                        //         setSelectedEmployee(record);
-                        //         setViewMode("detail");
-                        //         handleChangeItem(record);
-                        //     },
-                        // })}
+                            onRow={(record) => ({
+                                onClick: () => {
+                                    setSelectedEmployee(record);
+                                    setViewMode("detail");
+                                    handleChangeItem(record);
+                                },
+                            })}
                         />
                         {isFilterOpen && <EmployeeFilterPage />}
                     </div>
@@ -578,7 +578,12 @@ const EmployeePage = () => {
                                                 okText="Yes"
                                                 cancelText="No"
                                             >
-                                                <Button danger>Xóa</Button>
+                                                <Button
+                                                    danger
+                                                    icon={<IconWrapper Icon={Trash} color="#ff4d4f" />}
+                                                >
+                                                    Xóa
+                                                </Button>
                                             </Popconfirm>
 
                                             <Button

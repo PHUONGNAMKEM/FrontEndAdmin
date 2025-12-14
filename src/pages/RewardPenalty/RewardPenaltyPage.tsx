@@ -20,6 +20,7 @@ export const RewardPenaltyPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedItem, setEditedItem] = useState<RewardPenalty | null>(null);
     const [form] = Form.useForm();
+    const [modalType, setModalType] = useState<number | null>(null); // 0: reward, 1: penalty để lọc enum thưởng phạt
 
     const { rewardPenalties, meta, fetchRewardPenalty, filterRewardPenalty, addRewardPenalty, updateRewardPenalty, deleteRewardPenalty, isModalOpen, setModalOpen } = useRewardPenaltyStore();
 
@@ -144,6 +145,32 @@ export const RewardPenaltyPage = () => {
             q: searchText
         });
     };
+
+    useEffect(() => {
+        if (isModalOpen) {
+            form.resetFields();
+            setModalType(null);
+        }
+    }, [isModalOpen, form]);
+
+    const allFormOptions = [
+        { value: "verbal_warning", label: "Cảnh cáo bằng lời nói" },
+        { value: "written_warning", label: "Cảnh cáo bằng văn bản" },
+        { value: "fine", label: "Phạt" },
+        { value: "suspension", label: "Đình chỉ" },
+        { value: "bonus", label: "Thưởng" },
+        { value: "promotion", label: "Thăng chức" },
+    ];
+
+    const penaltyFormOptions = allFormOptions.slice(0, 4); // 4 cái đầu cho thửn
+    const rewardFormOptions = allFormOptions.slice(4);    // 2 cái cuối cho phạt
+
+    const formOptions =
+        modalType === 0
+            ? rewardFormOptions   // Thưởng
+            : modalType === 1
+                ? penaltyFormOptions // Phạt
+                : allFormOptions;    // chưa chọn gì thì show hết
 
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
@@ -379,14 +406,20 @@ export const RewardPenaltyPage = () => {
                     </Form.Item>
                     <Form.Item label="Loại" name="type" rules={[{ required: true }]}>
                         <Select
+                            allowClear
                             options={[
                                 { value: 0, label: "Thưởng" },
                                 { value: 1, label: "Phạt" },
                             ]}
+                            onChange={(value) => {
+                                setModalType(value);
+                                form.setFieldsValue({ form: undefined });
+                            }}
                         />
                     </Form.Item>
                     <Form.Item label="Cấp độ" name="level" rules={[{ required: true }]}>
                         <Select
+                            allowClear
                             options={[
                                 { value: 0, label: "Thấp" },
                                 { value: 1, label: "Trung bình" },
@@ -397,20 +430,15 @@ export const RewardPenaltyPage = () => {
                     <Form.Item label="Hình thức" name="form">
                         {/* <Input /> */}
                         <Select
+                            allowClear
                             className="w-full"
-                            options={[
-                                { value: 0, label: "Cảnh cáo bằng lời nói" },
-                                { value: 1, label: "Cảnh cáo bằng văn bản" },
-                                { value: 2, label: "Phạt" },
-                                { value: 3, label: "Đình chỉ" },
-                                { value: 4, label: "Thưởng" },
-                                { value: 5, label: "Thăng chức" },
-                            ]}
+                            options={formOptions}
                         />
                     </Form.Item>
                     <Form.Item label="Số tiền mặc định" name="defaultAmount">
                         {/* <Input type="number" /> */}
                         <Select
+                            allowClear
                             className="w-full"
                             placeholder="Chọn mức lương cơ bản"
                             options={[1000000, 5000000, 10000000, 15000000, 20000000, 25000000, 30000000].map((num) => ({

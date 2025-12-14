@@ -232,6 +232,14 @@ export const SalaryConfigPage = () => {
                                 </List.Item>
                             )}
                         />
+                        <div style={{ marginTop: 16, textAlign: "center" }}>
+                            <Pagination
+                                current={meta?.current || 1}
+                                total={meta?.total || 0}
+                                pageSize={meta?.pageSize || 10}
+                                onChange={handlePageChange}
+                            />
+                        </div>
                     </Card>
 
                     {/* CHI TIẾT BÊN PHẢI */}

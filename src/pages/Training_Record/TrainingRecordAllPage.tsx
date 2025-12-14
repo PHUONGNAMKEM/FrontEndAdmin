@@ -25,6 +25,7 @@ import {
     Search,
     AlignJustify,
     PanelLeft,
+    StepBack,
 } from "lucide-react";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -219,7 +220,7 @@ export const TrainingRecordAllPage = () => {
                 <Space>
                     <Button
                         size="large"
-                        icon={<IconWrapper Icon={PanelLeft} />}
+                        icon={<IconWrapper Icon={StepBack} />}
                         onClick={() => navigate(-1)}
                     >
                         Quay về

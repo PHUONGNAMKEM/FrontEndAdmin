@@ -162,7 +162,7 @@ export const RequestPage = () => {
             title: "Loại yêu cầu",
             dataIndex: "category",
             key: "category",
-            render: (text: string) => text.toUpperCase(),
+            // render: (text: string) => text.toUpperCase(),
         },
         {
             title: "Nội dung",
@@ -271,12 +271,12 @@ export const RequestPage = () => {
                 <div>
                     <Button
                         icon={<IconWrapper Icon={RefreshCcw} />}
-                        onClick={() => fetchRequests(currentPage, currentSize, "pending")}
+                        onClick={() => fetchRequests(1, meta?.total || 1000, "pending")}
                         loading={loading}
                         size="large"
                         className="mr-4"
                     >
-                        Yêu cần chưa được duyệt
+                        Yêu cầu chưa được duyệt
                     </Button>
                     <Button
                         icon={<IconWrapper Icon={RefreshCcw} />}

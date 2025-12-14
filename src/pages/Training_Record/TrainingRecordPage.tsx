@@ -1,35 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-    Table,
-    Input,
-    Space,
-    Pagination,
-    Select,
-    Card,
-    Typography,
-    Button,
-    Popconfirm,
-    Descriptions,
-    message,
-    notification,
-    List,
-    Modal,
-    Splitter
-} from "antd";
-
+import { Table, Input, Space, Pagination, Select, Card, Typography, Button, Popconfirm, Descriptions, message, notification, List, Modal, Splitter } from "antd";
 import { IconWrapper } from "@components/customsIconLucide/IconWrapper";
-
-import {
-    Edit3,
-    Trash,
-    Check,
-    Ban,
-    Search,
-    AlignJustify,
-    PanelLeft,
-    CirclePlus,
-} from "lucide-react";
-
+import { Edit3, Trash, Check, Ban, Search, AlignJustify, PanelLeft, CirclePlus, StepBack, CircleX, } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTrainingRecordStore } from "src/stores/training_record/useTrainingRecordStore";
 import axios from "axios";
@@ -89,6 +61,8 @@ export const TrainingRecordPage = () => {
     const currentSize = parseInt(searchParams.get("pageSize") || "10");
 
     const { courseId } = useParams();
+    const courseName =
+        records.find(r => r.courseId === (courseId ?? ""))?.courseName || "";
 
     /** INIT FILTERS (run once when route loaded) */
     useEffect(() => {
@@ -114,16 +88,31 @@ export const TrainingRecordPage = () => {
     }, [allocationModalOpen]);
 
     // Khi employees hoặc records thay đổi -> tính toán lại danh sách KHÔNG FETCH LẠIII
+    // useEffect(() => {
+    //     if (!allocationModalOpen) return;
+
+    //     const assignedIds = records.map((r) => r.employeeId);
+
+    //     setAssignedEmployees(records);
+    //     setUnassignedEmployees(
+    //         employees.filter((emp) => !assignedIds.includes(emp.id!))
+    //     );
+    // }, [allocationModalOpen, employees, records]);
     useEffect(() => {
         if (!allocationModalOpen) return;
 
-        const assignedIds = records.map((r) => r.employeeId);
+        // Chỉ lấy record thuộc đúng khóa hiện tại
+        const courseRecords = courseId
+            ? records.filter(r => r.courseId === courseId)
+            : records;
 
-        setAssignedEmployees(records);
+        const assignedIds = courseRecords.map((r) => r.employeeId);
+
+        setAssignedEmployees(courseRecords);
         setUnassignedEmployees(
             employees.filter((emp) => !assignedIds.includes(emp.id!))
         );
-    }, [allocationModalOpen, employees, records]);
+    }, [allocationModalOpen, employees, records, courseId]);
 
     const handleSearchChange = (value: string) => {
         setSearchName(value);
@@ -288,10 +277,11 @@ export const TrainingRecordPage = () => {
         };
 
         try {
-            const created = await createRecord(payload);
+            // const created = await createRecord(payload);
+            await createRecord(payload);
 
-            setAssignedEmployees(prev => [...prev, created]);
-            setUnassignedEmployees(prev => prev.filter(x => x.id !== emp.id));
+            // setAssignedEmployees(prev => [...prev, created]);
+            // setUnassignedEmployees(prev => prev.filter(x => x.id !== emp.id));
             // addLocalRecord(created);
             setAllocReason("");
             setAllocTargetId(null);
@@ -302,6 +292,24 @@ export const TrainingRecordPage = () => {
         }
     };
 
+    const [searchText, setSearchText] = useState("");
+    const handleSearch = () => {
+        fetchEmployees(1, currentSize, searchText);
+        setSearchParams({
+            current: "1",
+            pageSize: String(currentSize),
+            q: searchText
+        });
+    };
+
+    const handleUnassign = async (rec: any) => {
+        try {
+            await deleteRecord(rec.id);
+            notification.success({ message: "Đã xóa phân bổ khỏi khóa học!" });
+        } catch (err: any) {
+            notification.error({ message: "Xóa phân bổ thất bại!", description: err.message });
+        }
+    };
 
     return (
         <div style={{ background: "#fff", padding: 16, borderRadius: 8 }}>
@@ -318,7 +326,7 @@ export const TrainingRecordPage = () => {
                 <Space>
                     <Button
                         size="large"
-                        icon={<IconWrapper Icon={PanelLeft} />}
+                        icon={<IconWrapper Icon={StepBack} />}
                         onClick={() => navigate(-1)}
                     >
                         Quay về
@@ -555,12 +563,22 @@ export const TrainingRecordPage = () => {
 
             {/* ==================== ALLOCATION MODAL ==================== */}
             <Modal
-                title="Phân bổ nhân viên học khóa này"
+                title={"Phân bổ nhân viên học khóa " + (courseName || courseId || "này")}
                 open={allocationModalOpen}
                 onCancel={() => setAllocationModalOpen(false)}
                 footer={null}
                 width={"90vw"}
             >
+                <div className="mb-3">
+                    <Input
+                        placeholder="Tìm kiếm theo tên, mã, phòng ban..."
+                        prefix={<IconWrapper Icon={Search} />}
+                        style={{ width: "50%" }}
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onPressEnter={handleSearch}
+                    />
+                </div>
                 <Splitter style={{ height: 500 }}>
                     {/* LEFT PANEL */}
                     <Splitter.Panel className="!mr-4" defaultSize="50%" min="30%" max="60%">
@@ -612,7 +630,19 @@ export const TrainingRecordPage = () => {
                             header={<b>Danh sách đã học khóa này</b>}
                             dataSource={assignedEmployees}
                             renderItem={(rec) => (
-                                <List.Item>
+                                <List.Item
+                                    actions={[
+                                        <Popconfirm
+                                            title="Bạn chắc chắn muốn xóa nhân viên khỏi khóa này?"
+                                            onConfirm={() => handleUnassign(rec)}
+                                            okText="Xóa"
+                                            cancelText="Hủy"
+                                        >
+                                            <Button type="link" danger size="small" icon={<IconWrapper Icon={CircleX} color="#ff4d4f" size={24} />}>
+                                            </Button>
+                                        </Popconfirm>
+                                    ]}
+                                >
                                     <div style={{ width: "100%" }}>
                                         <div style={{ fontWeight: 600 }}>{rec.employeeName}</div>
                                         <div style={{ fontSize: 12, color: "#999" }}>

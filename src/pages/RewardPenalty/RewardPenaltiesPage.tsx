@@ -504,7 +504,7 @@ export const RewardPenaltiesPage = () => {
                     </Form.Item>
 
                     {/* Kiểu reward/penalty (kind) */}
-                    <Form.Item
+                    {/* <Form.Item
                         label="Kiểu"
                         name="kind"
                         rules={[{ required: true, message: "Vui lòng chọn kiểu" }]}
@@ -515,7 +515,7 @@ export const RewardPenaltiesPage = () => {
                                 { value: "penalty", label: "Phạt" },
                             ]}
                         />
-                    </Form.Item>
+                    </Form.Item> */}
 
                     <Form.Item label="Số tiền tùy chỉnh" name="amountOverride">
                         <Select

@@ -237,9 +237,9 @@ export const CoursePage = () => {
                                             {/* Ảnh khóa học */}
                                             <div className="w-full h-[200px] overflow-hidden">
                                                 <img
-                                                    src="https://plus.unsplash.com/premium_vector-1721494020721-45d7295df5e0?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=352&dpr=1&h=367"
+                                                    src="images/Course app-pana.svg"
                                                     alt={course.name}
-                                                    className="object-cover w-full h-full"
+                                                    className="object-cover w-full h-full p-1 border border-gray-100"
                                                 />
                                             </div>
 

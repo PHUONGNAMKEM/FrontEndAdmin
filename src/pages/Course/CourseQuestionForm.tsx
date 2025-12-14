@@ -48,22 +48,35 @@ export const CourseQuestionForm = () => {
     const handleSubmit = async () => {
         try {
             if (questions.length < 1) {
-                notification.info({ message: "Phải có ít nhất 1 câu hỏi!" });
+                notification.info({ message: "Phải có ít nhất 1 câu hỏi!", duration: 3 });
                 return;
             }
             for (const q of questions) {
+                if (q.content === "") {
+                    notification.info({ message: "Câu hỏi không được để trống!", duration: 3 });
+                    return;
+                }
+                if (q.content.length < 3) {
+                    notification.info({ message: "Nội dung câu hỏi phải có ít nhất 3 ký tự!", duration: 3 });
+                    return;
+                }
+                if (q.a === "" || q.b === "" || q.c === "" || q.d === "") {
+                    notification.info({ message: "Vui lòng nhập đầy đủ các đáp án!", duration: 3 });
+                    return;
+                }
                 if (!q.content.trim()) continue;
                 await addQuestion(q); // vì chưa có API tạo nhiều câu hỏi cùng lúc nên phải lặp từng câu hỏi
             }
-            notification.success({ message: "Tạo đề thi thành công!" });
+
+            notification.success({ message: "Tạo đề thi thành công!", duration: 3 });
             navigate(-1); // quay lại trang trước đó, navigate(1) -> tiến tới 1 trang. Cứ nhớ + là tiến, - là lùi
-        } catch (err) {
-            notification.error({ message: "Tạo câu hỏi thất bại!" });
+        } catch (err: any) {
+            notification.error({ message: "Tạo câu hỏi thất bại!", duration: 3 });
         }
     };
 
     const handleRemoveQuestion = (index: number) => {
-        if (questions.length < 1) {
+        if (questions.length <= 1) {
             notification.info({ message: "Phải có ít nhất 1 câu hỏi!" });
             return;
         }
